@@ -23,5 +23,36 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'react/react-in-jsx-scope': 'off',
+    'prettier/prettier': 'error',
+    'react/function-component-definition': [
+      2,
+      { namedComponents: ['arrow-function', 'function-declaration'] },
+    ],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        paths: ['src'],
+        extensions: ['.js', '.jsx', '.ts', '.d.ts', '.tsx'],
+      },
+      typescript: {
+        project: './tsconfig.json',
+      },
+      alias: {
+        map: [['~', path.resolve(__dirname, './src')]],
+        extensions: ['.js', '.jsx', '.ts', '.d.ts', '.tsx'],
+      },
+    },
   },
 }

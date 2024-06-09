@@ -18,13 +18,7 @@ interface Props extends Container {
   category: string
 }
 
-const ContainerItem = ({
-  id,
-  title,
-  language,
-  description,
-  category,
-}: Props) => {
+const ContainerItem = ({ title, language, description, category }: Props) => {
   return (
     <Card minH={235}>
       <CardHeader>

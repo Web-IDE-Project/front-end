@@ -1,5 +1,11 @@
-const LandingPage = () => {
-  return <div>LandingPage</div>
+import NavBar from "./NavBar";
+
+const LandingPage: React.FC = () => {
+  return (
+    <>
+      <NavBar />
+    </>
+  )
 }
 
 export default LandingPage

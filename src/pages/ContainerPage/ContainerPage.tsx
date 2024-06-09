@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import Sidebar from './Sidebar'
 import { Outlet } from 'react-router-dom'
 
@@ -6,7 +6,9 @@ const ContainerPage = () => {
   return (
     <Flex minH="100%">
       <Sidebar />
-      <Outlet />
+      <Box flexGrow={1} bg="gray.50">
+        <Outlet />
+      </Box>
     </Flex>
   )
 }

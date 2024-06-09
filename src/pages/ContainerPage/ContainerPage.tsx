@@ -1,10 +1,13 @@
+import { Flex } from '@chakra-ui/react'
+import Sidebar from './Sidebar'
+import { Outlet } from 'react-router-dom'
+
 const ContainerPage = () => {
   return (
-    <div>
-      <div>왼쪽 사이드 바</div>
-      <div>오른쪽 콘텐츠 영역</div>
-      // CI/CD 구축 테스트용 주석 // 2번째 시도 // 3번째 시도
-    </div>
+    <Flex>
+      <Sidebar />
+      <Outlet />
+    </Flex>
   )
 }
 

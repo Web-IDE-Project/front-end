@@ -14,11 +14,14 @@ function App() {
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/container" element={<ContainerPage />}>
         <Route index element={<Navigate to="my" />} />
-        <Route path="my" element={<ContainerList category="my" />} />
-        <Route path="lecture" element={<ContainerList category="lecture" />} />
+        <Route path="my" element={<ContainerList category="내 컨테이너" />} />
+        <Route
+          path="lecture"
+          element={<ContainerList category="강의 컨테이너" />}
+        />
         <Route
           path="question"
-          element={<ContainerList category="question" />}
+          element={<ContainerList category="질문 컨테이너" />}
         />
       </Route>
       <Route path="/editor" element={<EditorPage />} />

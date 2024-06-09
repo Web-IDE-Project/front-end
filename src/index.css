@@ -1,1 +1,6 @@
-// 최상위 - 공통 스타일링
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0px;
+}

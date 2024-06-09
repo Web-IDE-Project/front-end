@@ -1,6 +1,16 @@
 import { ArrowLeftIcon } from '@chakra-ui/icons'
-import { AspectRatio, Avatar, Flex, Image, Spacer } from '@chakra-ui/react'
+import {
+  Avatar,
+  Box,
+  Divider,
+  Flex,
+  IconButton,
+  Image,
+  Spacer,
+  Text,
+} from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
+import Logo from '@/assets/images/logo.png'
 
 const Sidebar = () => {
   const categories = [
@@ -10,27 +20,76 @@ const Sidebar = () => {
   ]
 
   return (
-    <Flex direction="column" width="300px">
+    <Flex direction="column" width="250px" p={4}>
       <Flex align="center">
-        <AspectRatio ratio={20 / 6}>
-          <Image
-            width="80px"
-            src="src/assets/images/logo.png"
-            alt="3Ever"
-            objectFit="fill"
-          />
-        </AspectRatio>
+        <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
         <Spacer />
-        <ArrowLeftIcon />
+        <IconButton
+          aria-label="Hide sidebar"
+          icon={<ArrowLeftIcon />}
+          bg="transparent"
+        />
       </Flex>
-      <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+      <Flex align="center" py={8} pl={2} gap={2}>
+        <Avatar name="Avatar" src="https://bit.ly/dan-abramov" />
+        <Text fontSize="md" as="b">
+          코딩 고수
+        </Text>
+      </Flex>
+      <Divider orientation="horizontal" mb={3} />
       {categories.map((category, index) => {
         return (
           <NavLink key={index} to={category.path}>
-            {category.name}
+            {({ isActive }) => (
+              <Box
+                w="full"
+                h={55}
+                as="button"
+                bg={isActive ? 'gray.100' : ''}
+                _hover={{ bg: 'gray.100' }}
+                mt={2}
+                borderRadius="xl"
+                transition="background-color 0.3s"
+              >
+                <Flex p={4}>
+                  <Text fontSize="md" mr={2}>
+                    {category.name}
+                  </Text>
+                  <Text color="green.900">3</Text>
+                </Flex>
+              </Box>
+            )}
           </NavLink>
         )
       })}
+      <Spacer />
+      <Divider orientation="horizontal" mb={3} />
+      <Box
+        w="full"
+        h={55}
+        as="button"
+        _hover={{ bg: 'gray.100' }}
+        mt={2}
+        borderRadius="xl"
+        transition="background-color 0.3s"
+      >
+        <Flex p={4}>
+          <Text fontSize="md">설정</Text>
+        </Flex>
+      </Box>
+      <Box
+        w="full"
+        h={55}
+        as="button"
+        _hover={{ bg: 'gray.100' }}
+        mt={2}
+        borderRadius="xl"
+        transition="background-color 0.3s"
+      >
+        <Flex p={4}>
+          <Text fontSize="md">로그아웃</Text>
+        </Flex>
+      </Box>
     </Flex>
   )
 }

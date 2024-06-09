@@ -20,7 +20,7 @@ interface Props extends Container {
 
 const ContainerItem = ({ title, language, description, category }: Props) => {
   return (
-    <Card minH={235}>
+    <Card minH={280}>
       <CardHeader>
         <Flex align="center">
           <Heading size="md">{title}</Heading>

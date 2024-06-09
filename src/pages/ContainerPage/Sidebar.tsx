@@ -12,15 +12,19 @@ import {
 import { NavLink } from 'react-router-dom'
 import Logo from '@/assets/images/logo.png'
 
-const Sidebar = () => {
+const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const categories = [
     { name: '내 컨테이너', path: '/container/my' },
     { name: '강의 컨테이너', path: '/container/lecture' },
     { name: '질문 컨테이너', path: '/container/question' },
   ]
 
+  const onSidebarOpenButton = () => {
+    toggleSidebar()
+  }
+
   return (
-    <Flex direction="column" width="250px" p={4}>
+    <Flex direction="column" p={4} h="100vh">
       <Flex align="center">
         <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
         <Spacer />
@@ -28,6 +32,7 @@ const Sidebar = () => {
           aria-label="Hide sidebar"
           icon={<ArrowLeftIcon />}
           bg="transparent"
+          onClick={onSidebarOpenButton}
         />
       </Flex>
       <Flex align="center" py={8} pl={2} gap={2}>
@@ -64,32 +69,34 @@ const Sidebar = () => {
       })}
       <Spacer />
       <Divider orientation="horizontal" mb={3} />
-      <Box
-        w="full"
-        h={55}
-        as="button"
-        _hover={{ bg: 'gray.100' }}
-        mt={2}
-        borderRadius="xl"
-        transition="background-color 0.3s"
-      >
-        <Flex p={4}>
-          <Text fontSize="md">설정</Text>
-        </Flex>
-      </Box>
-      <Box
-        w="full"
-        h={55}
-        as="button"
-        _hover={{ bg: 'gray.100' }}
-        mt={2}
-        borderRadius="xl"
-        transition="background-color 0.3s"
-      >
-        <Flex p={4}>
-          <Text fontSize="md">로그아웃</Text>
-        </Flex>
-      </Box>
+      <Flex direction="column">
+        <Box
+          w="full"
+          h={55}
+          as="button"
+          _hover={{ bg: 'gray.100' }}
+          mt={2}
+          borderRadius="xl"
+          transition="background-color 0.3s"
+        >
+          <Flex p={4}>
+            <Text fontSize="md">설정</Text>
+          </Flex>
+        </Box>
+        <Box
+          w="full"
+          h={55}
+          as="button"
+          _hover={{ bg: 'gray.100' }}
+          mt={2}
+          borderRadius="xl"
+          transition="background-color 0.3s"
+        >
+          <Flex p={4}>
+            <Text fontSize="md">로그아웃</Text>
+          </Flex>
+        </Box>
+      </Flex>
     </Flex>
   )
 }

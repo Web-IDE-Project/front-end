@@ -11,9 +11,9 @@ interface Props {
 
 const UserItem = ({ profile, nickname, isMicAllow, isEditAllow }: Props) => {
   return (
-    <Flex>
+    <Flex align="center">
       {/* TODO - profile 이미지 설정 */}
-      <Avatar name="User" size="sm" src="https://bit.ly/dan-abramov" />
+      <Avatar name="User" size="sm" src="https://bit.ly/dan-abramov" mr={1} />
       {nickname}
       <Spacer />
       <IconButton

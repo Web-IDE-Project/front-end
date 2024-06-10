@@ -17,7 +17,7 @@ const SignUp: React.FC = () => {
             <FormLabel>비밀번호</FormLabel>
             <Input type="password" placeholder='비밀번호' mb='12px' focusBorderColor='green.400' />
             <Input type="password" placeholder='비밀번호 확인' mb='48px' focusBorderColor='green.400' />
-            <Button type="submit" w='100%' bg='green.400' color='white' _hover={{ bg: 'green.500' }} variant='solid' mb='16px'>로그인</Button>
+            <Button type="submit" w='100%' bg='green.400' color='white' _hover={{ bg: 'green.500' }} variant='solid' mb='16px'>회원가입</Button>
           </FormControl>
         </Flex>
       </Flex>

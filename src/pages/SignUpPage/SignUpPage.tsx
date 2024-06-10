@@ -9,9 +9,11 @@ const SignUp: React.FC = () => {
           <Image src={logo} boxSize='150px' objectFit='contain' mb='20px' />
           <FormControl>
             <FormLabel>아이디</FormLabel>
-            <Input type="text" placeholder='아이디' mb='32px' focusBorderColor='green.400' />
+            <Input type="text" placeholder='아이디' mb='20px' focusBorderColor='green.400' />
+            <FormLabel>이메일</FormLabel>
+            <Input type="email" placeholder='3ever@example.com' mb='20px' focusBorderColor='green.400' />
             <FormLabel>닉네임</FormLabel>
-            <Input type="text" placeholder='닉네임' mb='32px' focusBorderColor='green.400' />
+            <Input type="text" placeholder='닉네임' mb='20px' focusBorderColor='green.400' />
             <FormLabel>비밀번호</FormLabel>
             <Input type="password" placeholder='비밀번호' mb='12px' focusBorderColor='green.400' />
             <Input type="password" placeholder='비밀번호 확인' mb='48px' focusBorderColor='green.400' />

@@ -17,6 +17,7 @@ import 'codemirror/theme/base16-light.css'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/python/python'
 import 'codemirror/mode/clike/clike'
+import TerminalComponent from './TerminalComponent'
 
 const EditorPage = () => {
   const [value, setValue] = useState('console.log(hello);')
@@ -76,7 +77,9 @@ const EditorPage = () => {
           </Box>
 
           {/* SECTION 터미널 영역 */}
-          <Box></Box>
+          <Box h={200} overflow="hidden">
+            <TerminalComponent />
+          </Box>
         </Flex>
       </Flex>
     </>

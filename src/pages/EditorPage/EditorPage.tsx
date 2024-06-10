@@ -16,9 +16,9 @@ const EditorPage = () => {
         <MenuBar />
 
         {/* SECTION 파일 탐색기/권한 관리 영역*/}
-        <Box>
+        <Box minW="180px" p={2} borderRight="1px" borderColor="gray.200">
           <Explorer />
-          <PermissionSettings />
+          {/* <PermissionSettings /> */}
         </Box>
 
         {/* SECTION 에디터 영역 */}

@@ -9,7 +9,14 @@ const MenuBar = () => {
   const navigate = useNavigate()
 
   return (
-    <Flex direction="column" p={2} gap={2} boxShadow="xs" align="center">
+    <Flex
+      direction="column"
+      p={2}
+      gap={2}
+      align="center"
+      borderRight="1px"
+      borderColor="gray.200"
+    >
       <IconButton aria-label="explorer" icon={<VscFiles />} fontSize="20px" />
       <IconButton
         aria-label="terminal"

@@ -8,7 +8,14 @@ import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 
 const NavBar = () => {
   return (
-    <Flex grow={1} p={2} align="center" gap={2} boxShadow="xs">
+    <Flex
+      grow={1}
+      p={2}
+      align="center"
+      gap={2}
+      borderBottom="1px"
+      borderColor="gray.200"
+    >
       <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
       <Spacer />
       <Button

@@ -9,19 +9,11 @@ import NavBar from './NavBar'
 import MenuBar from './MenuBar'
 import Explorer from './Explorer'
 import PermissionSettings from './PermissionSettings'
-import { useState } from 'react'
-import { ChevronRightIcon } from '@chakra-ui/icons'
-import { UnControlled as CodeMirror } from 'react-codemirror2'
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/base16-light.css'
-import 'codemirror/mode/javascript/javascript'
-import 'codemirror/mode/python/python'
-import 'codemirror/mode/clike/clike'
 import TerminalComponent from './TerminalComponent'
+import { ChevronRightIcon } from '@chakra-ui/icons'
+import EditorComponent from './EditorComponent'
 
 const EditorPage = () => {
-  const [value, setValue] = useState('console.log(hello);')
-
   return (
     <>
       {/* SECTION 상단바 - 로고, 저장/실행 버튼 */}
@@ -59,22 +51,9 @@ const EditorPage = () => {
               </BreadcrumbItem>
             </Breadcrumb>
           </Box>
-
-          <Box flexGrow={1}>
-            <CodeMirror
-              value={value}
-              options={{
-                mode: 'javascript', // 언어 모드 설정(text/x-java(java), python, javascript, text/x-csrc(c), text/x-c++src(c++))
-                theme: 'base16-light', // 편집기 테마 설정
-                lineNumbers: true,
-              }}
-              onChange={(editor, data, value) => {
-                setValue(value)
-              }}
-              autoCursor
-              autoScroll
-            />
-          </Box>
+          <Flex grow={1}>
+            <EditorComponent />
+          </Flex>
 
           {/* SECTION 터미널 영역 */}
           <Box h={200} overflow="hidden">

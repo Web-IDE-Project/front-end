@@ -8,7 +8,7 @@ import {
 import NavBar from './NavBar'
 import MenuBar from './MenuBar'
 import Explorer from './Explorer'
-import PermissionSettings from './PermissionSettings'
+// import PermissionSettings from './PermissionSettings'
 import TerminalComponent from './TerminalComponent'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import EditorComponent from './EditorComponent'
@@ -26,8 +26,8 @@ const EditorPage = () => {
 
         {/* SECTION 파일 탐색기/권한 관리 영역*/}
         <Box minW="180px" p={2} borderRight="1px" borderColor="gray.200">
-          {/* <Explorer /> */}
-          <PermissionSettings />
+          <Explorer />
+          {/* <PermissionSettings /> */}
         </Box>
 
         {/* SECTION 에디터/터미널 영역 */}

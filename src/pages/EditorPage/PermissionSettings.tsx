@@ -1,4 +1,4 @@
-import { Flex, IconButton, Spacer, Text } from '@chakra-ui/react'
+import { Flex, Text } from '@chakra-ui/react'
 import UserItem from './UserItem'
 
 const PermissionSettings = () => {

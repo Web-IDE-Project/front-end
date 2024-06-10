@@ -20,7 +20,7 @@ const EditorComponent = () => {
           theme: 'base16-light', // 편집기 테마 설정
           lineNumbers: true,
         }}
-        onChange={(editor, data, value) => {
+        onChange={value => {
           setValue(value)
         }}
         autoCursor

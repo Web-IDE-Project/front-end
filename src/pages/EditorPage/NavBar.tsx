@@ -3,7 +3,7 @@ import Logo from '@/assets/images/logo.png'
 import { IoIosSave } from 'react-icons/io'
 import { IoIosPlay } from 'react-icons/io'
 import { FiMic } from 'react-icons/fi'
-import { FiMicOff } from 'react-icons/fi'
+// import { FiMicOff } from 'react-icons/fi'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 
 const NavBar = () => {

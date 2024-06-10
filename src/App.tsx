@@ -24,7 +24,10 @@ function App() {
           element={<ContainerList category="질문 컨테이너" />}
         />
       </Route>
-      <Route path="/editor" element={<EditorPage />} />
+      <Route
+        path="/container/:containerId/workspace"
+        element={<EditorPage />}
+      />
     </Routes>
   )
 }

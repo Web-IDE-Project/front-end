@@ -11,7 +11,7 @@ const EditorPage = () => {
       <NavBar />
 
       {/* SECTION 하단 영역 */}
-      <Flex>
+      <Flex minH="calc(100vh - 48px)">
         {/* SECTION 파일 탐색기, 터미널, 권한 관리 탭 */}
         <MenuBar />
 

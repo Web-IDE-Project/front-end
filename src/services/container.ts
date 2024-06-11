@@ -34,6 +34,7 @@ export async function createContainer(
   }
 }
 
+/** 내 컨테이너 조회 API */
 export async function getMyContainer(): Promise<GetPrivateContainerResponse> {
   try {
     const response: AxiosResponse<PrivateContainer[]> =
@@ -52,6 +53,7 @@ export async function getMyContainer(): Promise<GetPrivateContainerResponse> {
   }
 }
 
+/** 강의 컨테이너 조회 API */
 export async function getLectureContainer(): Promise<GetPublicContainerResponse> {
   try {
     const response: AxiosResponse<PublicContainer[]> = await API.get(
@@ -71,6 +73,7 @@ export async function getLectureContainer(): Promise<GetPublicContainerResponse>
   }
 }
 
+/** 질문 컨테이너 조회 API */
 export async function getQuestionContainer(): Promise<GetPublicContainerResponse> {
   try {
     const response: AxiosResponse<PublicContainer[]> = await API.get(

@@ -12,7 +12,6 @@ import { ChevronRightIcon } from '@chakra-ui/icons'
 import CodeEditor from './CodeEditor/CodeEditor'
 import Terminal from './Terminal/Terminal'
 import Tab from './Tab/Tab'
-// import EditorComponent from './EditorComponent'
 
 const IDEPage = () => {
   return (

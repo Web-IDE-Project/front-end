@@ -10,6 +10,7 @@ import { python } from '@codemirror/lang-python'
 import { githubLight } from '@uiw/codemirror-theme-github'
 import './code-editor.css'
 import { LanguageSupport } from '@codemirror/language'
+import { showMinimap } from '@replit/codemirror-minimap'
 
 const EXTENSIONS: { [key: string]: LanguageSupport } = {
   python: python(),
@@ -22,12 +23,31 @@ const CodeEditor = ({ language }: { language: string }) => {
   const editorRef = useRef<HTMLDivElement>(null)
   const codemirrorViewRef = useRef<EditorView>()
 
-  const [code, setCode] = useState('')
+  const [code, setCode] = useState("consle.log('hello!');")
 
   useEffect(() => {
+    // minimap 설정을 위한 코드
+    const create = (v: EditorView) => {
+      const dom = document.createElement('div')
+      return { dom }
+    }
+
     const state = EditorState.create({
       doc: code,
-      extensions: [basicSetup, EXTENSIONS[language], githubLight],
+      extensions: [
+        basicSetup,
+        EXTENSIONS[language],
+        githubLight,
+        // minimap scrollbar
+        showMinimap.compute(['doc'], _ => {
+          return {
+            create,
+            /* optional */
+            displayText: 'characters',
+            showOverlay: 'always',
+          }
+        }),
+      ],
     })
 
     codemirrorViewRef.current = new EditorView({

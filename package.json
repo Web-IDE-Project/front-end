@@ -21,6 +21,7 @@
     "@codemirror/view": "^6.28.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@replit/codemirror-minimap": "^0.5.2",
     "@types/node": "^20.14.0",
     "@types/react-router-dom": "^5.3.3",
     "@uiw/codemirror-extensions-langs": "^4.22.2",

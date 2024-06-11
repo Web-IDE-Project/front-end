@@ -5,7 +5,7 @@ import { IoPeopleOutline } from 'react-icons/io5'
 import { ArrowBackIcon, SettingsIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom'
 
-const MenuBar = () => {
+const Tab = () => {
   const navigate = useNavigate()
 
   return (
@@ -45,4 +45,4 @@ const MenuBar = () => {
   )
 }
 
-export default MenuBar
+export default Tab

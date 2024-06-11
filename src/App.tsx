@@ -3,8 +3,8 @@ import LandingPage from './pages/LandingPage/LandingPage'
 import LoginPage from './pages/LoginPage/LoginPage'
 import SignUpPage from './pages/SignUpPage/SignUpPage'
 import ContainerPage from './pages/ContainerPage/ContainerPage'
-import EditorPage from './pages/EditorPage/EditorPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
+import IDEPage from './pages/IDEPage/IDEPage'
 
 function App() {
   return (
@@ -24,10 +24,7 @@ function App() {
           element={<ContainerList category="질문 컨테이너" />}
         />
       </Route>
-      <Route
-        path="/container/:containerId/workspace"
-        element={<EditorPage />}
-      />
+      <Route path="/container/:containerId/workspace" element={<IDEPage />} />
     </Routes>
   )
 }

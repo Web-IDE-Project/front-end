@@ -9,7 +9,7 @@ import { PiFileCpp } from 'react-icons/pi'
 import { DiPython } from 'react-icons/di'
 import { IoCodeSlashOutline } from 'react-icons/io5'
 import { FaRegFolder, FaRegFolderOpen } from 'react-icons/fa'
-import TreeView from 'react-accessible-treeview'
+import TreeView, { ITreeViewOnNodeSelectProps } from 'react-accessible-treeview'
 import './treeview.css'
 
 const Explorer = ({ entries }: { entries: FileSystemEntry[] | null }) => {
@@ -38,6 +38,13 @@ const Explorer = ({ entries }: { entries: FileSystemEntry[] | null }) => {
     }
   }
 
+  const onNodeSelect = ({ element, isBranch }: ITreeViewOnNodeSelectProps) => {
+    if (isBranch) {
+      // TODO - 선택된 파일 가져와서 CodeMirror 에디터에서 보여주기
+      console.log(element.id)
+    }
+  }
+
   return (
     <>
       <Flex align="center">
@@ -63,6 +70,7 @@ const Explorer = ({ entries }: { entries: FileSystemEntry[] | null }) => {
           <TreeView
             data={items!}
             aria-label="directory tree"
+            onNodeSelect={onNodeSelect}
             nodeRenderer={({
               element,
               isBranch,

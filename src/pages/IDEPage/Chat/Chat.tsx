@@ -1,5 +1,5 @@
 import { Search2Icon } from "@chakra-ui/icons";
-import { Box, Button, Center, Flex, Input, InputGroup, InputLeftElement, Text, Image } from "@chakra-ui/react"
+import { Box, Center, Flex, Input, InputGroup, InputLeftElement, Text, Image, IconButton } from "@chakra-ui/react"
 import React from "react";
 import send from '../../../assets/images/send.png';
 
@@ -92,9 +92,11 @@ const Chat: React.FC = () => {
             </Flex>
             <Flex gap='8px' >
                 <Input type='text' placeholder="채팅을 입력하세요" bg='white' />
-                <Button colorScheme="green" >
-                    <Image src={send} h='50%' />
-                </Button>
+                <IconButton
+                    colorScheme="green"
+                    aria-label="send button"
+                    icon={<Image src={send} h='50%' />}
+                />
             </Flex>
         </Flex>
     )

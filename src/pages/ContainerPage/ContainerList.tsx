@@ -18,11 +18,14 @@ import {
   Text,
   Select,
   Textarea,
+  Flex,
+  Spacer,
 } from '@chakra-ui/react'
 
 import container_list from '@/data/container-list.json'
 import ContainerItem from './ContainerItem'
 import { useState } from 'react'
+import { createContainer } from '@/services/container'
 
 interface Props {
   category: string
@@ -49,7 +52,7 @@ const ContainerList = ({ category }: Props) => {
     setShowLanguageRequired(false)
   }
 
-  const createButtonClick = () => {
+  const createButtonClick = async () => {
     if (name === '' || selectedLanguage === '') {
       if (name === '') {
         setShowNameRequired(true)
@@ -59,25 +62,24 @@ const ContainerList = ({ category }: Props) => {
         setShowLanguageRequired(true)
       }
     } else {
-      // TODO - 컨테이너 생성 요청
-      console.log(
-        `name: ${name}, desc: ${description}, lang: ${selectedLanguage}`
+      const response = await createContainer(
+        name,
+        description,
+        selectedLanguage
       )
+
+      if (response.success) {
+        onClose()
+      } else {
+        console.log(response.error)
+      }
 
       // 변수 초기화
       initiateValues()
-
-      // TODO - 요청 완료된 후 모달 닫기
-      onClose()
     }
   }
 
-  const modalCloseButtonClick = () => {
-    initiateValues()
-    onClose()
-  }
-
-  const modalOverlayClick = () => {
+  const modalClose = () => {
     initiateValues()
     onClose()
   }
@@ -139,13 +141,7 @@ const ContainerList = ({ category }: Props) => {
       </Box>
 
       {/* 컨테이너 생성 모달 */}
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
-        size="sm"
-        onOverlayClick={modalOverlayClick}
-      >
+      <Modal isOpen={isOpen} onClose={modalClose} isCentered size="sm">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader fontSize="lg" fontWeight="bold">
@@ -165,9 +161,16 @@ const ContainerList = ({ category }: Props) => {
               onChange={e => setName(e.target.value)}
               isInvalid={showNameRequired}
             />
-            <Text fontWeight="bold" mb={1}>
-              설명(선택)
-            </Text>
+            <Flex align="center">
+              <Text mb={1}>
+                <b>설명</b>(선택)
+              </Text>
+              <Spacer />
+              <Text fontSize="sm" color="gray">
+                {description.length < 60 ? description.length : 60}
+                /60 자
+              </Text>
+            </Flex>
             <Textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -176,6 +179,7 @@ const ContainerList = ({ category }: Props) => {
               borderRadius="md"
               mb={4}
               resize="none"
+              maxLength={60}
             />
             <Text mb={1}>
               <b>언어</b>(선택하신 언어로 기본 템플릿이 생성됩니다.)
@@ -190,18 +194,13 @@ const ContainerList = ({ category }: Props) => {
             >
               <option value="C">C</option>
               <option value="CPP">C++</option>
-              <option value="Java">Java</option>
-              <option value="JavaScript">JavaScript</option>
-              <option value="Python">Python</option>
+              <option value="JAVA">Java</option>
+              <option value="JAVASCRIPT">JavaScript</option>
+              <option value="PYTHON">Python</option>
             </Select>
           </ModalBody>
           <ModalFooter>
-            <Button
-              colorScheme="gray"
-              mr={3}
-              onClick={modalCloseButtonClick}
-              size="sm"
-            >
+            <Button colorScheme="gray" mr={3} onClick={modalClose} size="sm">
               취소
             </Button>
             <Button

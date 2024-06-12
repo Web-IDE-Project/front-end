@@ -7,6 +7,7 @@ import {
   PrivateContainer,
   PublicContainer,
 } from '@/models/ContainerData'
+import { StartContainerResponse } from '@/models/FileSystemEntryData'
 
 /** 컨테이너 생성 API */
 export async function createContainer(

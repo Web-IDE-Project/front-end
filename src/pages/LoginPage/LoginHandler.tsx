@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API from '@/services/API';
 
 // 쿠키 설정 함수
 const setCookie = (name: string, value: string, days: number): void => {
@@ -22,7 +22,7 @@ const LoginHandler: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/auth/transmit', { withCredentials: true })
+        API('/api/auth/transmit')
             .then(response => {
                 const authHeader = response.headers['authorization'];
                 const accessToken = authHeader ? authHeader.split(' ')[1] : null;

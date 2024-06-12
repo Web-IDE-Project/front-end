@@ -27,6 +27,9 @@ const ContainerItem = ({
   language,
   description,
   category,
+  nickname,
+  profileUrl,
+}: Props) => {
   const navigate = useNavigate()
   return (
     <Card minH={280}>

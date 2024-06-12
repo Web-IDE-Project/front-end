@@ -21,31 +21,106 @@ interface PubMessage {
 
 // 테스트 데이터
 // const data: Message[] = [
-//     {
-//         "messageType": "ENTER",
-//         "senderName": "sender",
-//         "message": "[알림] 코딩 고수님이 입장하셨습니다."
-//     },
-//     {
-//         "messageType": "TALK",
-//         "senderName": "코딩 고수",
-//         "message": "마이크 허용해주시면 직접 설명해드릴게요!"
-//     },
-//     {
-//         "messageType": "TALK",
-//         "senderName": "me",
-//         "message": "감사합니다!!"
-//     },
-//     {
-//         "messageType": "TALK",
-//         "senderName": "me",
-//         "message": "허용해드렸으니 확인 부탁드려요~"
-//     },
-//     {
-//         "messageType": "EXIT",
-//         "senderName": "sender",
-//         "message": "[알림] 코딩 고수님이 퇴장하셨습니다."
-//     },
+// 	{
+// 		"messageType": "ENTER",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "코딩 고수",
+// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "감사합니다!!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "허용해드렸으니 확인 부탁드려요~"
+// 	},
+// 	{
+// 		"messageType": "EXIT",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "ENTER",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "코딩 고수",
+// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "감사합니다!!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "허용해드렸으니 확인 부탁드려요~"
+// 	},
+// 	{
+// 		"messageType": "EXIT",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "ENTER",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "코딩 고수",
+// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "감사합니다!!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "허용해드렸으니 확인 부탁드려요~"
+// 	},
+// 	{
+// 		"messageType": "EXIT",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "ENTER",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "코딩 고수",
+// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "감사합니다!!"
+// 	},
+// 	{
+// 		"messageType": "TALK",
+// 		"senderName": "me",
+// 		"message": "허용해드렸으니 확인 부탁드려요~"
+// 	},
+// 	{
+// 		"messageType": "EXIT",
+// 		"senderName": "sender",
+// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+// 	},
 // ]
 
 interface BubbleProps {
@@ -163,7 +238,25 @@ const Chat: React.FC = () => {
 				</InputLeftElement>
 				<Input type='text' placeholder='검색' />
 			</InputGroup>
-			<Flex flex='1' flexDir='column' gap={1} py={4}>
+			<Flex
+				flex='1'
+				flexDir='column'
+				gap={1}
+				py={4}
+				overflow='scroll'
+				css={{
+					'&::-webkit-scrollbar': {
+						width: '4px',
+					},
+					'&::-webkit-scrollbar-track': {
+						width: '6px',
+					},
+					'&::-webkit-scrollbar-thumb': {
+						background: 'none',
+						borderRadius: '24px',
+					},
+				}}
+			>
 				{messages.length === 0 ? (
 					<Text fontSize='small' color='gray.500'>채팅을 시작해보세요</Text>
 				) : (

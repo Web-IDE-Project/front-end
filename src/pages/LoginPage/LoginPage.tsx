@@ -38,7 +38,7 @@ const LoginPage: React.FC = () => {
       const response = await API.post('/api/auth/login', data);
 
       // 응답 헤더에서 액세스 토큰을 추출
-      const authHeader = response.headers['authorization'];
+      const authHeader = response.headers['Authorization'];
       const accessToken = authHeader ? authHeader.split(' ')[1] : null;
 
       // 응답 쿠키에서 리프레시 토큰을 추출
@@ -103,15 +103,15 @@ const LoginPage: React.FC = () => {
             </AbsoluteCenter>
           </Box>
           <Flex flexDir='column' w='full' gap={3} >
-            <Link to='/oauth2/authorization/kakao' >
+            <a href='/api/oauth2/authorization/kakao' >
               <Button bg='yellow.300' _hover={{ bg: 'yellow.400' }} w='full'>카카오계정으로 로그인</Button>
-            </Link>
-            <Link to='/oauth2/authorization/naver'>
+            </a>
+            <a href='/api/oauth2/authorization/naver'>
               <Button bg='green.400' color='white' _hover={{ bg: 'green.500' }} w='full'>네이버로 로그인</Button>
-            </Link>
-            <Link to='/oauth2/authorization/google'>
+            </a>
+            <a href='/api/oauth2/authorization/google'>
               <Button colorScheme='gray' w='full'>구글로 로그인</Button>
-            </Link>
+            </a>
           </Flex>
         </Flex>
       </Flex>

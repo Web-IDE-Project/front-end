@@ -11,8 +11,23 @@ import { IoCodeSlashOutline } from 'react-icons/io5'
 import { FaRegFolder, FaRegFolderOpen } from 'react-icons/fa'
 import TreeView, { ITreeViewOnNodeSelectProps } from 'react-accessible-treeview'
 import './treeview.css'
+import { useAppDispatch } from '@/hooks'
+import {
+  setCurrentFileContent,
+  setCurrentFileId,
+  setSelectedEntry,
+} from '@/store/ideSlice'
+// import { getFile } from '@/services/entry'
 
-const Explorer = ({ entries }: { entries: FileSystemEntry[] | null }) => {
+const Explorer = ({
+  containerId,
+  entries,
+}: {
+  containerId: string | undefined
+  entries: FileSystemEntry[] | null
+}) => {
+  const dispatch = useAppDispatch()
+
   const items = getTreeItems(entries)
 
   const FolderIcon = ({ isOpen }: { isOpen: boolean }) =>
@@ -38,10 +53,37 @@ const Explorer = ({ entries }: { entries: FileSystemEntry[] | null }) => {
     }
   }
 
-  const onNodeSelect = ({ element, isBranch }: ITreeViewOnNodeSelectProps) => {
+  const onNodeSelect = async ({
+    element,
+    isBranch,
+  }: ITreeViewOnNodeSelectProps) => {
     if (isBranch) {
-      // TODO - 선택된 파일 가져와서 CodeMirror 에디터에서 보여주기
-      console.log(element.id)
+      dispatch(
+        setSelectedEntry({ type: 'directory', id: element.id as number })
+      )
+    } else {
+      dispatch(setSelectedEntry({ type: 'file', id: element.id as number }))
+      dispatch(setCurrentFileId(element.id as number))
+
+      // 선택된 파일 가져와서 currentFileContent에 저장
+      if (containerId) {
+        // const response = await getFile(containerId, element.id)
+
+        // if (response.success && response.data) {
+        //   dispatch(setCurrentFileContent(response.data.content))
+        // }  else {
+        //   console.log('Error fetching file', response.error)
+        // }
+
+        // NOTE - 테스트용 코드 내용
+        dispatch(
+          setCurrentFileContent(
+            `지금 열린 파일은 ${containerId}번 컨테이너에 있는 ${element.id}번 파일입니다. `
+          )
+        )
+      } else {
+        console.log('containerId가 없습니다.')
+      }
     }
   }
 
@@ -71,6 +113,8 @@ const Explorer = ({ entries }: { entries: FileSystemEntry[] | null }) => {
             data={items!}
             aria-label="directory tree"
             onNodeSelect={onNodeSelect}
+            defaultExpandedIds={[2]}
+            defaultSelectedIds={[3]}
             nodeRenderer={({
               element,
               isBranch,

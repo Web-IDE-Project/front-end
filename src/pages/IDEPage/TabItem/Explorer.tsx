@@ -4,6 +4,9 @@ import {
   Flex,
   IconButton,
   Input,
+  Menu,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -18,8 +21,7 @@ import {
 } from '@chakra-ui/react'
 import { FiFolderPlus } from 'react-icons/fi'
 import { FiFilePlus } from 'react-icons/fi'
-import { FileSystemEntry, TreeItem } from '@/models/FileSystemEntryData'
-import { getTreeItems } from '@/utils/treeview'
+import { convertToTreeItems } from '@/utils/treeview'
 import { IoLogoJavascript } from 'react-icons/io5'
 import { FaJava } from 'react-icons/fa'
 import { PiFileCpp } from 'react-icons/pi'
@@ -30,33 +32,57 @@ import TreeView, { ITreeViewOnNodeSelectProps } from 'react-accessible-treeview'
 import './treeview.css'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
+  selectEntries,
   selectEntry,
   setCurrentFileContent,
   setCurrentFileId,
+  setEntries,
   setSelectedEntry,
 } from '@/store/ideSlice'
 import { useRef, useState } from 'react'
-import { createDirectory, createFile } from '@/services/entry'
+import {
+  createDirectory,
+  createFile,
+  deleteDirectory,
+  deleteFile,
+  editDirectoryName,
+  editFileName,
+} from '@/services/entry'
 // import { getFile } from '@/services/entry'
 
-const Explorer = ({
-  containerId,
-  entries,
-}: {
-  containerId: string | undefined
-  entries: FileSystemEntry[] | null
-}) => {
+const Explorer = ({ containerId }: { containerId: string | undefined }) => {
+  const entries = useAppSelector(selectEntries)
+
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isMenuOpen,
+    onOpen: onMenuOpen,
+    onClose: onMenuClose,
+  } = useDisclosure()
+  const {
+    isOpen: isEditNameModalOpen,
+    onOpen: onEditNameModalOpen,
+    onClose: onEditNameModalClose,
+  } = useDisclosure()
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure()
+
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
+  const [contextClickElementId, setContextClickElementId] = useState(0)
 
   const dispatch = useAppDispatch()
   const selectedEntry = useAppSelector(selectEntry)
 
   const selectedTreeNodeRef = useRef<HTMLDivElement>(null)
 
-  const [items, setItems] = useState<TreeItem[] | null>(getTreeItems(entries))
   const [newEntryName, setNewEntryName] = useState('')
   const [newEntryType, setNewEntryType] = useState('')
+  const [editEntryName, setEditEntryName] = useState('')
+  const [isEditEntryDirectory, setIsEditEntryDirectory] = useState(false)
 
   const FolderIcon = ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? (
@@ -76,8 +102,10 @@ const Explorer = ({
         return <DiPython color="green" className="icon" />
       case 'cpp':
         return <PiFileCpp color="blue" className="icon" />
-      default:
+      case 'c':
         return <IoCodeSlashOutline color="gray" className="icon" />
+      default:
+        return <FolderIcon isOpen={false} />
     }
   }
 
@@ -120,7 +148,9 @@ const Explorer = ({
     dispatch(setSelectedEntry({ type: 'directory', id: 1 }))
   }
 
-  const addDirectoryButtonClick = () => {
+  // 디렉토리 생성 버튼 클릭 이벤트 핸들러
+  // 새 디렉토리 이름을 받는 모달 창을 띄운다.
+  const createDirectoryButtonClick = () => {
     if (selectedEntry.type === 'file') {
       toast({
         title: '파일에 디렉토리를 생성할 수 없습니다.',
@@ -135,6 +165,7 @@ const Explorer = ({
     }
   }
 
+  // 디렉토리 생성 모달
   const createNewDirectory = async () => {
     const response = await createDirectory(
       containerId!,
@@ -142,9 +173,10 @@ const Explorer = ({
       newEntryName
     )
 
-    if (response.success) {
-      const newEntries = [...entries!, response.data]
-      setItems(getTreeItems(newEntries as FileSystemEntry[]))
+    if (response.success && response.data) {
+      const newEntries = [...entries, response.data]
+      dispatch(setEntries(newEntries))
+
       toast({
         title: '디렉토리가 생성되었습니다.',
         position: 'top-right',
@@ -164,11 +196,14 @@ const Explorer = ({
     }
   }
 
-  const addFileButtonClick = () => {
+  // 파일 생성 버튼 클릭 이벤트 핸들러
+  // 새 파일 이름을 받는 모달 창을 띄운다.
+  const createFileButtonClick = () => {
     setNewEntryType('file')
     onOpen()
   }
 
+  // 파일 생성 모달
   const createNewFile = async () => {
     let parentDirectoryId
 
@@ -178,8 +213,8 @@ const Explorer = ({
 
     if (selectedEntry.type === 'file') {
       parentDirectoryId = entries?.find(
-        entry => entry.id === selectedEntry.id
-      )?.parentId
+        entry => entry.parentId === selectedEntry.id
+      )?.id
     } else {
       parentDirectoryId = selectedEntry.id
     }
@@ -194,9 +229,9 @@ const Explorer = ({
       newEntryName
     )
 
-    if (response.success) {
-      const newEntries = [...entries!, response.data]
-      setItems(getTreeItems(newEntries as FileSystemEntry[]))
+    if (response.success && response.data) {
+      const newEntries = [...entries, response.data]
+      dispatch(setEntries(newEntries))
       toast({
         title: '파일이 생성되었습니다.',
         position: 'top-right',
@@ -221,6 +256,103 @@ const Explorer = ({
     setNewEntryName('')
   }
 
+  // 마우스 우클릭 클릭 이벤트 핸들러
+  // 메뉴 모달을 띄운다.
+  const handleContextMenu = (e: any) => {
+    e.preventDefault()
+    setMenuPosition({ x: e.clientX, y: e.clientY })
+    onMenuOpen()
+  }
+
+  // 이름 수정 클릭 이벤트 핸들러
+  // 이름 수정 모달을 띄운다.
+  const handleEditName = () => {
+    setEditEntryName(
+      entries?.find(entry => entry.id === contextClickElementId)?.name!
+    )
+    onEditNameModalOpen()
+  }
+
+  // 파일/디렉토리 이름 수정
+  const editName = async () => {
+    if (
+      entries?.find(entry => entry.id === contextClickElementId)!.name ===
+      editEntryName
+    ) {
+      onEditNameModalClose()
+      return
+    }
+
+    let response
+
+    if (isEditEntryDirectory) {
+      response = await editDirectoryName(
+        containerId!,
+        contextClickElementId,
+        editEntryName
+      )
+    } else {
+      response = await editFileName(
+        containerId!,
+        contextClickElementId,
+        editEntryName
+      )
+    }
+
+    if (response.success) {
+      const newEntries = entries?.map(entry => {
+        if (entry.id === contextClickElementId) {
+          return { ...entry, name: editEntryName }
+        }
+        return entry
+      })
+
+      dispatch(setEntries(newEntries))
+      onEditNameModalClose()
+    } else {
+      toast({
+        title: '파일 이름 수정 실패',
+        description: response.error,
+        position: 'top-right',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+  }
+
+  // 디렉토리/파일 삭제
+  const deleteEntry = async () => {
+    let response
+
+    if (isEditEntryDirectory) {
+      response = await deleteDirectory(containerId!, contextClickElementId)
+    } else {
+      response = await deleteFile(containerId!, contextClickElementId)
+    }
+
+    if (response.success) {
+      const newEntries = entries.filter(
+        entry =>
+          entry.id !== contextClickElementId &&
+          entry.parentId !== contextClickElementId
+      )
+
+      dispatch(setEntries(newEntries))
+    } else {
+      toast({
+        title: '삭제 실패',
+        description: response.error,
+        position: 'top-right',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+
+    onDeleteModalClose()
+  }
+
   return (
     <>
       <Flex align="center">
@@ -232,7 +364,7 @@ const Explorer = ({
           bgColor="transparent"
           icon={<FiFolderPlus />}
           fontSize="16px"
-          onClick={addDirectoryButtonClick}
+          onClick={createDirectoryButtonClick}
         />
         <IconButton
           aria-label="add files"
@@ -240,12 +372,12 @@ const Explorer = ({
           bgColor="transparent"
           icon={<FiFilePlus />}
           fontSize="16px"
-          onClick={addFileButtonClick}
+          onClick={createFileButtonClick}
         />
       </Flex>
       <Flex className="directory" direction="column" minH="calc(100vh - 120px)">
         <TreeView
-          data={items!}
+          data={convertToTreeItems(entries)}
           aria-label="directory tree"
           onNodeSelect={onNodeSelect}
           defaultExpandedIds={[2]}
@@ -262,6 +394,11 @@ const Explorer = ({
               {...getNodeProps()}
               style={{ paddingLeft: 20 * (level - 1) }}
               ref={isSelected ? selectedTreeNodeRef : null}
+              onContextMenu={e => {
+                handleContextMenu(e)
+                setContextClickElementId(element.id as number)
+                setIsEditEntryDirectory(isBranch)
+              }}
             >
               {isBranch ? (
                 <FolderIcon isOpen={isExpanded} />
@@ -276,7 +413,26 @@ const Explorer = ({
         <Box flexGrow={1} onClick={onRootDirectoryClick} />
       </Flex>
 
-      {/* 디렉토리/파일 생성 모달 */}
+      {/* SECTION 디렉토리/파일 우클릭 시 나타나는 메뉴 */}
+      <Menu isOpen={isMenuOpen} onClose={onMenuClose} isLazy>
+        <MenuList
+          style={{
+            position: 'absolute',
+            left: menuPosition.x,
+            top: menuPosition.y,
+          }}
+          minW="120px"
+        >
+          <MenuItem fontSize="sm" onClick={handleEditName}>
+            이름 수정
+          </MenuItem>
+          <MenuItem fontSize="sm" onClick={onDeleteModalOpen}>
+            삭제
+          </MenuItem>
+        </MenuList>
+      </Menu>
+
+      {/* SECTION 디렉토리/파일 생성 모달 */}
       <Modal isOpen={isOpen} onClose={modalClose} isCentered size="sm">
         <ModalOverlay />
         <ModalContent>
@@ -311,6 +467,84 @@ const Explorer = ({
               }
             >
               생성
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* SECTION 디렉토리/파일 이름 수정 모달 */}
+      <Modal
+        isOpen={isEditNameModalOpen}
+        onClose={onEditNameModalClose}
+        isCentered
+        size="sm"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader fontSize="lg" fontWeight="bold">
+            이름 수정
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Input
+              size="sm"
+              borderRadius="md"
+              mb={4}
+              value={editEntryName}
+              onChange={e => setEditEntryName(e.target.value)}
+              isInvalid={editEntryName === ''}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              mr={3}
+              onClick={onEditNameModalClose}
+              size="sm"
+            >
+              취소
+            </Button>
+            <Button
+              variant="solid"
+              colorScheme="green"
+              size="sm"
+              onClick={editName}
+            >
+              수정
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* SECTION 디렉토리/파일 삭제 확인 모달 */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        isCentered
+        size="sm"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader fontSize="lg" fontWeight="bold">
+            정말로 삭제하시겠습니까?
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalFooter>
+            <Button
+              colorScheme="gray"
+              mr={3}
+              onClick={onDeleteModalClose}
+              size="sm"
+            >
+              취소
+            </Button>
+            <Button
+              variant="solid"
+              colorScheme="red"
+              size="sm"
+              onClick={deleteEntry}
+            >
+              삭제
             </Button>
           </ModalFooter>
         </ModalContent>

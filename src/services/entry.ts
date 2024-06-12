@@ -78,3 +78,103 @@ export async function createFile(
     }
   }
 }
+
+/** 디렉토리 삭제 API */
+export async function deleteDirectory(
+  containerId: string | number,
+  directoryId: string | number
+): Promise<FileApiResponse<string>> {
+  try {
+    const response: AxiosResponse = await API.delete(
+      `/api/workspaces/${containerId}/directories/${directoryId}`
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}
+
+/** 파일 삭제 API */
+export async function deleteFile(
+  containerId: string | number,
+  directoryId: string | number
+): Promise<FileApiResponse<string>> {
+  try {
+    const response: AxiosResponse = await API.delete(
+      `/api/workspaces/${containerId}/files/${directoryId}`
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}
+
+/** 파일 이름 수정 API */
+export async function editFileName(
+  containerId: string | number,
+  fileId: number,
+  editFileName: string
+): Promise<FileApiResponse<string>> {
+  try {
+    const response: AxiosResponse = await API.put(
+      `/api/workspaces/${containerId}/files/${fileId}/rename`,
+      {
+        name: editFileName,
+      }
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}
+
+/** 디렉토리 이름 수정 API */
+export async function editDirectoryName(
+  containerId: string | number,
+  directoryId: number,
+  editDirectoryName: string
+): Promise<FileApiResponse<string>> {
+  try {
+    const response: AxiosResponse = await API.put(
+      `/api/workspaces/${containerId}/directories/${directoryId}/rename`,
+      {
+        name: editDirectoryName,
+      }
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}

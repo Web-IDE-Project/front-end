@@ -25,3 +25,11 @@ export interface GetFileResponse {
   }
   error?: string
 }
+
+export interface FileResponse {
+  success: boolean
+  data?: {
+    message: string
+  }
+  error?: string
+}

@@ -77,7 +77,7 @@ export default ideSlice.reducer
 
 export const selectShowExplorer = (state: RootState) => state.ide.showExplorer
 export const selectShowTerminal = (state: RootState) => state.ide.showTerminal
-export const selectEntryType = (state: RootState) => state.ide.selectedEntry
+export const selectEntry = (state: RootState) => state.ide.selectedEntry
 export const selectCurrentFileId = (state: RootState) => state.ide.currentFileId
 export const selectShowChatting = (state: RootState) => state.ide.showChatting
 export const selectShowPermissionSettings = (state: RootState) =>

@@ -1,28 +1,195 @@
-import { Button, Flex, FormControl, Image, Input, FormLabel } from '@chakra-ui/react';
+import React from 'react';
+import { Button, Flex, FormControl, FormErrorMessage, Image, Input, FormLabel } from '@chakra-ui/react';
 import logo from '../../assets/images/logo.png';
+import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
+import API from '@/services/API';
+import { useNavigate } from 'react-router-dom';
+
+interface SignUpFormFields {
+  username: string;
+  nickname: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface SignUpRequestData {
+  username: string;
+  nickname: string;
+  email: string;
+  password: string;
+}
+
+const ERROR_MESSAGES = {
+  REQUIRED: '이 필드는 필수입니다.',
+  USERNAME_INVALID: '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
+  USERNAME_LENGTH: '아이디는 최소 5자에서 최대 15자까지 가능합니다.',
+  EMAIL_INVALID: '유효한 이메일을 입력해주세요.',
+  NICKNAME_INVALID: '닉네임은 한글, 알파벳 대소문자, 숫자만 허용됩니다.',
+  NICKNAME_LENGTH: '아이디는 최소 2자에서 최대 20자까지 가능합니다.',
+  PASSWORD_INVALID: '비밀번호는 알파벳, 숫자, 특수 문자를 포함해야 합니다.',
+  PASSWORD_LENGTH: '비밀번호는 최소 8자에서 최대 20자까지 가능합니다.',
+  PASSWORD_MATCH: '비밀번호가 일치하지 않습니다.',
+};
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<SignUpFormFields>();
+
+  const onSubmit: SubmitHandler<SignUpFormFields> = async (data) => {
+    try {
+      const requestData: SignUpRequestData = {
+        username: data.username,
+        password: data.password,
+        nickname: data.nickname,
+        email: data.email,
+      };
+
+      const response = await API.post('/api/auth/register', requestData);
+      console.log(response);
+      navigate('/login');
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'message' in error) {
+        alert((error as { message: string }).message);
+        console.error('회원가입 실패:', error);
+      } else {
+        alert('알 수 없는 오류가 발생했습니다.');
+        console.error('회원가입 실패:', error);
+      }
+    }
+  };
+
+  const password = watch("password");
+
   return (
     <>
-      <Flex w='100%' h='100vh' bg='gray.50' align='center' justify='center'>
-        <Flex flexDir='column' bg='white' p='24px' borderRadius='16px' align='center' maxW='500px' w='100%' >
-          <Image src={logo} boxSize='150px' objectFit='contain' mb='20px' />
-          <FormControl>
-            <FormLabel>아이디</FormLabel>
-            <Input type="text" placeholder='아이디' mb='20px' focusBorderColor='green.400' />
-            <FormLabel>이메일</FormLabel>
-            <Input type="email" placeholder='3ever@example.com' mb='20px' focusBorderColor='green.400' />
-            <FormLabel>닉네임</FormLabel>
-            <Input type="text" placeholder='닉네임' mb='20px' focusBorderColor='green.400' />
-            <FormLabel>비밀번호</FormLabel>
-            <Input type="password" placeholder='비밀번호' mb='12px' focusBorderColor='green.400' />
-            <Input type="password" placeholder='비밀번호 확인' mb='48px' focusBorderColor='green.400' />
-            <Button type="submit" w='100%' bg='green.400' color='white' _hover={{ bg: 'green.500' }} variant='solid' mb='16px'>회원가입</Button>
-          </FormControl>
+      <Flex w='full' h='100vh' bg='gray.50' align='center' justify='center'>
+        <Flex flexDir='column' bg='white' p={6} borderRadius={10} align='center' maxW='500px' w='full' >
+          <Image src={logo} boxSize='150px' objectFit='contain' mb={5} />
+          <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%', }} >
+            <FormControl isInvalid={!!(errors['username'] as FieldError)} mb={6}>
+              <FormLabel htmlFor='username'>아이디</FormLabel>
+              <Input
+                {...register('username', {
+                  required: ERROR_MESSAGES.REQUIRED,
+                  pattern: {
+                    value: /^[a-zA-Z0-9._]{5,15}$/,
+                    message: ERROR_MESSAGES.USERNAME_INVALID,
+                  },
+                  minLength: {
+                    value: 5,
+                    message: ERROR_MESSAGES.USERNAME_LENGTH,
+                  },
+                  maxLength: {
+                    value: 15,
+                    message: ERROR_MESSAGES.USERNAME_LENGTH,
+                  },
+                })}
+                id='username'
+                type='text'
+                placeholder='아이디'
+                focusBorderColor='green.400'
+              />
+              <FormErrorMessage>{(errors['username'] as FieldError)?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!(errors['email'] as FieldError)} mb={6}>
+              <FormLabel htmlFor='email'>이메일</FormLabel>
+              <Input
+                {...register('email', {
+                  required: ERROR_MESSAGES.REQUIRED,
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: ERROR_MESSAGES.EMAIL_INVALID,
+                  },
+                })}
+                id='email'
+                type='email'
+                placeholder='3ever@example.com'
+                focusBorderColor='green.400'
+              />
+              <FormErrorMessage>{(errors['email'] as FieldError)?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!(errors['nickname'] as FieldError)} mb={6}>
+              <FormLabel htmlFor='nickname'>닉네임</FormLabel>
+              <Input
+                {...register('nickname', {
+                  required: ERROR_MESSAGES.REQUIRED,
+                  pattern: {
+                    value: /^[가-힣a-zA-Z0-9]{2,20}$/,
+                    message: ERROR_MESSAGES.NICKNAME_INVALID,
+                  },
+                  minLength: {
+                    value: 2,
+                    message: ERROR_MESSAGES.NICKNAME_LENGTH,
+                  },
+                  maxLength: {
+                    value: 20,
+                    message: ERROR_MESSAGES.NICKNAME_LENGTH,
+                  },
+                })}
+                id='nickname'
+                type='text'
+                placeholder='닉네임'
+                focusBorderColor='green.400'
+              />
+              <FormErrorMessage>{(errors['nickname'] as FieldError)?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!(errors['password'] as FieldError)} mb={2}>
+              <FormLabel htmlFor='password'>비밀번호</FormLabel>
+              <Input
+                {...register('password', {
+                  required: ERROR_MESSAGES.REQUIRED,
+                  pattern: {
+                    value: /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+])(?=.*[0-9]).{8,15}$/,
+                    message: ERROR_MESSAGES.PASSWORD_INVALID,
+                  },
+                  minLength: {
+                    value: 8,
+                    message: ERROR_MESSAGES.PASSWORD_LENGTH,
+                  },
+                  maxLength: {
+                    value: 20,
+                    message: ERROR_MESSAGES.PASSWORD_LENGTH,
+                  },
+                })}
+                id='password'
+                type='password'
+                placeholder='비밀번호'
+                focusBorderColor='green.400'
+              />
+              <FormErrorMessage>{(errors['password'] as FieldError)?.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!(errors['confirmPassword'] as FieldError)} mb={12}>
+              <Input
+                {...register('confirmPassword', {
+                  required: ERROR_MESSAGES.REQUIRED,
+                  validate: value => value === password || ERROR_MESSAGES.PASSWORD_MATCH,
+                })}
+                id='confirmPassword'
+                type='password'
+                placeholder='비밀번호 확인'
+                focusBorderColor='green.400'
+              />
+              <FormErrorMessage>{(errors['confirmPassword'] as FieldError)?.message}</FormErrorMessage>
+            </FormControl>
+
+            <Button type="submit" w='full' bg='green.400' color='white' _hover={{ bg: 'green.500' }} variant='solid' mb={4}>
+              회원가입
+            </Button>
+          </form>
         </Flex>
       </Flex>
     </>
-  )
-}
+  );
+};
 
 export default SignUp;

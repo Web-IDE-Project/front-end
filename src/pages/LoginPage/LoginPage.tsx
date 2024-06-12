@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
       const response = await API.post('/api/auth/login', data);
       
       const accessToken = await response.headers['Authorization']?.split(' ')[1]; // 액세스 토큰 추출
-      const refreshToken = await response.headers['Set-Cookie'].split(';')[0].split('=')[1]; // 리프레시 토큰 추출
+      const refreshToken = await response.headers['Set-Cookie']?.split(';')[0].split('=')[1]; // 리프레시 토큰 추출
 
       if (accessToken && refreshToken) {
         setCookie('accessToken', accessToken, 1); // 액세스 토큰 쿠키를 1일간 유지

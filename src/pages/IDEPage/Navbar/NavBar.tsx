@@ -13,11 +13,18 @@ import { FiMic } from 'react-icons/fi'
 // import { FiMicOff } from 'react-icons/fi'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { useAppSelector } from '@/hooks'
-import { selectCurrentFileContent, selectCurrentFileId } from '@/store/ideSlice'
-import { saveFile } from '@/services/entry'
+import {
+  selectCurrentFileContent,
+  selectCurrentFileId,
+  setFileExecuteResult,
+} from '@/store/ideSlice'
+import { executeFile, saveFile } from '@/services/entry'
+import { useDispatch } from 'react-redux'
 
 const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   const toast = useToast()
+
+  const dispatch = useDispatch()
 
   const currentFileId = useAppSelector(selectCurrentFileId)
   const currentFileContent = useAppSelector(selectCurrentFileContent)
@@ -41,6 +48,24 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
     } else {
       toast({
         title: '파일 저장에 에러가 발생했습니다.',
+        description: `${response.error}`,
+        position: 'top-right',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      })
+    }
+  }
+
+  const onExecuteButtonClick = async () => {
+    const response = await executeFile(containerId!, currentFileId)
+
+    if (response.success) {
+      dispatch(setFileExecuteResult(response.data!.result!))
+    } else {
+      toast({
+        title: '파일 실행에 에러가 발생했습니다.',
+        description: `${response.error}`,
         position: 'top-right',
         status: 'error',
         isClosable: true,
@@ -74,6 +99,7 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
         colorScheme="green"
         variant="solid"
         leftIcon={<IoIosPlay />}
+        onClick={onExecuteButtonClick}
       >
         실행
       </Button>

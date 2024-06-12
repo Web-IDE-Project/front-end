@@ -18,18 +18,8 @@ export interface TreeItem {
   parent: number | null
 }
 
-export interface GetFileResponse {
+export interface FileApiResponse<T> {
   success: boolean
-  data?: {
-    content: string
-  }
-  error?: string
-}
-
-export interface FileResponse {
-  success: boolean
-  data?: {
-    message: string
-  }
+  data?: T
   error?: string
 }

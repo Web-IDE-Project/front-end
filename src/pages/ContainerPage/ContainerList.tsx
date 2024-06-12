@@ -22,18 +22,61 @@ import {
   Spacer,
 } from '@chakra-ui/react'
 
-import container_list from '@/data/container-list.json'
+import public_container from '@/data/public-container-list.json'
+import private_container from '@/data/private-container-list.json'
 import ContainerItem from './ContainerItem'
-import { useState } from 'react'
-import { createContainer } from '@/services/container'
+import { useEffect, useState } from 'react'
+import {
+  createContainer,
+  getLectureContainer,
+  getMyContainer,
+  getQuestionContainer,
+} from '@/services/container'
+import {
+  GetContainerResponse,
+  PrivateContainer,
+  PublicContainer,
+} from '@/models/ContainerData'
 
 interface Props {
   category: string
 }
 
 const ContainerList = ({ category }: Props) => {
-  // TODO - 카테고리에 따라 컨테이너 리스트를 요청해 받아온다.
-  const containerList = container_list
+  const tempPrivateContainerList = private_container
+  const tempPublicContainerList = public_container
+
+  // TODO - 서버와 연동 후 주석 삭제
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  // @ts-ignore
+  const [containerList, setContainerList] = useState<
+    PrivateContainer[] | PublicContainer[] | null
+  >(null)
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+
+  useEffect(() => {
+    const CATEGORY: { [key: string]: () => Promise<GetContainerResponse> } = {
+      '내 컨테이너': getMyContainer,
+      '강의 컨테이너': getLectureContainer,
+      '질문 컨테이너': getQuestionContainer,
+    }
+    const getContainerList = async () => {
+      const fetchContainer = CATEGORY[category]
+
+      if (fetchContainer) {
+        const response = await fetchContainer()
+
+        if (response.success) {
+          setContainerList(response.data || [])
+        } else {
+          console.error('Error fetching containers:', response.error)
+        }
+      }
+    }
+
+    getContainerList()
+  }, [category])
+
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   // NOTE - 컨테이너 생성 모달에서 사용할 변수들
@@ -126,16 +169,29 @@ const ContainerList = ({ category }: Props) => {
             spacing={4}
             templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
           >
-            {containerList.map(container => (
-              <ContainerItem
-                key={container.id}
-                category={category}
-                id={container.id}
-                title={container.title}
-                language={container.language}
-                description={container.description}
-              />
-            ))}
+            {category === '내 컨테이너'
+              ? tempPrivateContainerList.map(container => (
+                  <ContainerItem
+                    key={container.id}
+                    category={category}
+                    id={container.id}
+                    title={container.title}
+                    language={container.language}
+                    description={container.description}
+                  />
+                ))
+              : tempPublicContainerList.map(container => (
+                  <ContainerItem
+                    key={container.id}
+                    category={category}
+                    id={container.id}
+                    title={container.title}
+                    language={container.language}
+                    description={container.description}
+                    nickname={container.nickname}
+                    profileUrl={container.profileUrl}
+                  />
+                ))}
           </SimpleGrid>
         </Box>
       </Box>

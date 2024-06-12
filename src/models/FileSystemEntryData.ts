@@ -25,3 +25,9 @@ export interface GetFileResponse {
   }
   error?: string
 }
+
+export interface FileApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+}

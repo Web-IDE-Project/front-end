@@ -1,43 +1,43 @@
 [
   {
     "id": 2,
-    "name": "dir1",
+    "name": "dir2",
     "isDirectory": true,
     "parentId": 1
   },
   {
     "id": 3,
-    "name": "dir1.js",
+    "name": "file3.js",
     "isDirectory": false,
     "parentId": 2
   },
   {
     "id": 4,
-    "name": "dir2",
+    "name": "dir4",
     "isDirectory": true,
     "parentId": 2
   },
   {
     "id": 5,
-    "name": "dir1.cpp",
+    "name": "file5.cpp",
     "isDirectory": false,
     "parentId": 1
   },
   {
     "id": 6,
-    "name": "dir1.cpp",
+    "name": "file6.cpp",
     "isDirectory": false,
     "parentId": 1
   },
   {
     "id": 7,
-    "name": "dir1.java",
+    "name": "file7.java",
     "isDirectory": false,
     "parentId": 1
   },
   {
     "id": 8,
-    "name": "dir1.py",
+    "name": "file8.py",
     "isDirectory": false,
     "parentId": 4
   },
@@ -46,5 +46,11 @@
     "name": "dir1",
     "isDirectory": true,
     "parentId": 4
+  },
+  {
+    "id": 10,
+    "name": "newDirectory",
+    "isDirectory": true,
+    "parentId": 1
   }
 ]

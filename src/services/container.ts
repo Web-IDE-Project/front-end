@@ -34,6 +34,28 @@ export async function createContainer(
   }
 }
 
+/** 컨테이너 실행 API */
+export async function startContainer(
+  containerId: number
+): Promise<StartContainerResponse> {
+  try {
+    const response: AxiosResponse = await API.post(
+      `/api/workspaces/${containerId}`
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}
+
 /** 내 컨테이너 조회 API */
 export async function getMyContainer(): Promise<GetPrivateContainerResponse> {
   try {

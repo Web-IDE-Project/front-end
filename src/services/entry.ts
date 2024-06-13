@@ -1,12 +1,12 @@
 import { AxiosResponse } from 'axios'
 import API from './API'
-import { FileApiResponse, FileSystemEntry } from '@/models/FileSystemEntryData'
+import { ApiResponse } from '@/models/Api'
 
 /** 파일 조회 API */
 export async function getFile(
   containerId: string | number,
   fileId: string | number
-): Promise<FileApiResponse<{ content: string }>> {
+): Promise<ApiResponse<{ content: string }>> {
   try {
     const response: AxiosResponse = await API.get(
       `/api/workspaces/${containerId}/files/${fileId}`
@@ -30,7 +30,7 @@ export async function saveFile(
   containerId: string | number,
   fileId: string | number,
   content: string
-): Promise<FileApiResponse<{ content: string }>> {
+): Promise<ApiResponse<{ content: string }>> {
   try {
     const response: AxiosResponse = await API.put(
       `/api/workspaces/${containerId}/files/${fileId}`,
@@ -52,13 +52,14 @@ export async function saveFile(
 
 /** 파일 실행 API */
 export async function executeFile(
-  containerId: string | number,
-  fileId: string | number
-): Promise<FileApiResponse<{ result: string }>> {
+  language: string,
+  code: string
+): Promise<ApiResponse<{ result: string }>> {
   try {
-    const response: AxiosResponse = await API.post(
-      `/api/workspaces/${containerId}/files/${fileId}/execute`
-    )
+    const response: AxiosResponse = await API.post(`/api/workspaces/`, {
+      language: language,
+      code: code,
+    })
 
     return {
       success: true,
@@ -78,7 +79,7 @@ export async function createDirectory(
   containerId: string | number,
   directoryId: string | number,
   name: string
-): Promise<FileApiResponse<FileSystemEntry>> {
+): Promise<ApiResponse<FileSystemEntry>> {
   try {
     const response: AxiosResponse = await API.post(
       `/api/workspaces/${containerId}/directories/${directoryId}`,
@@ -103,7 +104,7 @@ export async function createFile(
   containerId: string | number,
   directoryId: string | number,
   name: string
-): Promise<FileApiResponse<FileSystemEntry>> {
+): Promise<ApiResponse<FileSystemEntry>> {
   try {
     const response: AxiosResponse = await API.post(
       `/api/workspaces/${containerId}/files/${directoryId}`,
@@ -127,7 +128,7 @@ export async function createFile(
 export async function deleteDirectory(
   containerId: string | number,
   directoryId: string | number
-): Promise<FileApiResponse<string>> {
+): Promise<ApiResponse<string>> {
   try {
     const response: AxiosResponse = await API.delete(
       `/api/workspaces/${containerId}/directories/${directoryId}`
@@ -150,7 +151,7 @@ export async function deleteDirectory(
 export async function deleteFile(
   containerId: string | number,
   directoryId: string | number
-): Promise<FileApiResponse<string>> {
+): Promise<ApiResponse<string>> {
   try {
     const response: AxiosResponse = await API.delete(
       `/api/workspaces/${containerId}/files/${directoryId}`
@@ -174,7 +175,7 @@ export async function editFileName(
   containerId: string | number,
   fileId: number,
   editFileName: string
-): Promise<FileApiResponse<string>> {
+): Promise<ApiResponse<string>> {
   try {
     const response: AxiosResponse = await API.put(
       `/api/workspaces/${containerId}/files/${fileId}/rename`,
@@ -201,7 +202,7 @@ export async function editDirectoryName(
   containerId: string | number,
   directoryId: number,
   editDirectoryName: string
-): Promise<FileApiResponse<string>> {
+): Promise<ApiResponse<string>> {
   try {
     const response: AxiosResponse = await API.put(
       `/api/workspaces/${containerId}/directories/${directoryId}/rename`,

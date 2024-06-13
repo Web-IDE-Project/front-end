@@ -1,23 +1,17 @@
-import { FileSystemEntry } from '@/models/FileSystemEntryData'
 import { RootState } from './index'
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 // NOTE - 테스트용 파일 리스트 / 컨테이너 실행 시에 파일을 저장하는 것으로 추후 수정
 import entries from '@/data/file-system-entry.json'
-
-interface Entry {
-  type: string
-  id: number
-}
+import { Tree, TreeNode } from '@/models/EntryData'
+import { flattenTree } from 'react-accessible-treeview'
 
 interface StateType {
   showExplorer: boolean
   showTerminal: boolean
   showPermissionSettings: boolean
-  selectedEntry: Entry
-  entries: FileSystemEntry[]
-  currentFileId: number
-  currentFileContent: string
+  selectedNode: TreeNode
+  tree: Tree
   showChatting: boolean
   fileExecuteResult: string
 }
@@ -26,13 +20,18 @@ const initialState: StateType = {
   showExplorer: true,
   showTerminal: true,
   showPermissionSettings: false,
-  selectedEntry: {
-    type: 'file',
-    id: 3,
+  selectedNode: {
+    id: 1,
+    name: 'file',
+    children: [],
+    parent: null,
+    isBranch: true,
+    metadata: {
+      isDirectory: true,
+      content: 'content',
+    },
   },
-  entries: entries || [],
-  currentFileId: 3,
-  currentFileContent: '',
+  tree: flattenTree(entries),
   showChatting: false,
   fileExecuteResult: '',
 }
@@ -59,18 +58,11 @@ export const ideSlice = createSlice({
     toggleChatting: state => {
       state.showChatting = !state.showChatting
     },
-    setSelectedEntry: (state, action: PayloadAction<Entry>) => {
-      state.selectedEntry = action.payload
+    setSelectedNode: (state, action: PayloadAction<TreeNode>) => {
+      state.selectedNode = action.payload
     },
-    setCurrentFileId: (state, action: PayloadAction<number>) => {
-      state.currentFileId = action.payload
-    },
-    setCurrentFileContent: (state, action: PayloadAction<string>) => {
-      state.currentFileContent = action.payload
-    },
-
-    setEntries: (state, action: PayloadAction<FileSystemEntry[]>) => {
-      state.entries = action.payload
+    setTree: (state, action: PayloadAction<Tree>) => {
+      state.tree = action.payload
     },
     setFileExecuteResult: (state, action: PayloadAction<string>) => {
       state.fileExecuteResult = action.payload
@@ -83,23 +75,18 @@ export const {
   toggleTerminal,
   togglePermissionSettings,
   toggleChatting,
-  setSelectedEntry,
-  setCurrentFileId,
-  setCurrentFileContent,
-  setEntries,
+  setSelectedNode,
+  setTree,
   setFileExecuteResult,
 } = ideSlice.actions
 export default ideSlice.reducer
 
 export const selectShowExplorer = (state: RootState) => state.ide.showExplorer
 export const selectShowTerminal = (state: RootState) => state.ide.showTerminal
-export const selectEntry = (state: RootState) => state.ide.selectedEntry
-export const selectCurrentFileId = (state: RootState) => state.ide.currentFileId
+export const selectEntry = (state: RootState) => state.ide.selectedNode
 export const selectShowChatting = (state: RootState) => state.ide.showChatting
 export const selectShowPermissionSettings = (state: RootState) =>
   state.ide.showPermissionSettings
-export const selectCurrentFileContent = (state: RootState) =>
-  state.ide.currentFileContent
-export const selectEntries = (state: RootState) => state.ide.entries
+export const selectEntries = (state: RootState) => state.ide.tree
 export const selectFileExecuteResult = (state: RootState) =>
   state.ide.fileExecuteResult

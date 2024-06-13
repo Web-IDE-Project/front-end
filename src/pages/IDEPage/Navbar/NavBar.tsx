@@ -47,7 +47,7 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
       })
     } else {
       toast({
-        title: '파일 저장에 에러가 발생했습니다.',
+        title: '파일 저장에 문제가 발생했습니다.',
         description: `${response.error}`,
         position: 'top-right',
         status: 'error',
@@ -58,7 +58,7 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   }
 
   const onExecuteButtonClick = async () => {
-    const response = await executeFile(containerId!, currentFileId)
+    const response = await executeFile('java', currentFileContent)
 
     if (response.success) {
       dispatch(setFileExecuteResult(response.data!.result!))

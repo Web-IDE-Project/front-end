@@ -20,9 +20,11 @@ import {
   selectShowExplorer,
   selectShowPermissionSettings,
   selectShowTerminal,
-  setEntries,
+  setTree,
 } from '@/store/ideSlice'
 import PermissionSettings from './TabItem/PermissionSettings.tsx'
+import { flattenTree } from 'react-accessible-treeview'
+import { Tree } from '@/models/EntryData.ts'
 
 const IDEPage = () => {
   const { containerId } = useParams()
@@ -52,7 +54,8 @@ const IDEPage = () => {
         const response = await startContainer(Number(containerId))
 
         if (!isCancelled && response.success) {
-          dispatch(setEntries(response.data!))
+          const tree = flattenTree(response.data!)
+          dispatch(setTree(tree as Tree))
         } else {
           console.log('Error fetching file system entries', response.error)
         }

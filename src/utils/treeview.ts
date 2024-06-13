@@ -1,4 +1,4 @@
-import { FileSystemEntry, TreeItem } from '@/models/FileSystemEntryData'
+import { FileSystemEntry, TreeItem } from '@/models/EntryData'
 
 /** react-accessible-treeview의 data 형태로 변환 */
 export function convertToTreeItems(entries: FileSystemEntry[]) {

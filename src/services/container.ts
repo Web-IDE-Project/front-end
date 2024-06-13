@@ -1,20 +1,15 @@
 import { AxiosResponse } from 'axios'
 import API from './API'
-import {
-  CreateContainerResponse,
-  GetPrivateContainerResponse,
-  GetPublicContainerResponse,
-  PrivateContainer,
-  PublicContainer,
-} from '@/models/ContainerData'
-import { StartContainerResponse } from '@/models/FileSystemEntryData'
+import { Container } from '@/models/ContainerData'
+import { ApiResponse } from '@/models/Api'
+import { Entry } from '@/models/EntryData'
 
 /** 컨테이너 생성 API */
 export async function createContainer(
   title: string,
   description: string,
   language: string
-): Promise<CreateContainerResponse> {
+): Promise<ApiResponse<Omit<Container, 'id'>>> {
   try {
     const response: AxiosResponse = await API.post(`/api/workspaces`, {
       title,
@@ -38,7 +33,7 @@ export async function createContainer(
 /** 컨테이너 실행 API */
 export async function startContainer(
   containerId: number
-): Promise<StartContainerResponse> {
+): Promise<ApiResponse<Entry>> {
   try {
     const response: AxiosResponse = await API.post(
       `/api/workspaces/${containerId}`
@@ -58,9 +53,9 @@ export async function startContainer(
 }
 
 /** 내 컨테이너 조회 API */
-export async function getMyContainer(): Promise<GetPrivateContainerResponse> {
+export async function getMyContainer(): Promise<ApiResponse<Container[]>> {
   try {
-    const response: AxiosResponse<PrivateContainer[]> =
+    const response: AxiosResponse<Container[]> =
       await API.get(`/api/workspaces/my`)
 
     return {
@@ -77,9 +72,9 @@ export async function getMyContainer(): Promise<GetPrivateContainerResponse> {
 }
 
 /** 강의 컨테이너 조회 API */
-export async function getLectureContainer(): Promise<GetPublicContainerResponse> {
+export async function getLectureContainer(): Promise<ApiResponse<Container[]>> {
   try {
-    const response: AxiosResponse<PublicContainer[]> = await API.get(
+    const response: AxiosResponse<Container[]> = await API.get(
       `/api/workspaces/lectures`
     )
 
@@ -97,9 +92,11 @@ export async function getLectureContainer(): Promise<GetPublicContainerResponse>
 }
 
 /** 질문 컨테이너 조회 API */
-export async function getQuestionContainer(): Promise<GetPublicContainerResponse> {
+export async function getQuestionContainer(): Promise<
+  ApiResponse<Container[]>
+> {
   try {
-    const response: AxiosResponse<PublicContainer[]> = await API.get(
+    const response: AxiosResponse<Container[]> = await API.get(
       `/api/workspaces/questions`
     )
 

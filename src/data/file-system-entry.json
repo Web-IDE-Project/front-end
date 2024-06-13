@@ -1,56 +1,34 @@
-[
-  {
-    "id": 2,
-    "name": "dir2",
-    "isDirectory": true,
-    "parentId": 1
-  },
-  {
-    "id": 3,
-    "name": "file3.js",
-    "isDirectory": false,
-    "parentId": 2
-  },
-  {
-    "id": 4,
-    "name": "dir4",
-    "isDirectory": true,
-    "parentId": 2
-  },
-  {
-    "id": 5,
-    "name": "file5.cpp",
-    "isDirectory": false,
-    "parentId": 1
-  },
-  {
-    "id": 6,
-    "name": "file6.cpp",
-    "isDirectory": false,
-    "parentId": 1
-  },
-  {
-    "id": 7,
-    "name": "file7.java",
-    "isDirectory": false,
-    "parentId": 1
-  },
-  {
-    "id": 8,
-    "name": "file8.py",
-    "isDirectory": false,
-    "parentId": 4
-  },
-  {
-    "id": 9,
-    "name": "dir1",
-    "isDirectory": true,
-    "parentId": 4
-  },
-  {
-    "id": 10,
-    "name": "newDirectory",
-    "isDirectory": true,
-    "parentId": 1
-  }
-]
+{
+  "id": 1,
+  "name": "WORKSPACE-9662574c-05c4-4d7c-8529-19130bba99b8",
+  "isDirectory": true,
+  "content": null,
+  "children": [
+    {
+      "id": 2,
+      "name": "main.c",
+      "isDirectory": false,
+      "content": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}\n"
+    },
+    {
+      "id": 3,
+      "name": "file2.txt",
+      "isDirectory": false,
+      "content": "print('file2')"
+    },
+    {
+      "id": 4,
+      "name": "subdir",
+      "isDirectory": true,
+      "content": null,
+      "children": [
+        {
+          "id": 5,
+          "name": "SUBTEST.PY",
+          "isDirectory": false,
+          "content": "print('Subtest file')"
+        }
+      ]
+    }
+  ]
+}

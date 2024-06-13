@@ -45,7 +45,9 @@ const CodeEditor = ({
       apiKey: import.meta.env.VITE_YORKIE_API_KEY,
     })
 
+    console.log(client)
     await client.activate()
+    console.log(client)
 
     // 2. 클라이언트와 연결된 문서 생성
     const doc = new yorkie.Document<YorkieDoc>(

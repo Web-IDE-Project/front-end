@@ -1,11 +1,114 @@
 import { Search2Icon } from "@chakra-ui/icons";
 import { Box, Button, Center, Flex, Input, InputGroup, InputLeftElement, Text, Image } from "@chakra-ui/react"
-import React, { useEffect, useRef, useState } from 'react'
-import { StompConfig, Client } from '@stomp/stompjs';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import { StompConfig, Client, IMessage } from '@stomp/stompjs';
 import send from '../../../assets/images/send.png';
 
+// 테스트 데이터
+const data: Message[] = [
+	{
+		"messageType": "ENTER",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "코딩 고수",
+		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "감사합니다!!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "허용해드렸으니 확인 부탁드려요~"
+	},
+	{
+		"messageType": "EXIT",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+	},
+	{
+		"messageType": "ENTER",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "코딩 고수",
+		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "감사합니다!!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "허용해드렸으니 확인 부탁드려요~"
+	},
+	{
+		"messageType": "EXIT",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+	},
+	{
+		"messageType": "ENTER",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "코딩 고수",
+		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "감사합니다!!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "허용해드렸으니 확인 부탁드려요~"
+	},
+	{
+		"messageType": "EXIT",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+	},
+	{
+		"messageType": "ENTER",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 입장하셨습니다."
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "코딩 고수",
+		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "감사합니다!!"
+	},
+	{
+		"messageType": "TALK",
+		"senderName": "me",
+		"message": "허용해드렸으니 확인 부탁드려요~"
+	},
+	{
+		"messageType": "EXIT",
+		"senderName": "sender",
+		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
+	},
+]
+
 const BASE_URI: string = 'ws://localhost:8080';
-const TOKEN: string = 'accessToken';
 const workspaceId: number = 1;
 const username: string = 'user';
 
@@ -18,110 +121,6 @@ interface PubMessage {
 	messageType: 'TALK' | 'ENTER' | 'EXIT';
 	message: string;
 }
-
-// 테스트 데이터
-// const data: Message[] = [
-// 	{
-// 		"messageType": "ENTER",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "코딩 고수",
-// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "감사합니다!!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "허용해드렸으니 확인 부탁드려요~"
-// 	},
-// 	{
-// 		"messageType": "EXIT",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "ENTER",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "코딩 고수",
-// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "감사합니다!!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "허용해드렸으니 확인 부탁드려요~"
-// 	},
-// 	{
-// 		"messageType": "EXIT",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "ENTER",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "코딩 고수",
-// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "감사합니다!!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "허용해드렸으니 확인 부탁드려요~"
-// 	},
-// 	{
-// 		"messageType": "EXIT",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "ENTER",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 입장하셨습니다."
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "코딩 고수",
-// 		"message": "마이크 허용해주시면 직접 설명해드릴게요!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "감사합니다!!"
-// 	},
-// 	{
-// 		"messageType": "TALK",
-// 		"senderName": "me",
-// 		"message": "허용해드렸으니 확인 부탁드려요~"
-// 	},
-// 	{
-// 		"messageType": "EXIT",
-// 		"senderName": "sender",
-// 		"message": "[알림] 코딩 고수님이 퇴장하셨습니다."
-// 	},
-// ]
 
 interface BubbleProps {
 	messageType: 'TALK' | 'ENTER' | 'EXIT';
@@ -160,43 +159,60 @@ const Bubble: React.FC<BubbleProps> = ({ messageType, message, senderName }) => 
 const Chat: React.FC = () => {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [inputMessage, setInputMessage] = useState('');
+	const [isConnected, setIsConnected] = useState(false);
 	const clientRef = useRef<Client | null>(null);
 
 	useEffect(() => {
 		const client = new Client({
 			brokerURL: `${BASE_URI}/api/ws`,
-			connectHeaders: {
-				Authorization: TOKEN,
-			},
 			debug: (str) => {
 				console.log(str);
 			},
 			reconnectDelay: 5000,
 			heartbeatIncoming: 4000,
 			heartbeatOutgoing: 4000,
+			beforeConnect: () => {
+				console.log('Attempting to connect...');
+			},
 			onConnect: () => {
-				client.subscribe(`/api/sub/${workspaceId}`, (message) => {
-					const newMessage = JSON.parse(message.body);
+				console.log('Connected to WebSocket');
+				setIsConnected(true);
+
+				client.subscribe(`/api/sub/${workspaceId}`, (message: IMessage) => {
+					const newMessage = JSON.parse(message.body) as Message;
 					setMessages((prevMessages) => [...prevMessages, newMessage]);
 				});
+
 				client.publish({
 					destination: `/api/pub/${workspaceId}`,
 					body: JSON.stringify({
 						messageType: 'ENTER',
 						message: `${username} 님이 입장했습니다.`,
 					}),
-					headers: { Authorization: TOKEN },
 				});
 			},
+			onStompError: (frame) => {
+				console.error('Broker reported error: ' + frame.headers['message']);
+				console.error('Additional details: ' + frame.body);
+			},
+			onWebSocketError: (event) => {
+				console.error('WebSocket error', event);
+			},
 			onDisconnect: () => {
+				console.log('Disconnected from WebSocket');
 				client.publish({
 					destination: `/api/pub/${workspaceId}`,
 					body: JSON.stringify({
 						messageType: 'EXIT',
 						message: `${username} 님이 퇴장했습니다.`,
 					}),
-					headers: { Authorization: TOKEN },
 				});
+				client.deactivate();
+				setIsConnected(false);
+			},
+			onWebSocketClose: () => {
+				console.log('WebSocket closed');
+				setIsConnected(false);
 			},
 		} as StompConfig);
 
@@ -204,15 +220,17 @@ const Chat: React.FC = () => {
 		clientRef.current = client;
 
 		return () => {
-			client.deactivate();
-		};
-	}, [])
+			if (clientRef.current) {
+				clientRef.current.deactivate();
+			}
+		}
+	}, []);
 
-	const sendMessage = () => {
-		if (!inputMessage) {
+	const sendMessage = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (!inputMessage.trim() || !isConnected || !clientRef.current) {
 			return;
 		}
-
 		const message: PubMessage = {
 			messageType: 'TALK',
 			message: inputMessage,
@@ -223,7 +241,6 @@ const Chat: React.FC = () => {
 		clientRef.current?.publish({
 			destination: `/api/pub/${workspaceId}`,
 			body: stringifiedMessage,
-			headers: { Authorization: TOKEN },
 		});
 
 		setInputMessage('');
@@ -271,10 +288,7 @@ const Chat: React.FC = () => {
 				)}
 			</Flex>
 			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					sendMessage();
-				}}
+				onSubmit={(e) => sendMessage(e)}
 			>
 				<Flex gap='8px' >
 					<Input
@@ -291,6 +305,6 @@ const Chat: React.FC = () => {
 			</form>
 		</Flex>
 	)
-}
+};
 
 export default Chat;

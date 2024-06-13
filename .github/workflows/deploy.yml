@@ -1,15 +1,10 @@
 name: Deploy to Vercel
 
 on:
-  pull_request_target:
-    branches:
-      - main
-    types:
-      - closed
+  workflow_dispatch:
 
 jobs:
-  if_merged:
-    if: github.event.pull_request.merged == true
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -27,6 +22,9 @@ jobs:
         run: npm install
 
       - name: Build project
+        env:
+          VITE_YORKIE_API_ADDR: ${{ secrets.VITE_YORKIE_API_ADDR }}
+          VITE_YORKIE_API_KEY: ${{ secrets.VITE_YORKIE_API_KEY }}
         run: npm run build
 
       - name: Deploy to Vercel
@@ -34,6 +32,4 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VITE_YORKIE_API_ADDR: ${{ secrets.VITE_YORKIE_API_ADDR }}
-          VITE_YORKIE_API_KEY: ${{ secrets.VITE_YORKIE_API_KEY }}
         run: npx vercel --prod --token $VERCEL_TOKEN

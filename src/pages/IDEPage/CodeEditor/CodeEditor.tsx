@@ -41,7 +41,7 @@ const CodeEditor = ({
 
   const initializeYorkieEditor = useCallback(async () => {
     // 1. 클라이언트 생성 및 활성화
-    const client = new yorkie.Client(import.meta.env.VITE_YORKIE_API_ADDR, {
+    const client = new yorkie.Client('https://api.yorkie.dev', {
       apiKey: import.meta.env.VITE_YORKIE_API_KEY,
     })
 

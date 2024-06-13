@@ -3,6 +3,7 @@ import Sidebar from './Sidebar'
 import { Outlet } from 'react-router-dom'
 import { useState } from 'react'
 import { HamburgerIcon } from '@chakra-ui/icons'
+// CD 테스트용 주석 추가
 
 const ContainerPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true)

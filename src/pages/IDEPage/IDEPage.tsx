@@ -14,26 +14,21 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { startContainer } from '@/services/container'
 import Loading from './Loading'
-import tmpEntries from '@/data/file-system-entry.json'
-import { FileSystemEntry } from '@/models/FileSystemEntryData'
 import Explorer from './TabItem/Explorer'
-import { useAppSelector } from '@/hooks'
+import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
-  // selectCurrentFileId,
-  // selectEntryType,
-  // selectShowChatting,
   selectShowExplorer,
   selectShowPermissionSettings,
   selectShowTerminal,
+  setEntries,
 } from '@/store/ideSlice'
 import PermissionSettings from './TabItem/PermissionSettings.tsx'
 
 const IDEPage = () => {
   const { containerId } = useParams()
+  const dispatch = useAppDispatch()
+  // const entries = useAppSelector(selectEntries)
 
-  // const showChatting = useAppSelector(selectShowChatting)
-  // const currentFileId = useAppSelector(selectCurrentFileId)
-  // const entryType = useAppSelector(selectEntryType)
   const showTerminal = useAppSelector(selectShowTerminal)
   const showExplorer = useAppSelector(selectShowExplorer)
   const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
@@ -41,7 +36,6 @@ const IDEPage = () => {
   // TODO - 서버와 연동 후 주석 삭제
   /* eslint-disable @typescript-eslint/no-unused-vars */
   // @ts-ignore
-  const [entries, setEntries] = useState<FileSystemEntry[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -58,7 +52,7 @@ const IDEPage = () => {
         const response = await startContainer(Number(containerId))
 
         if (!isCancelled && response.success) {
-          setEntries(response.data || null)
+          dispatch(setEntries(response.data!))
         } else {
           console.log('Error fetching file system entries', response.error)
         }
@@ -66,9 +60,6 @@ const IDEPage = () => {
         setIsLoading(false)
       }
     }
-
-    // NOTE - 임시 엔트리
-    setEntries(tmpEntries)
 
     setIsLoading(false)
 
@@ -104,7 +95,7 @@ const IDEPage = () => {
           display={showExplorer || showPermissionSettings ? 'block' : 'none'}
         >
           <Box display={showExplorer ? 'block' : 'none'}>
-            <Explorer entries={entries} containerId={containerId} />
+            <Explorer containerId={containerId} />
           </Box>
           <Box display={showPermissionSettings ? 'block' : 'none'}>
             <PermissionSettings />

@@ -58,12 +58,7 @@ const CodeEditor = ({
       }
     )
 
-    await client.attach(doc, {
-      initialPresence: {
-        name: 'username',
-        color: 'red',
-      },
-    })
+    await client.attach(doc, {})
 
     // 3. 해당 키의 문서에 content가 없으면 새로운 Text 생성
     doc.update(root => {

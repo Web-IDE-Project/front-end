@@ -23,3 +23,9 @@ export interface FileApiResponse<T> {
   data?: T
   error?: string
 }
+
+export interface FileApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+}

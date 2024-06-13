@@ -1,11 +1,7 @@
 import { FileSystemEntry, TreeItem } from '@/models/FileSystemEntryData'
 
 /** react-accessible-treeview의 data 형태로 변환 */
-export function getTreeItems(entries: FileSystemEntry[] | null) {
-  if (entries === null) {
-    return null
-  }
-
+export function convertToTreeItems(entries: FileSystemEntry[]) {
   const result: TreeItem[] = [
     {
       name: 'RootDirectory',
@@ -16,6 +12,7 @@ export function getTreeItems(entries: FileSystemEntry[] | null) {
       parent: null,
     },
   ]
+
   const idToIndexMap = new Map()
 
   entries.forEach(entry => {

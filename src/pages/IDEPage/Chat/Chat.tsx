@@ -128,7 +128,7 @@ interface BubbleProps {
 	senderName: string;
 }
 
-const Bubble: React.FC<BubbleProps> = ({ messageType, message, senderName }) => {
+const Bubble: React.FC<BubbleProps & { isHighlighted: boolean }> = ({ messageType, message, senderName, isHighlighted }) => {
 	if (messageType === 'ENTER' || messageType === 'EXIT') {
 		return (
 			<Center my={3}>
@@ -138,7 +138,15 @@ const Bubble: React.FC<BubbleProps> = ({ messageType, message, senderName }) => 
 	}
 	if (senderName === 'me') {
 		return (
-			<Box bg='green.100' p={2} fontSize='small' boxSize='fit-content' borderRadius={6} alignSelf='end' maxW='70%' >
+			<Box
+				bg={isHighlighted ? 'yellow.200' : 'green.100'}
+				p={2}
+				fontSize='small'
+				boxSize='fit-content'
+				borderRadius={6}
+				alignSelf='end'
+				maxW='70%'
+			>
 				<Text>{message}</Text>
 			</Box>
 		)
@@ -148,7 +156,14 @@ const Bubble: React.FC<BubbleProps> = ({ messageType, message, senderName }) => 
 			<Image src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmHtyKWEyMh3c5_FfZez-wqWCpj8ptLUbvOe1pAq4_ZdEvWtpyXHBbU4tqPI6UHawF7_Y&usqp=CAU' boxSize='40px' borderRadius='full' alt="user profile image" mr={2} mt={1} />
 			<Box >
 				<Text fontSize='small' fontWeight='500' >{senderName}</Text>
-				<Box bg='gray.200' p={2} fontSize='small' boxSize='fit-content' borderRadius={6} maxW='70%' >
+				<Box
+					bg={isHighlighted ? 'yellow.200' : 'gray.200'}
+					p={2}
+					fontSize='small'
+					boxSize='fit-content'
+					borderRadius={6}
+					maxW='70%'
+				>
 					<Text>{message}</Text>
 				</Box>
 			</Box>
@@ -157,10 +172,13 @@ const Bubble: React.FC<BubbleProps> = ({ messageType, message, senderName }) => 
 }
 
 const Chat: React.FC = () => {
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [messages, setMessages] = useState<Message[]>(data);
 	const [inputMessage, setInputMessage] = useState('');
 	const [isConnected, setIsConnected] = useState(false);
 	const clientRef = useRef<Client | null>(null);
+	const [searchQuery, setSearchQuery] = useState('');
+	const [highlightedIndices, setHighlightedIndices] = useState<number[]>([]);
+	const messageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
 	useEffect(() => {
 		const client = new Client({
@@ -226,6 +244,28 @@ const Chat: React.FC = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (searchQuery.trim() === '') {
+			setHighlightedIndices([]);
+			return;
+		}
+
+		const indices = messages
+			.map((message, index) => {
+				if (message.messageType === 'TALK' && message.message.includes(searchQuery)) {
+					return index;
+				}
+				return -1;
+			})
+			.filter(index => index !== -1);
+
+		setHighlightedIndices(indices);
+
+		if (indices.length > 0) {
+			messageRefs.current[indices[indices.length - 1]]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}
+	}, [searchQuery, messages]);
+
 	const sendMessage = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!inputMessage.trim() || !isConnected || !clientRef.current) {
@@ -246,14 +286,23 @@ const Chat: React.FC = () => {
 		setInputMessage('');
 	};
 
+	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchQuery(e.target.value);
+	};
+
 	return (
-		<Flex h='full' w={400} border='1px solid #eee' flexDir='column' p={4} bg='gray.50' >
-			<Text fontSize='small' mb={2} color='gray.700' >채팅(참여인원)</Text>
-			<InputGroup bg='white' >
+		<Flex h='full' w={400} border='1px solid #eee' flexDir='column' p={4} bg='gray.50'>
+			<Text fontSize='small' mb={2} color='gray.700'>채팅(참여인원)</Text>
+			<InputGroup bg='white'>
 				<InputLeftElement pointerEvents='none'>
 					<Search2Icon color='gray.300' />
 				</InputLeftElement>
-				<Input type='text' placeholder='검색' />
+				<Input
+					type='text'
+					placeholder='검색'
+					value={searchQuery}
+					onChange={handleSearchChange}
+				/>
 			</InputGroup>
 			<Flex
 				flex='1'
@@ -278,19 +327,19 @@ const Chat: React.FC = () => {
 					<Text fontSize='small' color='gray.500'>채팅을 시작해보세요</Text>
 				) : (
 					messages.map((msg, index) => (
-						<Bubble
-							key={index}
-							messageType={msg.messageType}
-							message={msg.message}
-							senderName={msg.senderName}
-						/>
+						<div ref={(el) => (messageRefs.current[index] = el)} key={index}>
+							<Bubble
+								messageType={msg.messageType}
+								message={msg.message}
+								senderName={msg.senderName}
+								isHighlighted={highlightedIndices.includes(index)}
+							/>
+						</div>
 					))
 				)}
 			</Flex>
-			<form
-				onSubmit={(e) => sendMessage(e)}
-			>
-				<Flex gap='8px' >
+			<form onSubmit={(e) => sendMessage(e)}>
+				<Flex gap={2}>
 					<Input
 						value={inputMessage}
 						onChange={(e) => setInputMessage(e.target.value)}
@@ -298,13 +347,13 @@ const Chat: React.FC = () => {
 						placeholder="채팅을 입력하세요"
 						bg='white'
 					/>
-					<Button colorScheme="green" type="submit" >
+					<Button colorScheme="green" type="submit">
 						<Image src={send} h='50%' />
 					</Button>
 				</Flex>
 			</form>
 		</Flex>
-	)
+	);
 };
 
 export default Chat;

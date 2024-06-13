@@ -9,34 +9,22 @@ interface LoginFormFields {
   password: string;
 }
 
-const setCookie = (name: string, value: string, days: number): void => {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  const expires = `expires=${date.toUTCString()}`;
-  document.cookie = `${name}=${value};${expires};path=/`;
-}
-
 const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormFields>();
+
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<LoginFormFields> = async (data) => {
     try {
       const response = await API.post('/api/auth/login', data);
-      
-      const accessToken = await response.headers['Authorization']?.split(' ')[1]; // 액세스 토큰 추출
-      const refreshToken = await response.headers['Set-Cookie']?.split(';')[0].split('=')[1]; // 리프레시 토큰 추출
-
-      if (accessToken && refreshToken) {
-        setCookie('accessToken', accessToken, 1); // 액세스 토큰 쿠키를 1일간 유지
-        setCookie('refreshToken', refreshToken, 10); // 리프레시 토큰 쿠키를 10일간 유지
+      if (response.status === 200) {
+        // TODO: rtk -> id, nickname
+        alert('로그인 성공');
         navigate('/container/my');
-      } else {
-        console.error('토큰을 받지 못했습니다.');
       }
     } catch (error: unknown) {
       if (typeof error === 'object' && error !== null && 'message' in error) {
@@ -89,7 +77,7 @@ const LoginPage: React.FC = () => {
             </AbsoluteCenter>
           </Box>
           <Flex flexDir='column' w='full' gap={3} >
-            <a href='/api/oauth2/authorization/kakao' >
+            <a href='/api/oauth2/authorization/kakao'>
               <Button bg='yellow.300' _hover={{ bg: 'yellow.400' }} w='full'>카카오계정으로 로그인</Button>
             </a>
             <a href='/api/oauth2/authorization/naver'>

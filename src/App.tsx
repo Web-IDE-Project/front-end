@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import LandingPage from './pages/LandingPage/LandingPage'
 import LoginPage from './pages/LoginPage/LoginPage'
 import SignUpPage from './pages/SignUpPage/SignUpPage'
+import OauthLoginHandler from './pages/LoginPage/OauthLoginHandler'
 import ContainerPage from './pages/ContainerPage/ContainerPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
 import IDEPage from './pages/IDEPage/IDEPage'
@@ -12,6 +13,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/oauth-login-handler" element={<OauthLoginHandler />} />
       <Route path="/container" element={<ContainerPage />}>
         <Route index element={<Navigate to="my" />} />
         <Route path="my" element={<ContainerList category="내 컨테이너" />} />

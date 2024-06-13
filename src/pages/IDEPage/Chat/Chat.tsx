@@ -293,7 +293,7 @@ const Chat: React.FC = () => {
 	return (
 		<Flex h='full' w={400} border='1px solid #eee' flexDir='column' p={4} bg='gray.50'>
 			<Text fontSize='small' mb={2} color='gray.700'>채팅(참여인원)</Text>
-			<InputGroup bg='white'>
+			<InputGroup bg='white' mb={2} >
 				<InputLeftElement pointerEvents='none'>
 					<Search2Icon color='gray.300' />
 				</InputLeftElement>
@@ -327,14 +327,14 @@ const Chat: React.FC = () => {
 					<Text fontSize='small' color='gray.500'>채팅을 시작해보세요</Text>
 				) : (
 					messages.map((msg, index) => (
-						<div ref={(el) => (messageRefs.current[index] = el)} key={index}>
+						<Flex ref={(el) => (messageRefs.current[index] = el)} key={index} flexDir='column' >
 							<Bubble
 								messageType={msg.messageType}
 								message={msg.message}
 								senderName={msg.senderName}
 								isHighlighted={highlightedIndices.includes(index)}
 							/>
-						</div>
+						</Flex>
 					))
 				)}
 			</Flex>

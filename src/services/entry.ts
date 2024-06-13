@@ -1,10 +1,6 @@
 import { AxiosResponse } from 'axios'
 import API from './API'
-import {
-  FileApiResponse,
-  FileSystemEntry,
-  GetFileResponse,
-} from '@/models/FileSystemEntryData'
+import { FileApiResponse, FileSystemEntry } from '@/models/FileSystemEntryData'
 
 /** 파일 조회 API */
 export async function getFile(
@@ -76,7 +72,6 @@ export async function executeFile(
     }
   }
 }
-
 
 /** 디렉토리 생성 API */
 export async function createDirectory(

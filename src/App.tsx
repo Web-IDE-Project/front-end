@@ -5,12 +5,14 @@ import SignUpPage from './pages/SignUpPage/SignUpPage'
 import ContainerPage from './pages/ContainerPage/ContainerPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
 import IDEPage from './pages/IDEPage/IDEPage'
+import LoginHandler from './pages/LoginPage/LoginHandler'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path='/login-handler' element={<LoginHandler />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/container" element={<ContainerPage />}>
         <Route index element={<Navigate to="my" />} />

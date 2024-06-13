@@ -79,7 +79,7 @@ const IDEPage = () => {
   return (
     <>
       {/* SECTION 상단바 - 로고, 저장/실행 버튼 */}
-      <NavBar />
+      <NavBar containerId={containerId} />
 
       {/* SECTION 하단 영역 */}
       <Flex minH="calc(100vh - 48px)">

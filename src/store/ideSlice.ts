@@ -19,6 +19,7 @@ interface StateType {
   currentFileId: number
   currentFileContent: string
   showChatting: boolean
+  fileExecuteResult: string
 }
 
 const initialState: StateType = {
@@ -33,6 +34,7 @@ const initialState: StateType = {
   currentFileId: 3,
   currentFileContent: '',
   showChatting: false,
+  fileExecuteResult: '',
 }
 
 export const ideSlice = createSlice({
@@ -66,8 +68,12 @@ export const ideSlice = createSlice({
     setCurrentFileContent: (state, action: PayloadAction<string>) => {
       state.currentFileContent = action.payload
     },
+
     setEntries: (state, action: PayloadAction<FileSystemEntry[]>) => {
       state.entries = action.payload
+    },
+    setFileExecuteResult: (state, action: PayloadAction<string>) => {
+      state.fileExecuteResult = action.payload
     },
   },
 })
@@ -81,6 +87,7 @@ export const {
   setCurrentFileId,
   setCurrentFileContent,
   setEntries,
+  setFileExecuteResult,
 } = ideSlice.actions
 export default ideSlice.reducer
 
@@ -94,3 +101,5 @@ export const selectShowPermissionSettings = (state: RootState) =>
 export const selectCurrentFileContent = (state: RootState) =>
   state.ide.currentFileContent
 export const selectEntries = (state: RootState) => state.ide.entries
+export const selectFileExecuteResult = (state: RootState) =>
+  state.ide.fileExecuteResult

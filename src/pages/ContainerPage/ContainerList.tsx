@@ -32,11 +32,8 @@ import {
   getMyContainer,
   getQuestionContainer,
 } from '@/services/container'
-import {
-  GetContainerResponse,
-  PrivateContainer,
-  PublicContainer,
-} from '@/models/ContainerData'
+import { Container } from '@/models/ContainerData'
+import { ApiResponse } from '@/models/Api'
 
 interface Props {
   category: string
@@ -49,17 +46,17 @@ const ContainerList = ({ category }: Props) => {
   // TODO - 서버와 연동 후 주석 삭제
   /* eslint-disable @typescript-eslint/no-unused-vars */
   // @ts-ignore
-  const [containerList, setContainerList] = useState<
-    PrivateContainer[] | PublicContainer[] | null
-  >(null)
+  const [containerList, setContainerList] = useState<Container[] | null>(null)
   /* eslint-disable @typescript-eslint/no-unused-vars */
 
   useEffect(() => {
-    const CATEGORY: { [key: string]: () => Promise<GetContainerResponse> } = {
-      '내 컨테이너': getMyContainer,
-      '강의 컨테이너': getLectureContainer,
-      '질문 컨테이너': getQuestionContainer,
-    }
+    const CATEGORY: { [key: string]: () => Promise<ApiResponse<Container[]>> } =
+      {
+        '내 컨테이너': getMyContainer,
+        '강의 컨테이너': getLectureContainer,
+        '질문 컨테이너': getQuestionContainer,
+      }
+
     const getContainerList = async () => {
       const fetchContainer = CATEGORY[category]
 

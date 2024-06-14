@@ -296,7 +296,7 @@ const Chat: React.FC = () => {
 
 	return (
 		<Flex h='full' w={400} border='1px solid #eee' flexDir='column' p={4} bg='gray.50'>
-			<Text fontSize='small' mb={2} color='gray.700'>채팅(참여인원)</Text>  // TODO: 참여인원 값 백엔드와 상의 후 수정
+			<Text fontSize='small' mb={2} color='gray.700'>채팅(참여인원)</Text>
 			<InputGroup bg='white' mb={2} >
 				<InputLeftElement pointerEvents='none'>
 					<Search2Icon color='gray.300' />

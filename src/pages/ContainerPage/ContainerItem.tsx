@@ -13,6 +13,7 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
 
 interface Props extends PrivateContainer {
   category: string
@@ -21,6 +22,7 @@ interface Props extends PrivateContainer {
 }
 
 const ContainerItem = ({
+  id,
   title,
   language,
   description,
@@ -28,6 +30,7 @@ const ContainerItem = ({
   nickname,
   profileUrl,
 }: Props) => {
+  const navigate = useNavigate()
   return (
     <Card minH={280}>
       <CardHeader>
@@ -72,7 +75,13 @@ const ContainerItem = ({
       </Flex>
       {/* Card Body */}
       <CardFooter pt={3}>
-        <Button w="100%" size="sm" variant="outline">
+        <Button
+          w="100%"
+          size="sm"
+          variant="outline"
+          onClick={() => navigate(`/container/${id}/workspace`)}
+        >
+          {/* TODO - 현재 로그인한 사용자가 생성하지 않은 컨테이너는 '참여' 버튼으로 보여주기(강의/질문 컨테이너) */}
           실행
         </Button>
       </CardFooter>

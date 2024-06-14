@@ -3,12 +3,16 @@ import App from './App.tsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import { ChakraProvider } from '@chakra-ui/react'
+import { Provider } from 'react-redux'
+import store from './store/index.ts'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <BrowserRouter>
     <ChakraProvider>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ChakraProvider>
   </BrowserRouter>
   // </React.StrictMode>

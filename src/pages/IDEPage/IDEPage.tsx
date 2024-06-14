@@ -6,33 +6,106 @@ import {
   Flex,
 } from '@chakra-ui/react'
 import NavBar from './Navbar/NavBar'
-import Explorer from './TabItem/Explorer'
-// import PermissionSettings from './PermissionSettings'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import CodeEditor from './CodeEditor/CodeEditor'
 import Terminal from './Terminal/Terminal'
-import Tab from './Tab/Tab'
+import Tab from './Tab/Tab.tsx'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { startContainer } from '@/services/container'
+import Loading from './Loading'
+import Explorer from './TabItem/Explorer'
+import { useAppDispatch, useAppSelector } from '@/hooks'
+import {
+  selectShowExplorer,
+  selectShowPermissionSettings,
+  selectShowTerminal,
+  setEntries,
+} from '@/store/ideSlice'
+import PermissionSettings from './TabItem/PermissionSettings.tsx'
 
 const IDEPage = () => {
+  const { containerId } = useParams()
+  const dispatch = useAppDispatch()
+  // const entries = useAppSelector(selectEntries)
+
+  const showTerminal = useAppSelector(selectShowTerminal)
+  const showExplorer = useAppSelector(selectShowExplorer)
+  const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
+
+  // TODO - 서버와 연동 후 주석 삭제
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  // @ts-ignore
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // NOTE - 상태 추적 변수: 로딩 중 컴포넌트가 언마운트되면 요청을 중단한다.
+    let isCancelled = false
+
+    // TODO - 서버와 연동 후 주석 삭제
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    // @ts-ignore
+    const startContainerRequest = async () => {
+      setIsLoading(true) // 로딩 시작
+
+      try {
+        const response = await startContainer(Number(containerId))
+
+        if (!isCancelled && response.success) {
+          dispatch(setEntries(response.data!))
+        } else {
+          console.log('Error fetching file system entries', response.error)
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    setIsLoading(false)
+
+    // TODO - 서버와 연동 후 주석 삭제
+    // startContainerRequest()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [containerId])
+
+  if (isLoading) {
+    // 로딩 중일 때 보여줄 UI
+    return <Loading />
+  }
+
   return (
     <>
       {/* SECTION 상단바 - 로고, 저장/실행 버튼 */}
-      <NavBar />
+      <NavBar containerId={containerId} />
 
       {/* SECTION 하단 영역 */}
       <Flex minH="calc(100vh - 48px)">
         {/* SECTION 파일 탐색기, 터미널, 권한 관리 탭 */}
         <Tab />
 
-        {/* SECTION 파일 탐색기/권한 관리 영역*/}
-        <Box minW="180px" p={2} borderRight="1px" borderColor="gray.200">
-          <Explorer />
-          {/* <PermissionSettings /> */}
+        {/* SECTION 파일 탐색기/권한 관리 영역 */}
+        <Box
+          minW="180px"
+          p={2}
+          borderRight="1px"
+          borderColor="gray.200"
+          display={showExplorer || showPermissionSettings ? 'block' : 'none'}
+        >
+          <Box display={showExplorer ? 'block' : 'none'}>
+            <Explorer containerId={containerId} />
+          </Box>
+          <Box display={showPermissionSettings ? 'block' : 'none'}>
+            <PermissionSettings />
+          </Box>
         </Box>
 
         {/* SECTION 에디터/터미널 영역 */}
         <Flex direction="column" w="100%">
           {/* SECTION 에디터 영역 */}
+          {/* TODO - 경로 보여주기 */}
           <Box p={2} fontSize="sm">
             <Breadcrumb
               spacing="8px"
@@ -52,11 +125,11 @@ const IDEPage = () => {
             </Breadcrumb>
           </Box>
           <Flex grow={1}>
-            <CodeEditor language="javascript" />
+            <CodeEditor language="javascript" containerId={containerId} />
           </Flex>
 
           {/* SECTION 터미널 영역 */}
-          <Box h={200} overflow="hidden">
+          <Box h={showTerminal ? 200 : 0} overflow="hidden">
             <Terminal />
           </Box>
         </Flex>

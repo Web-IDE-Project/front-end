@@ -9,48 +9,22 @@ interface LoginFormFields {
   password: string;
 }
 
-// 쿠키 설정 함수
-const setCookie = (name: string, value: string, days: number): void => {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  const expires = `expires=${date.toUTCString()}`;
-  document.cookie = `${name}=${value};${expires};path=/`;
-};
-
-// 쿠키 가져오는 함수
-const getCookie = (name: string): string | null => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-  return null;
-};
-
 const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormFields>();
+
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<LoginFormFields> = async (data) => {
     try {
       const response = await API.post('/api/auth/login', data);
-
-      // 응답 헤더에서 액세스 토큰을 추출
-      const authHeader = response.headers['authorization'];
-      const accessToken = authHeader ? authHeader.split(' ')[1] : null;
-
-      // 응답 쿠키에서 리프레시 토큰을 추출
-      const refreshToken = getCookie('Refresh-Token');
-
-      if (accessToken && refreshToken) {
-        setCookie('accessToken', accessToken, 1); // 액세스 토큰을 쿠키에 1일간 저장
-        setCookie('refreshToken', refreshToken, 10); // 리프레시 토큰을 쿠키에 10일간 저장
-        console.log('토큰 저장 완료:', accessToken, refreshToken);
+      if (response.status === 200) {
+        // TODO: rtk -> userInfo(username, nickname) 저장
+        alert('로그인 성공');
         navigate('/container/my');
-      } else {
-        console.error('토큰을 받지 못했습니다.');
       }
     } catch (error: unknown) {
       if (typeof error === 'object' && error !== null && 'message' in error) {
@@ -103,15 +77,15 @@ const LoginPage: React.FC = () => {
             </AbsoluteCenter>
           </Box>
           <Flex flexDir='column' w='full' gap={3} >
-            <Link to='/oauth2/authorization/kakao' >
+            <a href='/api/oauth2/authorization/kakao'>
               <Button bg='yellow.300' _hover={{ bg: 'yellow.400' }} w='full'>카카오계정으로 로그인</Button>
-            </Link>
-            <Link to='/oauth2/authorization/naver'>
+            </a>
+            <a href='/api/oauth2/authorization/naver'>
               <Button bg='green.400' color='white' _hover={{ bg: 'green.500' }} w='full'>네이버로 로그인</Button>
-            </Link>
-            <Link to='/oauth2/authorization/google'>
+            </a>
+            <a href='/api/oauth2/authorization/google'>
               <Button colorScheme='gray' w='full'>구글로 로그인</Button>
-            </Link>
+            </a>
           </Flex>
         </Flex>
       </Flex>

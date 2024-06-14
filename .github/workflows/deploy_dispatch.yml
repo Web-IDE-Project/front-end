@@ -21,20 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Verify Environment Variables
-        run: |
-          echo "VERCEL_TOKEN: ${VERCEL_TOKEN:0:4}****"
-          echo "VERCEL_ORG_ID: ${VERCEL_ORG_ID:0:4}****"
-          echo "VERCEL_PROJECT_ID: ${VERCEL_PROJECT_ID:0:4}****"
-          echo "VITE_YORKIE_API_ADDR: ${VITE_YORKIE_API_ADDR}"
-          echo "VITE_YORKIE_API_KEY: ${VITE_YORKIE_API_KEY:0:4}****"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VITE_YORKIE_API_ADDR: ${{ secrets.VITE_YORKIE_API_ADDR }}
-          VITE_YORKIE_API_KEY: ${{ secrets.VITE_YORKIE_API_KEY }}
-
       - name: Build project
         env:
           VITE_YORKIE_API_ADDR: ${{ secrets.VITE_YORKIE_API_ADDR }}

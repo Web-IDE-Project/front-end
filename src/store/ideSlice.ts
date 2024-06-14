@@ -1,7 +1,7 @@
 import { RootState } from './index'
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { Tree, TreeNode } from '@/models/EntryData'
+import { Tree, TreeNode } from '@/models/entry'
 
 interface StateType {
   showExplorer: boolean
@@ -39,8 +39,8 @@ export const ideSlice = createSlice({
   reducers: {
     toggleExplorer: state => {
       state.showExplorer = !state.showExplorer
-      if (state.showPermissionSettings) {
-        state.showPermissionSettings = !state.showPermissionSettings
+      if (state.showExplorer && state.showPermissionSettings) {
+        state.showPermissionSettings = false
       }
     },
     toggleTerminal: state => {
@@ -48,8 +48,8 @@ export const ideSlice = createSlice({
     },
     togglePermissionSettings: state => {
       state.showPermissionSettings = !state.showPermissionSettings
-      if (state.showExplorer) {
-        state.showExplorer = !state.showExplorer
+      if (state.showPermissionSettings && state.showExplorer) {
+        state.showExplorer = false
       }
     },
     toggleChatting: state => {

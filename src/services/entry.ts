@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import API from './API'
-import { ApiResponse } from '@/models/Api'
-import { Entry } from '@/models/EntryData'
+import { ApiResponse } from '@/models/api'
+import { Entry } from '@/models/entry'
 
 /** 파일 저장(수정) API */
 export async function saveFile(

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios'
 import API from './API'
-import { ApiResponse } from '@/models/api'
+import { ApiResponse } from '@/models/ApiData'
 import { Entry } from '@/models/entry'
 
 /** 파일 저장(수정) API */

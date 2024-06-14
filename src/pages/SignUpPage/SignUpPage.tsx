@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react'
 import logo from '../../assets/images/logo.png'
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form'
-import API from '@/services/API'
 import { useNavigate } from 'react-router-dom'
 import { signup } from '@/services/user'
 

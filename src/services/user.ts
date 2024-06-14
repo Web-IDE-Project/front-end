@@ -1,4 +1,4 @@
-import { ApiResponse } from '@/models/api'
+import { ApiResponse } from '@/models/ApiData'
 import { loginResponse } from '@/models/user'
 import { AxiosResponse } from 'axios'
 import API from './API'

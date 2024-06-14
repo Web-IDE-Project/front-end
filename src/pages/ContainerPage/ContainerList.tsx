@@ -6,13 +6,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   SimpleGrid,
   useDisclosure,
   Text,
@@ -21,7 +14,7 @@ import {
   Flex,
   Spacer,
 } from '@chakra-ui/react'
-
+import Modal from '@/components/Modal'
 import public_container from '@/data/public-container-list.json'
 import private_container from '@/data/private-container-list.json'
 import ContainerItem from './ContainerItem'
@@ -194,78 +187,63 @@ const ContainerList = ({ category }: Props) => {
       </Box>
 
       {/* 컨테이너 생성 모달 */}
-      <Modal isOpen={isOpen} onClose={modalClose} isCentered size="sm">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader fontSize="lg" fontWeight="bold">
-            컨테이너 생성하기
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text fontWeight="bold" mb={1}>
-              이름
-            </Text>
-            <Input
-              placeholder="컨테이너 이름을 입력해주세요."
-              size="sm"
-              borderRadius="md"
-              mb={4}
-              value={name}
-              onChange={e => setName(e.target.value)}
-              isInvalid={showNameRequired}
-            />
-            <Flex align="center">
-              <Text mb={1}>
-                <b>설명</b>(선택)
-              </Text>
-              <Spacer />
-              <Text fontSize="sm" color="gray">
-                {description.length < 60 ? description.length : 60}
-                /60 자
-              </Text>
-            </Flex>
-            <Textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="컨테이너 설명을 입력해주세요."
-              size="sm"
-              borderRadius="md"
-              mb={4}
-              resize="none"
-              maxLength={60}
-            />
-            <Text mb={1}>
-              <b>언어</b>(선택하신 언어로 기본 템플릿이 생성됩니다.)
-            </Text>
-            <Select
-              placeholder="언어를 선택하세요."
-              size="sm"
-              borderRadius="md"
-              value={selectedLanguage}
-              onChange={e => setSelectedLanguage(e.target.value)}
-              isInvalid={showLanguageRequired}
-            >
-              <option value="C">C</option>
-              <option value="CPP">C++</option>
-              <option value="JAVA">Java</option>
-              <option value="JAVASCRIPT">JavaScript</option>
-              <option value="PYTHON">Python</option>
-            </Select>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={modalClose} size="sm">
-              취소
-            </Button>
-            <Button
-              variant="solid"
-              colorScheme="green"
-              size="sm"
-              onClick={createButtonClick}
-            >
-              생성
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={isOpen}
+        onClose={modalClose}
+        title="컨테이너 생성하기"
+        cancelMessage="취소"
+        confirmMessage="생성"
+        confirmCallback={createButtonClick}
+      >
+        <Text fontWeight="bold" mb={1}>
+          이름
+        </Text>
+        <Input
+          placeholder="컨테이너 이름을 입력해주세요."
+          size="sm"
+          borderRadius="md"
+          mb={4}
+          value={name}
+          onChange={e => setName(e.target.value)}
+          isInvalid={showNameRequired}
+        />
+        <Flex align="center">
+          <Text mb={1}>
+            <b>설명</b>(선택)
+          </Text>
+          <Spacer />
+          <Text fontSize="sm" color="gray">
+            {description.length < 60 ? description.length : 60}
+            /60 자
+          </Text>
+        </Flex>
+        <Textarea
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder="컨테이너 설명을 입력해주세요."
+          size="sm"
+          borderRadius="md"
+          mb={4}
+          resize="none"
+          maxLength={60}
+        />
+        <Text mb={1}>
+          <b>언어</b>(선택하신 언어로 기본 템플릿이 생성됩니다.)
+        </Text>
+        <Select
+          placeholder="언어를 선택하세요."
+          size="sm"
+          borderRadius="md"
+          value={selectedLanguage}
+          onChange={e => setSelectedLanguage(e.target.value)}
+          isInvalid={showLanguageRequired}
+        >
+          <option value="C">C</option>
+          <option value="CPP">C++</option>
+          <option value="JAVA">Java</option>
+          <option value="JAVASCRIPT">JavaScript</option>
+          <option value="PYTHON">Python</option>
+        </Select>
       </Modal>
     </>
   )

@@ -1,24 +1,17 @@
 import {
   Box,
-  Button,
   Flex,
   IconButton,
   Input,
   Menu,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Spacer,
   Text,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
+import Modal from '@/components/Modal'
 import { FiFolderPlus } from 'react-icons/fi'
 import { FiFilePlus } from 'react-icons/fi'
 import { IoLogoJavascript } from 'react-icons/io5'
@@ -341,122 +334,59 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
       </Menu>
 
       {/* SECTION 엔트리 생성 모달 */}
-      <Modal isOpen={isOpen} onClose={modalClose} isCentered size="sm">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader fontSize="lg" fontWeight="bold">
-            {newEntryType === 'file' ? '파일 생성하기' : '디렉토리 생성하기'}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text fontWeight="bold" mb={1}>
-              이름
-            </Text>
-            <Input
-              placeholder={`생성할 ${newEntryType === 'file' ? '파일' : '디렉토리'}의 이름을 입력해주세요.`}
-              size="sm"
-              borderRadius="md"
-              mb={4}
-              value={newEntryName}
-              onChange={e => setNewEntryName(e.target.value)}
-              // TODO - 디렉토리이면 뒤에 확장자 없이, 파일이면 뒤에 확장자 필수 확인(유효성 검사 추가)
-              isInvalid={newEntryName === ''}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={modalClose} size="sm">
-              취소
-            </Button>
-            <Button
-              variant="solid"
-              colorScheme="green"
-              size="sm"
-              onClick={handleCreateEntry}
-            >
-              생성
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={isOpen}
+        onClose={modalClose}
+        title="이름"
+        cancelMessage="취소"
+        confirmMessage="생성"
+        confirmCallback={handleCreateEntry}
+      >
+        <Text fontWeight="bold" mb={1}>
+          이름
+        </Text>
+        <Input
+          placeholder={`생성할 ${newEntryType === 'file' ? '파일' : '디렉토리'}의 이름을 입력해주세요.`}
+          size="sm"
+          borderRadius="md"
+          mb={4}
+          value={newEntryName}
+          onChange={e => setNewEntryName(e.target.value)}
+          // TODO - 디렉토리이면 뒤에 확장자 없이, 파일이면 뒤에 확장자 필수 확인(유효성 검사 추가)
+          isInvalid={newEntryName === ''}
+        />
       </Modal>
 
       {/* SECTION 디렉토리/파일 이름 수정 모달 */}
       <Modal
         isOpen={isEditNameModalOpen}
         onClose={onEditNameModalClose}
-        isCentered
-        size="sm"
+        title="이름 수정"
+        cancelMessage="취소"
+        confirmMessage="수정"
+        confirmCallback={handleEditName}
       >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader fontSize="lg" fontWeight="bold">
-            이름 수정
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input
-              size="sm"
-              borderRadius="md"
-              mb={4}
-              value={newEntryName}
-              onChange={e => setNewEntryName(e.target.value)}
-              // TODO - 디렉토리이면 뒤에 확장자 없이, 파일이면 뒤에 확장자 필수 확인(유효성 검사 추가)
-              isInvalid={newEntryName === ''}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              colorScheme="gray"
-              mr={3}
-              onClick={onEditNameModalClose}
-              size="sm"
-            >
-              취소
-            </Button>
-            <Button
-              variant="solid"
-              colorScheme="green"
-              size="sm"
-              onClick={handleEditName}
-            >
-              수정
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+        <Input
+          size="sm"
+          borderRadius="md"
+          mb={4}
+          value={newEntryName}
+          onChange={e => setNewEntryName(e.target.value)}
+          // TODO - 디렉토리이면 뒤에 확장자 없이, 파일이면 뒤에 확장자 필수 확인(유효성 검사 추가)
+          isInvalid={newEntryName === ''}
+        />
       </Modal>
 
       {/* SECTION 엔트리 삭제 확인 모달 */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={onDeleteModalClose}
-        isCentered
-        size="sm"
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader fontSize="lg" fontWeight="bold">
-            정말로 삭제하시겠습니까?
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalFooter>
-            <Button
-              colorScheme="gray"
-              mr={3}
-              onClick={onDeleteModalClose}
-              size="sm"
-            >
-              취소
-            </Button>
-            <Button
-              variant="solid"
-              colorScheme="red"
-              size="sm"
-              onClick={handleDeleteEntry}
-            >
-              삭제
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        title="정말로 삭제하시겠습니까?"
+        cancelMessage="취소"
+        confirmMessage="삭제"
+        confirmCallback={handleDeleteEntry}
+        confirmButtonColorScheme="red"
+      ></Modal>
     </>
   )
 }

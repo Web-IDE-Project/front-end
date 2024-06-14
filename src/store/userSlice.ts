@@ -16,7 +16,8 @@ interface userInfo {
 }
 
 const initialState: StateType = {
-  isAuthenticated: false,
+  // NOTE - 개발 시에는 초기 상태 true로 설정
+  isAuthenticated: true,
   id: '',
   nickname: '',
   profileUrl: null,

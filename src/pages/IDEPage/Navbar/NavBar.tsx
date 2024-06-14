@@ -12,16 +12,19 @@ import { IoIosPlay } from 'react-icons/io'
 import { FiMic } from 'react-icons/fi'
 // import { FiMicOff } from 'react-icons/fi'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
-import { useAppSelector } from '@/hooks'
-import { selectSelectedNode, setFileExecuteResult } from '@/store/ideSlice'
+import { useAppDispatch, useAppSelector } from '@/hooks'
+import {
+  selectSelectedNode,
+  setFileExecuteResult,
+  toggleChatting,
+} from '@/store/ideSlice'
 import { executeFile, saveFile } from '@/services/entry'
-import { useDispatch } from 'react-redux'
 import { getExtension } from '@/utils/entry'
 
 const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   const toast = useToast()
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const selectedNode = useAppSelector(selectSelectedNode)
 
   const saveButtonClick = async () => {
@@ -123,6 +126,9 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
         icon={<IoChatbubbleEllipsesOutline />}
         bgColor="transparent"
         fontSize={'20px'}
+        onClick={() => {
+          dispatch(toggleChatting())
+        }}
       />
     </Flex>
   )

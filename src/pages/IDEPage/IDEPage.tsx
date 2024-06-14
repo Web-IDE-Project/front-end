@@ -17,6 +17,7 @@ import Loading from './Loading'
 import Explorer from './TabItem/Explorer'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
+  selectShowChatting,
   selectShowExplorer,
   selectShowPermissionSettings,
   selectShowTerminal,
@@ -27,6 +28,7 @@ import { flattenTree } from 'react-accessible-treeview'
 import { Tree, nodeMetadata } from '@/models/entry.ts'
 // NOTE - 테스트용 파일 리스트
 import entries from '@/data/file-system-entry.json'
+import Chat from './Chat/Chat.tsx'
 
 const IDEPage = () => {
   const { containerId } = useParams()
@@ -35,6 +37,7 @@ const IDEPage = () => {
   const showTerminal = useAppSelector(selectShowTerminal)
   const showExplorer = useAppSelector(selectShowExplorer)
   const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
+  const showChatting = useAppSelector(selectShowChatting)
 
   // TODO - 서버와 연동 후 주석 삭제
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -141,6 +144,11 @@ const IDEPage = () => {
             <Terminal />
           </Box>
         </Flex>
+
+        {/* SECTION 채팅창 영역 */}
+        <Box display={showChatting ? 'block' : 'none'}>
+          <Chat />
+        </Box>
       </Flex>
     </>
   )

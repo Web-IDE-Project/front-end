@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
     try {
       const response = await API.post('/api/auth/login', data);
       if (response.status === 200) {
-        // TODO: rtk -> id, nickname
+        // TODO: rtk -> userInfo(username, nickname) 저장
         alert('로그인 성공');
         navigate('/container/my');
       }

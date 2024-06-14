@@ -1,56 +1,46 @@
-[
-  {
-    "id": 2,
-    "name": "dir2",
+{
+  "id": 1,
+  "name": "WORKSPACE-9662574c-05c4-4d7c-8529-19130bba99b8",
+  "metadata": {
     "isDirectory": true,
-    "parentId": 1
+    "content": null
   },
-  {
-    "id": 3,
-    "name": "file3.js",
-    "isDirectory": false,
-    "parentId": 2
-  },
-  {
-    "id": 4,
-    "name": "dir4",
-    "isDirectory": true,
-    "parentId": 2
-  },
-  {
-    "id": 5,
-    "name": "file5.cpp",
-    "isDirectory": false,
-    "parentId": 1
-  },
-  {
-    "id": 6,
-    "name": "file6.cpp",
-    "isDirectory": false,
-    "parentId": 1
-  },
-  {
-    "id": 7,
-    "name": "file7.java",
-    "isDirectory": false,
-    "parentId": 1
-  },
-  {
-    "id": 8,
-    "name": "file8.py",
-    "isDirectory": false,
-    "parentId": 4
-  },
-  {
-    "id": 9,
-    "name": "dir1",
-    "isDirectory": true,
-    "parentId": 4
-  },
-  {
-    "id": 10,
-    "name": "newDirectory",
-    "isDirectory": true,
-    "parentId": 1
-  }
-]
+  "children": [
+    {
+      "id": 2,
+      "name": "main",
+      "metadata": {
+        "isDirectory": true,
+        "content": null
+      },
+      "children": [
+        {
+          "id": 3,
+          "name": "file2.txt",
+          "metadata": {
+            "isDirectory": false,
+            "content": "print('file2')"
+          }
+        },
+        {
+          "id": 4,
+          "name": "subdir",
+          "metadata": {
+            "isDirectory": true,
+            "content": null
+          },
+          "children": [
+            {
+              "id": 5,
+              "name": "subtest.py",
+              "metadata": {
+                "isDirectory": false,
+                "content": "print('Subtest file')"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

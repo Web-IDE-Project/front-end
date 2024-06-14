@@ -1,4 +1,4 @@
-import { PrivateContainer } from '@/models/ContainerData'
+import { Container } from '@/models/ContainerData'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
@@ -15,10 +15,8 @@ import {
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 
-interface Props extends PrivateContainer {
+interface Props extends Container {
   category: string
-  nickname?: string
-  profileUrl?: string
 }
 
 const ContainerItem = ({
@@ -26,11 +24,12 @@ const ContainerItem = ({
   title,
   language,
   description,
-  category,
   nickname,
   profileUrl,
+  category,
 }: Props) => {
   const navigate = useNavigate()
+
   return (
     <Card minH={280}>
       <CardHeader>

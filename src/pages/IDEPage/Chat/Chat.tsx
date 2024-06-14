@@ -109,8 +109,8 @@ const data: Message[] = [
 ]
 
 const BASE_URI: string = 'ws://localhost:8080';
-const workspaceId: number = 1;
-const username: string = 'user';
+const workspaceId: number = 1;  // props로 값 받을 예정
+const username: string = 'me';  // 상태관리 store에서 값 가져올 예정, 나중에 프로필 이미지도 받아오기.
 
 interface Message {
 	messageType: 'TALK' | 'ENTER' | 'EXIT';
@@ -121,14 +121,14 @@ interface PubMessage {
 	messageType: 'TALK' | 'ENTER' | 'EXIT';
 	message: string;
 }
-
 interface BubbleProps {
 	messageType: 'TALK' | 'ENTER' | 'EXIT';
 	message: string;
 	senderName: string;
+	isHighlighted: boolean;
 }
 
-const Bubble: React.FC<BubbleProps & { isHighlighted: boolean }> = ({ messageType, message, senderName, isHighlighted }) => {
+const Bubble: React.FC<BubbleProps> = ({ messageType, message, senderName, isHighlighted }) => {
 	if (messageType === 'ENTER' || messageType === 'EXIT') {
 		return (
 			<Center my={3}>
@@ -136,7 +136,7 @@ const Bubble: React.FC<BubbleProps & { isHighlighted: boolean }> = ({ messageTyp
 			</Center>
 		)
 	}
-	if (senderName === 'me') {
+	if (senderName === username) {
 		return (
 			<Box
 				bg={isHighlighted ? 'yellow.200' : 'green.100'}
@@ -180,11 +180,12 @@ const Chat: React.FC = () => {
 	const [highlightedIndices, setHighlightedIndices] = useState<number[]>([]);
 	const messageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+	// WebSocket
 	useEffect(() => {
 		const client = new Client({
 			brokerURL: `${BASE_URI}/api/ws`,
 			debug: (str) => {
-				console.log(str);
+				console.debug(str);
 			},
 			reconnectDelay: 5000,
 			heartbeatIncoming: 4000,
@@ -204,8 +205,9 @@ const Chat: React.FC = () => {
 				client.publish({
 					destination: `/api/pub/${workspaceId}`,
 					body: JSON.stringify({
-						messageType: 'ENTER',
-						message: `${username} 님이 입장했습니다.`,
+            messageType: 'ENTER',
+            message: '',
+            senderName: username,
 					}),
 				});
 			},
@@ -221,8 +223,9 @@ const Chat: React.FC = () => {
 				client.publish({
 					destination: `/api/pub/${workspaceId}`,
 					body: JSON.stringify({
-						messageType: 'EXIT',
-						message: `${username} 님이 퇴장했습니다.`,
+            messageType: 'EXIT',
+            message: '',
+            senderName: username,
 					}),
 				});
 				client.deactivate();
@@ -244,6 +247,7 @@ const Chat: React.FC = () => {
 		}
 	}, []);
 
+	// 검색
 	useEffect(() => {
 		if (searchQuery.trim() === '') {
 			setHighlightedIndices([]);
@@ -292,7 +296,7 @@ const Chat: React.FC = () => {
 
 	return (
 		<Flex h='full' w={400} border='1px solid #eee' flexDir='column' p={4} bg='gray.50'>
-			<Text fontSize='small' mb={2} color='gray.700'>채팅(참여인원)</Text>
+			<Text fontSize='small' mb={2} color='gray.700'>채팅(참여인원)</Text>  // TODO: 참여인원 값 백엔드와 상의 후 수정
 			<InputGroup bg='white' mb={2} >
 				<InputLeftElement pointerEvents='none'>
 					<Search2Icon color='gray.300' />

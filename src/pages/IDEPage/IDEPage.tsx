@@ -24,12 +24,13 @@ import {
 } from '@/store/ideSlice'
 import PermissionSettings from './TabItem/PermissionSettings.tsx'
 import { flattenTree } from 'react-accessible-treeview'
-import { Tree } from '@/models/EntryData.ts'
+import { Tree, nodeMetadata } from '@/models/EntryData.ts'
+// NOTE - 테스트용 파일 리스트
+import entries from '@/data/file-system-entry.json'
 
 const IDEPage = () => {
   const { containerId } = useParams()
   const dispatch = useAppDispatch()
-  // const entries = useAppSelector(selectEntries)
 
   const showTerminal = useAppSelector(selectShowTerminal)
   const showExplorer = useAppSelector(selectShowExplorer)
@@ -44,6 +45,10 @@ const IDEPage = () => {
     // NOTE - 상태 추적 변수: 로딩 중 컴포넌트가 언마운트되면 요청을 중단한다.
     let isCancelled = false
 
+    // TODO - 테스트용 코드
+    const tree = flattenTree<nodeMetadata>(entries as any)
+    dispatch(setTree(tree as Tree))
+
     // TODO - 서버와 연동 후 주석 삭제
     /* eslint-disable @typescript-eslint/no-unused-vars */
     // @ts-ignore
@@ -54,7 +59,7 @@ const IDEPage = () => {
         const response = await startContainer(Number(containerId))
 
         if (!isCancelled && response.success) {
-          const tree = flattenTree(response.data!)
+          const tree = flattenTree<nodeMetadata>(response.data!)
           dispatch(setTree(tree as Tree))
         } else {
           console.log('Error fetching file system entries', response.error)

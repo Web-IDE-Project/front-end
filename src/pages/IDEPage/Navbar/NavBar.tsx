@@ -13,27 +13,22 @@ import { FiMic } from 'react-icons/fi'
 // import { FiMicOff } from 'react-icons/fi'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { useAppSelector } from '@/hooks'
-import {
-  selectCurrentFileContent,
-  selectCurrentFileId,
-  setFileExecuteResult,
-} from '@/store/ideSlice'
+import { selectSelectedNode, setFileExecuteResult } from '@/store/ideSlice'
 import { executeFile, saveFile } from '@/services/entry'
 import { useDispatch } from 'react-redux'
+import { getExtension } from '@/utils/entry'
 
 const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   const toast = useToast()
 
   const dispatch = useDispatch()
-
-  const currentFileId = useAppSelector(selectCurrentFileId)
-  const currentFileContent = useAppSelector(selectCurrentFileContent)
+  const selectedNode = useAppSelector(selectSelectedNode)
 
   const saveButtonClick = async () => {
     const response = await saveFile(
       containerId!,
-      currentFileId,
-      currentFileContent
+      selectedNode.id,
+      selectedNode.metadata!.content!
     )
 
     if (response.success) {
@@ -58,7 +53,10 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   }
 
   const onExecuteButtonClick = async () => {
-    const response = await executeFile('java', currentFileContent)
+    const response = await executeFile(
+      getExtension(selectedNode.name),
+      selectedNode.metadata!.content!
+    )
 
     if (response.success) {
       dispatch(setFileExecuteResult(response.data!.result!))

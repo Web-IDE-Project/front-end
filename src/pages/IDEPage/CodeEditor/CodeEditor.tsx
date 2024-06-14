@@ -13,7 +13,7 @@ import { LanguageSupport } from '@codemirror/language'
 import { showMinimap } from '@replit/codemirror-minimap'
 import yorkie, { type Text } from 'yorkie-js-sdk'
 import { useAppSelector } from '@/hooks'
-import { selectCurrentFileContent, selectCurrentFileId } from '@/store/ideSlice'
+import { selectSelectedNode } from '@/store/ideSlice'
 
 type YorkieDoc = {
   content: Text
@@ -36,8 +36,9 @@ const CodeEditor = ({
   const editorRef = useRef<HTMLDivElement>(null)
   const codemirrorViewRef = useRef<EditorView>()
 
-  const currentFileId = useAppSelector(selectCurrentFileId)
-  const currentFileContent = useAppSelector(selectCurrentFileContent)
+  const currentFileId = useAppSelector(selectSelectedNode).id
+  const currentFileContent =
+    useAppSelector(selectSelectedNode).metadata!.content!
 
   const initializeYorkieEditor = useCallback(async () => {
     // 1. 클라이언트 생성 및 활성화

@@ -1,4 +1,4 @@
-import { INode, flattenTree } from 'react-accessible-treeview'
+import { INode } from 'react-accessible-treeview'
 
 export interface Entry {
   id: number
@@ -7,11 +7,11 @@ export interface Entry {
   content?: string | null
   children?: Entry[]
 }
-flattenTree
 
-// export type TreeNode = ReturnType<
-//   typeof flattenTree<{ isDirectory: boolean; content: string }>
-// >
-export type TreeNode = INode<{ isDirectory: boolean; content: string }>
+export type nodeMetadata = {
+  isDirectory: boolean
+  content: string
+}
 
+export type TreeNode = INode<nodeMetadata>
 export type Tree = TreeNode[]

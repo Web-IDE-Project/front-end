@@ -35,7 +35,7 @@ export async function startContainer(
   containerId: number
 ): Promise<ApiResponse<Entry>> {
   try {
-    const response: AxiosResponse = await API.post(
+    const response: AxiosResponse = await API.get(
       `/api/workspaces/${containerId}`
     )
 

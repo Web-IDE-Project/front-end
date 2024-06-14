@@ -1,32 +1,44 @@
 {
   "id": 1,
   "name": "WORKSPACE-9662574c-05c4-4d7c-8529-19130bba99b8",
-  "isDirectory": true,
-  "content": null,
+  "metadata": {
+    "isDirectory": true,
+    "content": null
+  },
   "children": [
     {
       "id": 2,
-      "name": "main.c",
-      "isDirectory": false,
-      "content": "#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}\n"
-    },
-    {
-      "id": 3,
-      "name": "file2.txt",
-      "isDirectory": false,
-      "content": "print('file2')"
-    },
-    {
-      "id": 4,
-      "name": "subdir",
-      "isDirectory": true,
-      "content": null,
+      "name": "main",
+      "metadata": {
+        "isDirectory": true,
+        "content": null
+      },
       "children": [
         {
-          "id": 5,
-          "name": "SUBTEST.PY",
-          "isDirectory": false,
-          "content": "print('Subtest file')"
+          "id": 3,
+          "name": "file2.txt",
+          "metadata": {
+            "isDirectory": false,
+            "content": "print('file2')"
+          }
+        },
+        {
+          "id": 4,
+          "name": "subdir",
+          "metadata": {
+            "isDirectory": true,
+            "content": null
+          },
+          "children": [
+            {
+              "id": 5,
+              "name": "subtest.py",
+              "metadata": {
+                "isDirectory": false,
+                "content": "print('Subtest file')"
+              }
+            }
+          ]
         }
       ]
     }

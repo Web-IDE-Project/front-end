@@ -1,17 +1,14 @@
 import { RootState } from './index'
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-// NOTE - 테스트용 파일 리스트 / 컨테이너 실행 시에 파일을 저장하는 것으로 추후 수정
-import entries from '@/data/file-system-entry.json'
 import { Tree, TreeNode } from '@/models/EntryData'
-import { flattenTree } from 'react-accessible-treeview'
 
 interface StateType {
   showExplorer: boolean
   showTerminal: boolean
   showPermissionSettings: boolean
   selectedNode: TreeNode
-  tree: Tree
+  tree: Tree | null
   showChatting: boolean
   fileExecuteResult: string
 }
@@ -21,7 +18,7 @@ const initialState: StateType = {
   showTerminal: true,
   showPermissionSettings: false,
   selectedNode: {
-    id: 1,
+    id: 2,
     name: 'file',
     children: [],
     parent: null,
@@ -31,7 +28,7 @@ const initialState: StateType = {
       content: 'content',
     },
   },
-  tree: flattenTree(entries),
+  tree: null,
   showChatting: false,
   fileExecuteResult: '',
 }
@@ -83,10 +80,10 @@ export default ideSlice.reducer
 
 export const selectShowExplorer = (state: RootState) => state.ide.showExplorer
 export const selectShowTerminal = (state: RootState) => state.ide.showTerminal
-export const selectEntry = (state: RootState) => state.ide.selectedNode
+export const selectSelectedNode = (state: RootState) => state.ide.selectedNode
 export const selectShowChatting = (state: RootState) => state.ide.showChatting
 export const selectShowPermissionSettings = (state: RootState) =>
   state.ide.showPermissionSettings
-export const selectEntries = (state: RootState) => state.ide.tree
+export const selectTree = (state: RootState) => state.ide.tree
 export const selectFileExecuteResult = (state: RootState) =>
   state.ide.fileExecuteResult

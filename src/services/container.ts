@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios'
 import API from './API'
-import { Container } from '@/models/ContainerData'
-import { ApiResponse } from '@/models/Api'
-import { Entry } from '@/models/EntryData'
+import { Container } from '@/models/container'
+import { ApiResponse } from '@/models/api'
+import { Entry } from '@/models/entry'
 
 /** 컨테이너 생성 API */
 export async function createContainer(
@@ -52,52 +52,13 @@ export async function startContainer(
   }
 }
 
-/** 내 컨테이너 조회 API */
-export async function getMyContainer(): Promise<ApiResponse<Container[]>> {
-  try {
-    const response: AxiosResponse<Container[]> =
-      await API.get(`/api/workspaces/my`)
-
-    return {
-      success: true,
-      data: response.data,
-    }
-  } catch (err: any) {
-    return {
-      success: false,
-      error:
-        err.response?.data?.message || err.message || 'Unknown error occurred',
-    }
-  }
-}
-
-/** 강의 컨테이너 조회 API */
-export async function getLectureContainer(): Promise<ApiResponse<Container[]>> {
+/** 컨테이너 조회 API */
+export async function getContainer(
+  category: string
+): Promise<ApiResponse<Container[]>> {
   try {
     const response: AxiosResponse<Container[]> = await API.get(
-      `/api/workspaces/lectures`
-    )
-
-    return {
-      success: true,
-      data: response.data,
-    }
-  } catch (err: any) {
-    return {
-      success: false,
-      error:
-        err.response?.data?.message || err.message || 'Unknown error occurred',
-    }
-  }
-}
-
-/** 질문 컨테이너 조회 API */
-export async function getQuestionContainer(): Promise<
-  ApiResponse<Container[]>
-> {
-  try {
-    const response: AxiosResponse<Container[]> = await API.get(
-      `/api/workspaces/questions`
+      `/api/workspace/${category}`
     )
 
     return {

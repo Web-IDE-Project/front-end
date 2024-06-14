@@ -34,7 +34,7 @@ import {
 } from '@/store/ideSlice'
 import { useRef, useState } from 'react'
 import { createEntry, deleteEntry, editEntryName } from '@/services/entry'
-import { Tree, TreeNode } from '@/models/EntryData'
+import { Tree, TreeNode } from '@/models/entry'
 import { getExtension } from '@/utils/entry'
 
 const Explorer = ({ containerId }: { containerId: string | undefined }) => {

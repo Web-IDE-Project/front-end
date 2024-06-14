@@ -1,4 +1,4 @@
-import { Container } from '@/models/ContainerData'
+import { Container } from '@/models/container'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,

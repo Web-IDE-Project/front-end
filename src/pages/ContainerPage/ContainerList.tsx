@@ -19,14 +19,8 @@ import public_container from '@/data/public-container-list.json'
 import private_container from '@/data/private-container-list.json'
 import ContainerItem from './ContainerItem'
 import { useEffect, useState } from 'react'
-import {
-  createContainer,
-  getLectureContainer,
-  getMyContainer,
-  getQuestionContainer,
-} from '@/services/container'
-import { Container } from '@/models/ContainerData'
-import { ApiResponse } from '@/models/Api'
+import { createContainer, getContainer } from '@/services/container'
+import { Container } from '@/models/container'
 
 interface Props {
   category: string
@@ -43,24 +37,19 @@ const ContainerList = ({ category }: Props) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
 
   useEffect(() => {
-    const CATEGORY: { [key: string]: () => Promise<ApiResponse<Container[]>> } =
-      {
-        '내 컨테이너': getMyContainer,
-        '강의 컨테이너': getLectureContainer,
-        '질문 컨테이너': getQuestionContainer,
-      }
+    const CATEGORY: { [key: string]: string } = {
+      '내 컨테이너': 'my',
+      '강의 컨테이너': 'lecture',
+      '질문 컨테이너': 'question',
+    }
 
     const getContainerList = async () => {
-      const fetchContainer = CATEGORY[category]
+      const response = await getContainer(CATEGORY[category])
 
-      if (fetchContainer) {
-        const response = await fetchContainer()
-
-        if (response.success) {
-          setContainerList(response.data || [])
-        } else {
-          console.error('Error fetching containers:', response.error)
-        }
+      if (response.success) {
+        setContainerList(response.data || [])
+      } else {
+        console.error('Error fetching containers:', response.error)
       }
     }
 

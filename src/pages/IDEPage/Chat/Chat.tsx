@@ -78,7 +78,7 @@ const Bubble: React.FC<BubbleProps> = ({
         bg={isHighlighted ? 'yellow.200' : 'green.100'}
         p={2}
         fontSize="small"
-        boxSize="fit-content"
+        w="fit-content"
         borderRadius={6}
         alignSelf="end"
         maxW="70%"
@@ -105,7 +105,7 @@ const Bubble: React.FC<BubbleProps> = ({
           bg={isHighlighted ? 'yellow.200' : 'gray.200'}
           p={2}
           fontSize="small"
-          boxSize="fit-content"
+          w="fit-content"
           borderRadius={6}
           maxW="70%"
         >
@@ -274,7 +274,7 @@ const Chat: React.FC = () => {
         flexDir="column"
         gap={1}
         py={4}
-        overflow="scroll"
+        overflowY="scroll"
         css={{
           '&::-webkit-scrollbar': {
             width: '4px',

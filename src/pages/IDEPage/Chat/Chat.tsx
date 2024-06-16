@@ -52,10 +52,6 @@ interface Message {
   message: string
   senderName: string
 }
-interface PubMessage {
-  messageType: 'TALK' | 'ENTER' | 'EXIT'
-  message: string
-}
 interface BubbleProps {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
   message: string
@@ -129,36 +125,57 @@ const Chat: React.FC = () => {
   const [highlightedIndices, setHighlightedIndices] = useState<number[]>([])
   const messageRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  // WebSocket
+  const handleWebSocketConnect = (client: Client) => {
+    console.log('Connected to WebSocket')
+    setIsConnected(true)
+
+    client.subscribe(`/api/sub/${workspaceId}`, (message: IMessage) => {
+      const newMessage = JSON.parse(message.body) as Message
+      setMessages(prevMessages => [...prevMessages, newMessage])
+    })
+
+    client.publish({
+      destination: `/api/pub/${workspaceId}`,
+      body: JSON.stringify({
+        messageType: 'ENTER',
+        message: '',
+        senderName: username,
+      }),
+    })
+  }
+
+  const handleWebSocketDisconnect = (client: Client) => {
+    console.log('Disconnected from WebSocket')
+    client.publish({
+      destination: `/api/pub/${workspaceId}`,
+      body: JSON.stringify({
+        messageType: 'EXIT',
+        message: '',
+        senderName: username,
+      }),
+    })
+    client.deactivate()
+    setIsConnected(false)
+  }
+
+  // WebSocket 연결 설정
   useEffect(() => {
     const client = new Client({
       brokerURL: `${BASE_URI}/api/ws`,
-      debug: str => {
-        console.debug(str)
+      beforeConnect: () => {
+        console.log('Attempting to connect...')
+      },
+      onConnect: () => handleWebSocketConnect(client),
+      onDisconnect: () => handleWebSocketDisconnect(client),
+      onWebSocketClose: () => {
+        console.log('WebSocket closed')
+        setIsConnected(false)
       },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      beforeConnect: () => {
-        console.log('Attempting to connect...')
-      },
-      onConnect: () => {
-        console.log('Connected to WebSocket')
-        setIsConnected(true)
-
-        client.subscribe(`/api/sub/${workspaceId}`, (message: IMessage) => {
-          const newMessage = JSON.parse(message.body) as Message
-          setMessages(prevMessages => [...prevMessages, newMessage])
-        })
-
-        client.publish({
-          destination: `/api/pub/${workspaceId}`,
-          body: JSON.stringify({
-            messageType: 'ENTER',
-            message: '',
-            senderName: username,
-          }),
-        })
+      debug: str => {
+        console.debug(str)
       },
       onStompError: frame => {
         console.error('Broker reported error: ' + frame.headers['message'])
@@ -166,23 +183,6 @@ const Chat: React.FC = () => {
       },
       onWebSocketError: event => {
         console.error('WebSocket error', event)
-      },
-      onDisconnect: () => {
-        console.log('Disconnected from WebSocket')
-        client.publish({
-          destination: `/api/pub/${workspaceId}`,
-          body: JSON.stringify({
-            messageType: 'EXIT',
-            message: '',
-            senderName: username,
-          }),
-        })
-        client.deactivate()
-        setIsConnected(false)
-      },
-      onWebSocketClose: () => {
-        console.log('WebSocket closed')
-        setIsConnected(false)
       },
     } as StompConfig)
 
@@ -196,7 +196,7 @@ const Chat: React.FC = () => {
     }
   }, [])
 
-  // 검색
+  // 메시지 검색 기능
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setHighlightedIndices([])
@@ -230,16 +230,13 @@ const Chat: React.FC = () => {
     if (!inputMessage.trim() || !isConnected || !clientRef.current) {
       return
     }
-    const message: PubMessage = {
-      messageType: 'TALK',
-      message: inputMessage,
-    }
-
-    const stringifiedMessage = JSON.stringify(message)
 
     clientRef.current?.publish({
       destination: `/api/pub/${workspaceId}`,
-      body: stringifiedMessage,
+      body: JSON.stringify({
+        messageType: 'TALK',
+        message: inputMessage,
+      }),
     })
 
     setInputMessage('')
@@ -312,7 +309,7 @@ const Chat: React.FC = () => {
           ))
         )}
       </Flex>
-      <form onSubmit={e => sendMessage(e)}>
+      <form onSubmit={sendMessage}>
         <Flex gap={2}>
           <Input
             value={inputMessage}

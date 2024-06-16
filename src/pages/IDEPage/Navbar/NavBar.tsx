@@ -14,7 +14,7 @@ import { FiMic } from 'react-icons/fi'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
-  selectSelectedNode,
+  selectCurrentFile,
   setFileExecuteResult,
   toggleChatting,
 } from '@/store/ideSlice'
@@ -25,19 +25,19 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   const toast = useToast()
 
   const dispatch = useAppDispatch()
-  const selectedNode = useAppSelector(selectSelectedNode)
+  const currentFile = useAppSelector(selectCurrentFile)
 
   const saveButtonClick = async () => {
     const response = await saveFile(
       containerId!,
-      selectedNode.id,
-      selectedNode.metadata!.content!
+      currentFile!.id,
+      currentFile!.metadata!.content!
     )
 
     if (response.success) {
       toast({
         title: '파일이 저장되었습니다.',
-        position: 'top',
+        position: 'top-right',
         isClosable: true,
         colorScheme: 'green',
         status: 'success',
@@ -57,8 +57,8 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
 
   const onExecuteButtonClick = async () => {
     const response = await executeFile(
-      getExtension(selectedNode.name),
-      selectedNode.metadata!.content!
+      getExtension(currentFile!.name),
+      currentFile!.metadata!.content!
     )
 
     if (response.success) {

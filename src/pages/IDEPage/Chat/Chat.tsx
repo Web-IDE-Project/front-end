@@ -247,6 +247,7 @@ const Chat: React.FC = () => {
           placeholder="검색"
           value={searchQuery}
           onChange={handleSearchChange}
+          focusBorderColor='green.400'
         />
       </InputGroup>
       <Flex
@@ -297,6 +298,7 @@ const Chat: React.FC = () => {
             type="text"
             placeholder="채팅을 입력하세요"
             bg="white"
+            focusBorderColor='green.400'
           />
           <Button colorScheme="green" type="submit">
             <Image src={send} h="50%" />

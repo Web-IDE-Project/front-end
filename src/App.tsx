@@ -7,18 +7,33 @@ import ContainerPage from './pages/ContainerPage/ContainerPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
 import IDEPage from './pages/IDEPage/IDEPage'
 import LoginHandler from './pages/LoginPage/LoginHandler'
-import { useAppSelector } from './hooks'
-import { selectIsAuthenticated } from './store/userSlice'
+import { useAppDispatch } from './hooks'
 import { useEffect } from 'react'
+import { checkLoginStatus } from './services/user'
+import { login } from '@/store/userSlice'
 
 function App() {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/')
+    const isLogined = async () => {
+      const response = await checkLoginStatus()
+      if (response.success) {
+        const userInfo = response.data?.userInfo
+        dispatch(
+          login({
+            id: userInfo.username,
+            nickname: userInfo.nickname,
+            profileUrl: userInfo.awsS3SavedFileURL,
+          })
+        )
+        navigate('/container/my')
+      } else {
+        navigate('/');
+      }
     }
+    isLogined();
   }, [])
 
   return (

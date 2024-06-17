@@ -147,7 +147,7 @@ const IDEPage = () => {
           </Flex>
 
           {/* SECTION 터미널 영역 */}
-          <Box h={showTerminal ? 200 : 0} overflow="hidden">
+          <Box h={showTerminal ? 200 : 0}>
             <Terminal />
           </Box>
         </Flex>

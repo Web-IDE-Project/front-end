@@ -250,14 +250,9 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
   const handleDeleteEntry = async () => {
     const response = await deleteEntry(containerId!, contextClickElementId)
 
-    if (response.success) {
-      const newTree = tree!.filter(
-        node =>
-          node.id !== contextClickElementId &&
-          node.parent !== contextClickElementId
-      )
-
-      dispatch(setTree(newTree))
+    if (response.success && response.data) {
+      const newTree = flattenTree(response.data)
+      dispatch(setTree(newTree as Tree))
     } else {
       toast({
         title: '삭제 실패',

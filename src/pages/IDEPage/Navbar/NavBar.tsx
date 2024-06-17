@@ -56,6 +56,10 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
   }
 
   const onExecuteButtonClick = async () => {
+    if (currentFile?.metadata?.content === null) {
+      return
+    }
+
     const response = await executeFile(
       getExtension(currentFile!.name),
       currentFile!.metadata!.content!

@@ -18,7 +18,8 @@ function App() {
 
   useEffect(() => {
     const isLogined = async () => {
-      const response = await checkLoginStatus()
+      try {
+        const response = await checkLoginStatus()
       if (response.success) {
         const userInfo = response.data?.userInfo
         dispatch(
@@ -31,6 +32,9 @@ function App() {
         navigate('/container/my')
       } else {
         navigate('/');
+      }
+      } catch (error) {
+        console.error('Error:', error)
       }
     }
     isLogined();

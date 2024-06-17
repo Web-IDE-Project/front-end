@@ -2,11 +2,15 @@ import { PlusSquareIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, FormControl, FormLabel, Image, Input, Text, Box } from "@chakra-ui/react";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import API from "@/services/API";
+import Modal from "@/components/Modal";
 
 interface FormValues {
+    profileImage: FileList | null;
     nickname: string;
-    password: string;
-    confirmPassword: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
 };
 
 const ERROR_MESSAGES = {
@@ -19,152 +23,207 @@ const ERROR_MESSAGES = {
 }
 
 const Setting = () => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
+    const [changePassword, setChangePassword] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [errorPassword, setErrorPassword] = useState(false);
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
         defaultValues: {
+            profileImage: null,
             nickname: 'nickname',
-            password: '',
-            confirmPassword: ''
+            currentPassword: '',
+            newPassword: '',
+            confirmNewPassword: '',
         }
     });
-    const [changePassword, setChangePassword] = useState(false);
 
-    const onSubmit: SubmitHandler<FormValues> = data => {
-        console.log(data);
-        alert('유저 정보가 변경되었습니다.');
+    const onSubmit: SubmitHandler<FormValues> = async (data) => {
+        console.log('data', data);
     };
 
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+        setValue('currentPassword', '');
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setValue('currentPassword', '');
+    }
+
+    const handleConfirm = async () => {
+        try {
+            const response = await API.post('/api/auth/password', { password: watch('currentPassword') });
+
+            if (response.status === 200) {
+                setChangePassword(true);
+                setErrorPassword(false);
+            }
+        } catch (error: any) {
+            if (error.response?.status === 401) {
+                setErrorPassword(true);
+            } else {
+                alert(error.message);
+            }
+        } finally {
+            setIsModalOpen(false);
+        }
+    }
+
     return (
-        <Flex flexDir='column' p={16} h='full' as="form" onSubmit={handleSubmit(onSubmit)}>
-            <Flex flexDir='column' align='center' position='relative'>
-                <Box
-                    position='relative'
-                    onClick={() => alert('프로필 이미지 변경')}
-                    cursor='pointer'
-                    _hover={{
-                        '& img': {
-                            filter: 'brightness(0.7)',
-                            transition: 'filter 0.3s',
-                        },
-                        '& svg': {
-                            filter: 'brightness(0.7)',
-                            transition: 'filter 0.3s',
-                        }
-                    }}
-                >
-                    <Image
-                        src="https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/cnoC/image/Lc-6Nyq5qvRh6Aadda7a1mxqsO8"
-                        alt="profile image"
-                        boxSize='200px'
-                        objectFit='cover'
-                        borderRadius='full'
-                        mb={4}
-                    />
-                    <PlusSquareIcon
-                        boxSize={10}
-                        color='gray.400'
-                        position='absolute'
-                        bottom={4}
-                        right={4}
-                    />
-                </Box>
-                <Button colorScheme="red" variant='outline' onClick={() => alert('프로필 이미지 삭제')}>이미지 삭제</Button>
-            </Flex>
-
-            <Divider marginY={8} />
-
-            <Flex my={4}>
-                <Text fontWeight='500' mr={4}>아이디</Text>
-                <Text>username</Text>
-            </Flex>
-
-            <FormControl my={4}>
-                <Flex align='center'>
-                    <FormLabel htmlFor="nickname" mb="0" mr={4}>닉네임</FormLabel>
-                    <Input
-                        id="nickname"
-                        type="text"
-                        {...register("nickname", {
-                            required: ERROR_MESSAGES.REQUIRED,
-                            pattern: {
-                                value: /^[가-힣a-zA-Z0-9]{2,20}$/,
-                                message: ERROR_MESSAGES.NICKNAME_INVALID,
+        <Flex as="form" onSubmit={handleSubmit(onSubmit)} flexDir='column' p={16} h='full' align='center'>
+            <Flex flexDir='column' w={600} h='full'>
+                <Flex flexDir='column' align='center' position='relative' >
+                    <Box
+                        position='relative'
+                        onClick={() => alert('프로필 이미지 변경')}
+                        cursor='pointer'
+                        _hover={{
+                            '& img': {
+                                filter: 'brightness(0.7)',
+                                transition: 'filter 0.3s',
                             },
-                            minLength: {
-                                value: 2,
-                                message: ERROR_MESSAGES.NICKNAME_LENGTH,
-                            },
-                            maxLength: {
-                                value: 20,
-                                message: ERROR_MESSAGES.NICKNAME_LENGTH,
-                            },
-                        })}
-                        focusBorderColor="green.400"
-                        flex={1}
-                    />
+                            '& svg': {
+                                filter: 'brightness(0.7)',
+                                transition: 'filter 0.3s',
+                            }
+                        }}
+                    >
+                        <Image
+                            src="https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/cnoC/image/Lc-6Nyq5qvRh6Aadda7a1mxqsO8"
+                            alt="profile image"
+                            boxSize='200px'
+                            objectFit='cover'
+                            borderRadius='full'
+                            mb={4}
+                        />
+                        <PlusSquareIcon
+                            boxSize={10}
+                            color='gray.400'
+                            position='absolute'
+                            bottom={4}
+                            right={4}
+                        />
+                    </Box>
+                    <Button colorScheme="red" variant='outline' onClick={() => alert('프로필 이미지 삭제')}>이미지 삭제</Button>
                 </Flex>
-                {errors.nickname && <Text color="tomato">{errors.nickname.message}</Text>}
-            </FormControl>
 
-            <Flex justifyContent='space-between' align='center' my={4}>
-                <Text fontWeight='500'>비밀번호</Text>
-                {!changePassword &&
-                    <Button colorScheme="green" variant='outline' onClick={() => setChangePassword(true)}>비밀번호 변경</Button>
-                }
-                {changePassword &&
-                    <Button colorScheme="red" variant='outline' onClick={() => setChangePassword(false)}>취소</Button>
-                }
-            </Flex>
+                <Divider marginY={8} />
 
-            {changePassword &&
+                <Flex my={4}>
+                    <Text fontWeight='500' mr={4}>아이디</Text>
+                    <Text>username</Text>
+                </Flex>
+
                 <FormControl my={4}>
-                    <Box mb={2}>
-                        <FormLabel htmlFor="password">새 비밀번호</FormLabel>
+                    <Flex align='center'>
+                        <FormLabel htmlFor="nickname" mb="0" mr={4}>닉네임</FormLabel>
                         <Input
-                            id="password"
-                            type="password"
-                            {...register("password", {
+                            id="nickname"
+                            type="text"
+                            {...register("nickname", {
                                 required: ERROR_MESSAGES.REQUIRED,
                                 pattern: {
-                                    value:
-                                        /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+])(?=.*[0-9]).{8,15}$/,
-                                    message: ERROR_MESSAGES.PASSWORD_INVALID,
+                                    value: /^[가-힣a-zA-Z0-9]{2,20}$/,
+                                    message: ERROR_MESSAGES.NICKNAME_INVALID,
                                 },
                                 minLength: {
-                                    value: 8,
-                                    message: ERROR_MESSAGES.PASSWORD_LENGTH,
+                                    value: 2,
+                                    message: ERROR_MESSAGES.NICKNAME_LENGTH,
                                 },
                                 maxLength: {
                                     value: 20,
-                                    message: ERROR_MESSAGES.PASSWORD_LENGTH,
+                                    message: ERROR_MESSAGES.NICKNAME_LENGTH,
                                 },
                             })}
                             focusBorderColor="green.400"
                             flex={1}
                         />
-                        {errors.password && <Text color="tomato">{errors.password.message}</Text>}
-                    </Box>
-
-                    <Box>
-                        <FormLabel htmlFor="confirmPassword">새 비밀번호 확인</FormLabel>
-                        <Input
-                            id="confirmPassword"
-                            type="password"
-                            {...register("confirmPassword", {
-                                required: ERROR_MESSAGES.REQUIRED,
-                                validate: value =>
-                                    value === watch('password') || ERROR_MESSAGES.PASSWORD_MATCH,
-                            })}
-                            focusBorderColor="green.400"
-                            flex={1}
-                        />
-                        {errors.confirmPassword && <Text color="tomato">{errors.confirmPassword.message}</Text>}
-                    </Box>
+                    </Flex>
+                    {errors.nickname && <Text color="tomato">{errors.nickname.message}</Text>}
                 </FormControl>
-            }
 
-            <Flex flexGrow={1} />
+                <Box my={4}>
+                    <Flex justifyContent='space-between' align='center'>
+                        <Text fontWeight='500'>비밀번호</Text>
+                        {!changePassword &&
+                            <Button colorScheme="green" variant='outline' onClick={handleOpenModal}>비밀번호 변경</Button>
+                        }
+                        {changePassword &&
+                            <Button colorScheme="red" variant='outline' onClick={() => setChangePassword(false)}>취소</Button>
+                        }
+                        <Modal
+                            isOpen={isModalOpen}
+                            onClose={handleCloseModal}
+                            title='현재 비밀번호를 입력하세요'
+                            cancelMessage="취소"
+                            confirmMessage="확인"
+                            confirmCallback={handleConfirm}
+                            confirmButtonColorScheme="green"
+                        >
+                            <Input
+                                {...register('currentPassword', {
+                                    required: ERROR_MESSAGES.REQUIRED,
+                                })}
+                                type="password"
+                                placeholder="비밀번호"
+                                focusBorderColor="green.400"
+                            />
+                        </Modal>
+                    </Flex>
+                    {errorPassword && <Text color='tomato'>입력하신 비밀번호가 올바르지 않습니다.</Text>}
+                </Box>
 
-            <Button colorScheme="green" type="submit">유저 정보 변경하기</Button>
+                {changePassword &&
+                    <FormControl my={4}>
+                        <Box mb={2}>
+                            <FormLabel htmlFor="newPassword">새 비밀번호</FormLabel>
+                            <Input
+                                id="newPassword"
+                                type="password"
+                                {...register("newPassword", {
+                                    required: ERROR_MESSAGES.REQUIRED,
+                                    pattern: {
+                                        value:
+                                            /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+-=])(?=.*[0-9]).{8,15}$/,
+                                        message: ERROR_MESSAGES.PASSWORD_INVALID,
+                                    },
+                                    minLength: {
+                                        value: 8,
+                                        message: ERROR_MESSAGES.PASSWORD_LENGTH,
+                                    },
+                                    maxLength: {
+                                        value: 20,
+                                        message: ERROR_MESSAGES.PASSWORD_LENGTH,
+                                    },
+                                })}
+                                focusBorderColor="green.400"
+                                flex={1}
+                            />
+                            {errors.newPassword && <Text color="tomato">{errors.newPassword.message}</Text>}
+                        </Box>
+
+                        <Box>
+                            <FormLabel htmlFor="confirmNewPassword">새 비밀번호 확인</FormLabel>
+                            <Input
+                                id="confirmNewPassword"
+                                type="password"
+                                {...register("confirmNewPassword", {
+                                    required: ERROR_MESSAGES.REQUIRED,
+                                    validate: value =>
+                                        value === watch('newPassword') || ERROR_MESSAGES.PASSWORD_MATCH,
+                                })}
+                                focusBorderColor="green.400"
+                                flex={1}
+                            />
+                            {errors.confirmNewPassword && <Text color="tomato">{errors.confirmNewPassword.message}</Text>}
+                        </Box>
+                    </FormControl>
+                }
+
+                <Flex flexGrow={1} />
+
+                <Button colorScheme="green" type="submit">유저 정보 변경하기</Button>
+            </Flex>
         </Flex>
     );
 }

@@ -11,37 +11,8 @@ import {
   Image,
 } from '@chakra-ui/react'
 import React, { FormEvent, useEffect, useRef, useState } from 'react'
-import { StompConfig, Client, IMessage } from '@stomp/stompjs'
+import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
-
-// 테스트 데이터
-const data: Message[] = [
-  {
-    messageType: 'ENTER',
-    senderName: 'sender',
-    message: '[알림] 코딩 고수님이 입장하셨습니다.',
-  },
-  {
-    messageType: 'TALK',
-    senderName: '코딩 고수',
-    message: '마이크 허용해주시면 직접 설명해드릴게요!',
-  },
-  {
-    messageType: 'TALK',
-    senderName: 'me',
-    message: '감사합니다!!',
-  },
-  {
-    messageType: 'TALK',
-    senderName: 'me',
-    message: '허용해드렸으니 확인 부탁드려요~',
-  },
-  {
-    messageType: 'EXIT',
-    senderName: 'sender',
-    message: '[알림] 코딩 고수님이 퇴장하셨습니다.',
-  },
-]
 
 const BASE_URI: string = 'ws://localhost:8080'
 const workspaceId: number = 1 // props로 값 받을 예정
@@ -117,9 +88,10 @@ const Bubble: React.FC<BubbleProps> = ({
 }
 
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>(data)
+  const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
   const [isConnected, setIsConnected] = useState(false)
+  const [subscriberCount, setSubscriberCount] = useState(0)
   const clientRef = useRef<Client | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [highlightedIndices, setHighlightedIndices] = useState<number[]>([])
@@ -129,29 +101,37 @@ const Chat: React.FC = () => {
     console.log('Connected to WebSocket')
     setIsConnected(true)
 
-    client.subscribe(`/api/sub/${workspaceId}`, (message: IMessage) => {
+    client.subscribe(`/api/sub/chat/${workspaceId}`, (message: IMessage) => {
       const newMessage = JSON.parse(message.body) as Message
       setMessages(prevMessages => [...prevMessages, newMessage])
     })
 
     client.publish({
-      destination: `/api/pub/${workspaceId}`,
+      destination: `/api/pub/chat/${workspaceId}`,
       body: JSON.stringify({
         messageType: 'ENTER',
         message: '',
-        senderName: username,
       }),
     })
+    
+    client.subscribe(`/api/sub/chat/${workspaceId}/count`, (message: IMessage) => {
+      setSubscriberCount(parseInt(message.body, 10));
+    });
+
+    client.publish({
+      destination: `/api/pub/chat/${workspaceId}/count`,
+      body: '',
+    });
   }
 
   const handleWebSocketDisconnect = (client: Client) => {
     console.log('Disconnected from WebSocket')
+
     client.publish({
-      destination: `/api/pub/${workspaceId}`,
+      destination: `/api/pub/chat/${workspaceId}`,
       body: JSON.stringify({
         messageType: 'EXIT',
         message: '',
-        senderName: username,
       }),
     })
     client.deactivate()
@@ -184,7 +164,7 @@ const Chat: React.FC = () => {
       onWebSocketError: event => {
         console.error('WebSocket error', event)
       },
-    } as StompConfig)
+    })
 
     client.activate()
     clientRef.current = client
@@ -232,7 +212,7 @@ const Chat: React.FC = () => {
     }
 
     clientRef.current?.publish({
-      destination: `/api/pub/${workspaceId}`,
+      destination: `/api/pub/chat/${workspaceId}`,
       body: JSON.stringify({
         messageType: 'TALK',
         message: inputMessage,
@@ -256,7 +236,7 @@ const Chat: React.FC = () => {
       bg="gray.50"
     >
       <Text fontSize="small" mb={2} color="gray.700">
-        채팅(참여인원)
+        채팅({subscriberCount})
       </Text>
       <InputGroup bg="white" mb={2}>
         <InputLeftElement pointerEvents="none">

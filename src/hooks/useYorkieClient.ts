@@ -3,11 +3,17 @@ import { TreeNode } from '@/models/entry'
 import { selectTree, setTree } from '@/store/ideSlice'
 import { selectId, selectNickname } from '@/store/userSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import yorkie, { Document, Client, JSONArray, Indexable } from 'yorkie-js-sdk'
+import yorkie, {
+  Document,
+  Client,
+  JSONArray,
+  Indexable,
+  JSONObject,
+} from 'yorkie-js-sdk'
 
 export type ContainerDoc = {
   tree: JSONArray<TreeNode>
-  users: { [key: string]: string }
+  users: JSONObject<{ [key: string]: string }>
 }
 
 const useYorkieClient = (containerId: string) => {
@@ -97,7 +103,7 @@ const useYorkieClient = (containerId: string) => {
 
   // local 조작에 의해 tree 상태가 바뀌면 remote 문서를 update
   useEffect(() => {
-    if (docRef.current !== undefined && tree !== null) {
+    if (docRef.current !== undefined && tree) {
       const remoteTree = `[${docRef.current.getRoot().tree.toString()}]`
 
       // local에서 바꾼 경우, 이어지는 remote change에 의해 순환상태에 빠지는 걸 막기 위한 return문

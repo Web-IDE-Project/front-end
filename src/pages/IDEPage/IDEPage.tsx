@@ -152,6 +152,7 @@ const IDEPage = () => {
             </Breadcrumb>
           </Box>
           <Flex grow={1}>
+            {/* TODO - language 동적으로 수정 */}
             <CodeEditor language="javascript" containerId={containerId} />
           </Flex>
 

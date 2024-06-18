@@ -5,7 +5,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import API from "@/services/API";
 import Modal from "@/components/Modal";
 import { useAppSelector } from "@/hooks";
-import { selectId, selectNickname, selectProfileUrl } from "@/store/userSlice";
+import { selectId, selectNickname, selectProfileUrl, setNickName, setProfileUrl } from "@/store/userSlice";
+import { checkLoginStatus } from "@/services/user";
+import { useDispatch } from "react-redux";
 
 interface FormValues {
     nickname: string;
@@ -24,12 +26,13 @@ const ERROR_MESSAGES = {
 }
 
 const Setting = () => {
+    const dispatch = useDispatch();
     const username = useAppSelector(selectId);
     const [profileImage, setProfileImage] = useState({
-        profileImage: null as string | null,
+        profileImage: null as File | null,
         previewProfileImage: useAppSelector(selectProfileUrl) as string | null,
     });
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [changePassword, setChangePassword] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errorPassword, setErrorPassword] = useState(false);
@@ -42,16 +45,47 @@ const Setting = () => {
         }
     });
 
-    // 유저 정보 변경하기 버튼 클릭
     const onSubmit: SubmitHandler<FormValues> = async (data) => {
-        const requestData = JSON.stringify({
-            nickname: data.nickname || null,
-            password: data.newPassword || null,
-        })
-        const formData = new FormData();
-        formData.append('updateMemberRequestDTO', requestData);
-        formData.append('profileImage', profileImage?.profileImage);
-        setChangePassword(false);
+        try {
+            const requestData = JSON.stringify({
+                nickname: data.nickname || null,
+                password: data.newPassword || null,
+            });
+    
+            const formData = new FormData();
+            formData.append('updateMemberRequestDTO', requestData);
+            if (profileImage?.profileImage) {
+                formData.append('profileImage', profileImage.profileImage);
+            }
+    
+            const response = await API.put('/api/member', formData);
+            
+            if (response.status === 200) {
+                alert('수정이 완료되었습니다.');
+    
+                const userStatus = await checkLoginStatus();
+    
+                if (userStatus.success) {
+                    const userInfo = userStatus.data?.userInfo;
+    
+                    if (userInfo) {
+                        dispatch(setNickName(userInfo.nickname));
+                        dispatch(setProfileUrl(userInfo.profileUrl));
+                    } else {
+                        alert('유저 정보를 불러오는데 오류가 발생했습니다.');
+                    }
+                } else {
+                    alert('유저 정보를 불러오는데 오류가 발생했습니다.');
+                }
+            } else {
+                alert('수정이 정상적으로 완료되지 않았습니다.');
+            }
+    
+            setChangePassword(false);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('수정이 정상적으로 완료되지 않았습니다.');
+        }
     };
 
     const handleOpenModal = () => {
@@ -105,13 +139,13 @@ const Setting = () => {
     };
 
     return (
-        <Flex  flexDir='column' p={16} h='full' align='center'>
+        <Flex flexDir='column' p={16} h='full' align='center'>
             <Flex flexDir='column' w={600} h='full' as="form" onSubmit={handleSubmit(onSubmit)}>
                 <Flex flexDir='column' align='center' position='relative' >
                     <Input type="file" ref={fileInputRef} onChange={changeProfileImage} accept='image/png, image/jpeg, image/jpg' display='none' />
                     <Box
                         position='relative'
-                        onClick={() => fileInputRef.current.click()}
+                        onClick={() => fileInputRef.current?.click()}
                         cursor='pointer'
                         _hover={{
                             '& img': {
@@ -194,9 +228,7 @@ const Setting = () => {
                             confirmButtonColorScheme="green"
                         >
                             <Input
-                                {...register('currentPassword', {
-                                    // required: ERROR_MESSAGES.REQUIRED,
-                                })}
+                                {...register('currentPassword')}
                                 type="password"
                                 placeholder="비밀번호"
                                 focusBorderColor="green.400"
@@ -214,7 +246,6 @@ const Setting = () => {
                                 id="newPassword"
                                 type="password"
                                 {...register("newPassword", {
-                                    // required: ERROR_MESSAGES.REQUIRED,
                                     pattern: {
                                         value:
                                             /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+-=])(?=.*[0-9]).{8,15}$/,
@@ -241,7 +272,6 @@ const Setting = () => {
                                 id="confirmNewPassword"
                                 type="password"
                                 {...register("confirmNewPassword", {
-                                    // required: ERROR_MESSAGES.REQUIRED,
                                     validate: value =>
                                         value === watch('newPassword') || ERROR_MESSAGES.PASSWORD_MATCH,
                                 })}

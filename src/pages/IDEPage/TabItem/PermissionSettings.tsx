@@ -1,7 +1,14 @@
 import { Flex, Text } from '@chakra-ui/react'
 import UserItem from './UserItem'
+import { Document, Indexable } from 'yorkie-js-sdk'
+import { ContainerDoc } from '@/hooks/useYorkieClient'
+import { useEffect } from 'react'
 
-const PermissionSettings = () => {
+const PermissionSettings = ({
+  docRef,
+}: {
+  docRef: React.MutableRefObject<Document<ContainerDoc, Indexable> | undefined>
+}) => {
   const userList = [
     {
       id: 1,
@@ -25,6 +32,12 @@ const PermissionSettings = () => {
       isEditAllow: true,
     },
   ]
+
+  if (docRef && docRef.current) {
+    docRef.current.subscribe('presence', event => {
+      console.log(docRef!.current!.getPresences())
+    })
+  }
 
   return (
     <>

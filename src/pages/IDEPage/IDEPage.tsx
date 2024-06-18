@@ -33,6 +33,7 @@ import { Tree, nodeMetadata } from '@/models/entry.ts'
 // @ts-ignore
 // import entries from '@/data/file-system-entry.json'
 import Chat from './Chat/Chat.tsx'
+import useYorkieClient from '@/hooks/useYorkieClient.ts'
 
 const IDEPage = () => {
   const { containerId } = useParams()
@@ -42,6 +43,12 @@ const IDEPage = () => {
   const showExplorer = useAppSelector(selectShowExplorer)
   const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
   const showChatting = useAppSelector(selectShowChatting)
+
+  const {
+    clientRef,
+    docRef,
+    isLoading: isExplorerLoading,
+  } = useYorkieClient(containerId!)
 
   // TODO - 서버와 연동 후 주석 삭제
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -91,7 +98,7 @@ const IDEPage = () => {
     }
   }, [containerId])
 
-  if (isLoading) {
+  if (isLoading || isExplorerLoading) {
     // 로딩 중일 때 보여줄 UI
     return <Loading />
   }
@@ -118,7 +125,7 @@ const IDEPage = () => {
             <Explorer containerId={containerId} />
           </Box>
           <Box display={showPermissionSettings ? 'block' : 'none'}>
-            <PermissionSettings />
+            <PermissionSettings docRef={docRef || null} />
           </Box>
         </Box>
 

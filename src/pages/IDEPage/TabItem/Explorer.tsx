@@ -269,7 +269,7 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
 
   return (
     <>
-      <ExplorerState containerId={containerId} />
+      {/* <ExplorerState containerId={containerId} /> */}
       <Flex align="center">
         <Text fontSize="sm">탐색기</Text>
         <Spacer />

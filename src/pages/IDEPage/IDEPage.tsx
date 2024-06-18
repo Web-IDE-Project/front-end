@@ -29,7 +29,9 @@ import PermissionSettings from './TabItem/PermissionSettings.tsx'
 import { flattenTree } from 'react-accessible-treeview'
 import { Tree, nodeMetadata } from '@/models/entry.ts'
 // NOTE - 테스트용 파일 리스트
-import entries from '@/data/file-system-entry.json'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-ignore
+// import entries from '@/data/file-system-entry.json'
 import Chat from './Chat/Chat.tsx'
 
 const IDEPage = () => {

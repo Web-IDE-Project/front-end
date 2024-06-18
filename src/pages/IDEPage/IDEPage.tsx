@@ -21,6 +21,8 @@ import {
   selectShowExplorer,
   selectShowPermissionSettings,
   selectShowTerminal,
+  setCurrentFile,
+  setSelectedNode,
   setTree,
 } from '@/store/ideSlice'
 import PermissionSettings from './TabItem/PermissionSettings.tsx'
@@ -49,8 +51,8 @@ const IDEPage = () => {
     let isCancelled = false
 
     // TODO - 테스트용 코드
-    const tree = flattenTree<nodeMetadata>(entries as any)
-    dispatch(setTree(tree as Tree))
+    // const tree = flattenTree<nodeMetadata>(entries as any)
+    // dispatch(setTree(tree as Tree))
 
     // TODO - 서버와 연동 후 주석 삭제
     /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -64,6 +66,11 @@ const IDEPage = () => {
         if (!isCancelled && response.success) {
           const tree = flattenTree<nodeMetadata>(response.data!)
           dispatch(setTree(tree as Tree))
+
+          if (tree.length > 1) {
+            dispatch(setCurrentFile(tree[1]))
+            dispatch(setSelectedNode(tree[1]))
+          }
         } else {
           console.log('Error fetching file system entries', response.error)
         }
@@ -75,7 +82,7 @@ const IDEPage = () => {
     setIsLoading(false)
 
     // TODO - 서버와 연동 후 주석 삭제
-    // startContainerRequest()
+    startContainerRequest()
 
     return () => {
       isCancelled = true
@@ -140,7 +147,7 @@ const IDEPage = () => {
           </Flex>
 
           {/* SECTION 터미널 영역 */}
-          <Box h={showTerminal ? 200 : 0} overflow="hidden">
+          <Box h={showTerminal ? 200 : 0}>
             <Terminal />
           </Box>
         </Flex>

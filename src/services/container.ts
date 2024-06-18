@@ -9,7 +9,8 @@ export async function createContainer(
   title: string,
   description: string,
   language: string
-): Promise<ApiResponse<Omit<Container, 'id'>>> {
+): Promise<ApiResponse<number>> {
+  // TODO - 서버 API 명세서 수정 후 다시 확인
   try {
     const response: AxiosResponse = await API.post(`/api/workspaces`, {
       title,
@@ -58,7 +59,7 @@ export async function getContainer(
 ): Promise<ApiResponse<Container[]>> {
   try {
     const response: AxiosResponse<Container[]> = await API.get(
-      `/api/workspace/${category}`
+      `/api/workspaces/${category}/get`
     )
 
     return {

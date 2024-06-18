@@ -1,7 +1,7 @@
 export interface userInfo {
   username: string
   nickname: string
-  profileUrl: string
+  awsS3SavedFileURL: string
 }
 
 export interface loginResponse {

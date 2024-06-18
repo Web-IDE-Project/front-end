@@ -13,12 +13,7 @@ import { LanguageSupport } from '@codemirror/language'
 import { showMinimap } from '@replit/codemirror-minimap'
 import yorkie, { type Text } from 'yorkie-js-sdk'
 import { useAppDispatch, useAppSelector } from '@/hooks'
-import {
-  selectCurrentFile,
-  selectSelectedNode,
-  setCurrentFile,
-  setSelectedNode,
-} from '@/store/ideSlice'
+import { selectCurrentFile, setCurrentFile } from '@/store/ideSlice'
 
 type YorkieDoc = {
   content: Text
@@ -54,7 +49,7 @@ const CodeEditor = ({
 
     // 2. 클라이언트와 연결된 문서 생성
     const doc = new yorkie.Document<YorkieDoc>(
-      `${containerId}-${currentFile?.id}-${new Date()
+      `File-${containerId}-${currentFile?.id}-${new Date()
         .toISOString()
         .substring(0, 10)
         .replace(/-/g, '')}`,
@@ -70,8 +65,18 @@ const CodeEditor = ({
       if (!root.content) {
         root.content = new yorkie.Text()
 
-        // TODO - 기존에 저장된 코드 삽입
+        // 기존에 저장된 코드 삽입
         root.content.edit(0, 0, currentFile?.metadata?.content || '')
+      } else {
+        dispatch(
+          setCurrentFile({
+            ...currentFile!,
+            metadata: {
+              isDirectory: false,
+              content: root.content.toString(),
+            },
+          })
+        )
       }
     }, 'create content if not exists')
 

@@ -1,16 +1,17 @@
 import { PlusSquareIcon } from "@chakra-ui/icons";
-import { Button, Divider, Flex, FormControl, FormLabel, Image, Input, Text, Box } from "@chakra-ui/react";
-import { useState } from "react";
+import { Button, Divider, Flex, FormControl, FormLabel, Input, Text, Box, Avatar } from "@chakra-ui/react";
+import React, { useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import API from "@/services/API";
 import Modal from "@/components/Modal";
+import { useAppSelector } from "@/hooks";
+import { selectId, selectNickname, selectProfileUrl } from "@/store/userSlice";
 
 interface FormValues {
-    profileImage: FileList | null;
     nickname: string;
     currentPassword: string;
-    newPassword: string;
-    confirmNewPassword: string;
+    newPassword: string | null;
+    confirmNewPassword: string | null;
 };
 
 const ERROR_MESSAGES = {
@@ -23,21 +24,38 @@ const ERROR_MESSAGES = {
 }
 
 const Setting = () => {
+    const username = useAppSelector(selectId);
+    const [profileImage, setProfileImage] = useState({
+        profileImage: useAppSelector(selectProfileUrl) as string | null,
+        previewProfileImage: useAppSelector(selectProfileUrl) as string | null,
+    });
+    const fileInputRef = useRef(null);
     const [changePassword, setChangePassword] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errorPassword, setErrorPassword] = useState(false);
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
         defaultValues: {
-            profileImage: null,
-            nickname: 'nickname',
+            nickname: useAppSelector(selectNickname),
             currentPassword: '',
-            newPassword: '',
-            confirmNewPassword: '',
+            newPassword: null,
+            confirmNewPassword: null,
         }
     });
 
+    // 유저 정보 변경하기 버튼 클릭
     const onSubmit: SubmitHandler<FormValues> = async (data) => {
-        console.log('data', data);
+        console.log('유저 정보 변경하기 버튼 클릭');
+        const requestData = JSON.stringify({
+            nickname: data.nickname || null,
+            password: data.newPassword || null,
+        })
+        console.log('reqData:', requestData);
+        const formData = new FormData();
+        formData.append('updateMemberRequestDTO', requestData);
+        formData.append('profileImage', profileImage?.profileImage);
+        console.log('profileImage:', profileImage);
+
+        console.log('data', formData);
     };
 
     const handleOpenModal = () => {
@@ -69,13 +87,35 @@ const Setting = () => {
         }
     }
 
+    const changeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const profileImageFile = e.target.files?.[0];
+        if (profileImageFile) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setProfileImage({
+                    profileImage: profileImageFile,
+                    previewProfileImage: reader.result as string,
+                });
+            };
+            reader.readAsDataURL(profileImageFile);
+        }
+    };
+
+    const deleteProfileImage = () => {
+        setProfileImage({
+            profileImage: null,
+            previewProfileImage: null,
+        });
+    };
+
     return (
         <Flex as="form" onSubmit={handleSubmit(onSubmit)} flexDir='column' p={16} h='full' align='center'>
             <Flex flexDir='column' w={600} h='full'>
                 <Flex flexDir='column' align='center' position='relative' >
+                    <Input type="file" ref={fileInputRef} onChange={changeProfileImage} accept='image/png, image/jpeg, image/jpg' display='none' />
                     <Box
                         position='relative'
-                        onClick={() => alert('프로필 이미지 변경')}
+                        onClick={() => fileInputRef.current.click()}
                         cursor='pointer'
                         _hover={{
                             '& img': {
@@ -88,30 +128,23 @@ const Setting = () => {
                             }
                         }}
                     >
-                        <Image
-                            src="https://img1.daumcdn.net/thumb/R1280x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/user/cnoC/image/Lc-6Nyq5qvRh6Aadda7a1mxqsO8"
-                            alt="profile image"
-                            boxSize='200px'
-                            objectFit='cover'
-                            borderRadius='full'
-                            mb={4}
-                        />
+                        <Avatar boxSize={200} src={profileImage.previewProfileImage} mb={4} />
                         <PlusSquareIcon
-                            boxSize={10}
-                            color='gray.400'
+                            boxSize={8}
+                            color='gray.600'
                             position='absolute'
-                            bottom={4}
-                            right={4}
+                            bottom={6}
+                            right={3}
                         />
                     </Box>
-                    <Button colorScheme="red" variant='outline' onClick={() => alert('프로필 이미지 삭제')}>이미지 삭제</Button>
+                    <Button colorScheme="red" variant='outline' onClick={() => deleteProfileImage()}>이미지 삭제</Button>
                 </Flex>
 
                 <Divider marginY={8} />
 
                 <Flex my={4}>
                     <Text fontWeight='500' mr={4}>아이디</Text>
-                    <Text>username</Text>
+                    <Text>{username}</Text>
                 </Flex>
 
                 <FormControl my={4}>
@@ -149,7 +182,11 @@ const Setting = () => {
                             <Button colorScheme="green" variant='outline' onClick={handleOpenModal}>비밀번호 변경</Button>
                         }
                         {changePassword &&
-                            <Button colorScheme="red" variant='outline' onClick={() => setChangePassword(false)}>취소</Button>
+                            <Button colorScheme="red" variant='outline' onClick={() => {
+                                setChangePassword(false)
+                                setValue('newPassword', null);
+                                setValue('confirmNewPassword', null);
+                            }}>취소</Button>
                         }
                         <Modal
                             isOpen={isModalOpen}

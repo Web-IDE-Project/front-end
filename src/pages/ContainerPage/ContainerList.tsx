@@ -16,7 +16,12 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import Modal from '@/components/Modal'
+// NOTE - 테스트용 데이터
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-ignore
 // import public_container from '@/data/public-container-list.json'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-ignore
 // import private_container from '@/data/private-container-list.json'
 import ContainerItem from './ContainerItem'
 import { useEffect, useState } from 'react'

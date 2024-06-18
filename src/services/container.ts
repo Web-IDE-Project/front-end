@@ -74,3 +74,33 @@ export async function getContainer(
     }
   }
 }
+
+/** 컨테이너 정보 수정(공유) API */
+export async function editContainerInfo(
+  containerId: string,
+  title: string,
+  description: string,
+  category: string
+): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response: AxiosResponse<{ message: string }> = await API.put(
+      `/api/workspaces/${containerId}`,
+      {
+        title: title,
+        description: description,
+        category: category,
+      }
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}

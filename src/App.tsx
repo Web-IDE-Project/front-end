@@ -6,7 +6,8 @@ import OauthLoginHandler from './pages/LoginPage/OauthLoginHandler'
 import ContainerPage from './pages/ContainerPage/ContainerPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
 import IDEPage from './pages/IDEPage/IDEPage'
-import LoginHandler from './pages/LoginPage/LoginHandler'
+import { useAppSelector } from './hooks'
+import { selectIsAuthenticated } from './store/userSlice'
 import { useEffect } from 'react'
 import { useAppDispatch } from './hooks'
 import { checkLoginStatus } from './services/user'
@@ -44,7 +45,6 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/login-handler" element={<LoginHandler />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/login/oauth/callback" element={<OauthLoginHandler />} />
       <Route path="/container" element={<ContainerPage />}>

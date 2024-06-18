@@ -12,8 +12,8 @@ import './code-editor.css'
 import { LanguageSupport } from '@codemirror/language'
 import { showMinimap } from '@replit/codemirror-minimap'
 import yorkie, { type Text } from 'yorkie-js-sdk'
-import { useAppSelector } from '@/hooks'
-import { selectSelectedNode } from '@/store/ideSlice'
+import { useAppDispatch, useAppSelector } from '@/hooks'
+import { selectCurrentFile, setCurrentFile } from '@/store/ideSlice'
 
 type YorkieDoc = {
   content: Text
@@ -36,9 +36,8 @@ const CodeEditor = ({
   const editorRef = useRef<HTMLDivElement>(null)
   const codemirrorViewRef = useRef<EditorView>()
 
-  const currentFileId = useAppSelector(selectSelectedNode).id
-  const currentFileContent =
-    useAppSelector(selectSelectedNode).metadata!.content!
+  const currentFile = useAppSelector(selectCurrentFile)
+  const dispatch = useAppDispatch()
 
   const initializeYorkieEditor = useCallback(async () => {
     // 1. 클라이언트 생성 및 활성화
@@ -46,13 +45,11 @@ const CodeEditor = ({
       apiKey: import.meta.env.VITE_YORKIE_API_KEY,
     })
 
-    console.log(client)
     await client.activate()
-    console.log(client)
 
     // 2. 클라이언트와 연결된 문서 생성
     const doc = new yorkie.Document<YorkieDoc>(
-      `${containerId}-${currentFileId}-${new Date()
+      `File-${containerId}-${currentFile?.id}-${new Date()
         .toISOString()
         .substring(0, 10)
         .replace(/-/g, '')}`,
@@ -68,9 +65,18 @@ const CodeEditor = ({
       if (!root.content) {
         root.content = new yorkie.Text()
 
-        // TODO - 기존에 저장된 코드 삽입
-        console.log(currentFileContent)
-        root.content.edit(0, 0, currentFileContent)
+        // 기존에 저장된 코드 삽입
+        root.content.edit(0, 0, currentFile?.metadata?.content || '')
+      } else {
+        dispatch(
+          setCurrentFile({
+            ...currentFile!,
+            metadata: {
+              isDirectory: false,
+              content: root.content.toString(),
+            },
+          })
+        )
       }
     }, 'create content if not exists')
 
@@ -78,6 +84,7 @@ const CodeEditor = ({
     // 문서 내용을 CodeMirror 에디터에 동기화
     const syncText = () => {
       const text = doc.getRoot().content
+
       codemirrorViewRef.current?.dispatch({
         changes: {
           from: 0,
@@ -114,6 +121,18 @@ const CodeEditor = ({
               root.content.edit(fromA + adj, toA + adj, insertText)
             }, `update content byA ${client.getID()}`)
             adj += insertText.length - (toA - fromA)
+
+            doc.update(root => {
+              dispatch(
+                setCurrentFile({
+                  ...currentFile!,
+                  metadata: {
+                    isDirectory: false,
+                    content: root.content.toString(),
+                  },
+                })
+              )
+            })
           })
         }
       }
@@ -152,11 +171,10 @@ const CodeEditor = ({
     })
 
     syncText()
-  }, [containerId, currentFileId, currentFileContent, language])
+  }, [containerId, currentFile, language])
 
   useEffect(() => {
     initializeYorkieEditor()
-    console.log('useEffect')
 
     // Cleanup function to destroy the editor when the component unmounts
     return () => {
@@ -164,7 +182,7 @@ const CodeEditor = ({
         codemirrorViewRef.current.destroy()
       }
     }
-  }, [containerId, currentFileId])
+  }, [containerId, currentFile!.id])
 
   return <Box ref={editorRef} minH="calc(100vh - 285px)" width="100%"></Box>
 }

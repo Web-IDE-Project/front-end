@@ -13,10 +13,16 @@ import {
   Textarea,
   Flex,
   Spacer,
+  useToast,
 } from '@chakra-ui/react'
 import Modal from '@/components/Modal'
-import public_container from '@/data/public-container-list.json'
-import private_container from '@/data/private-container-list.json'
+// NOTE - 테스트용 데이터
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-ignore
+// import public_container from '@/data/public-container-list.json'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-ignore
+// import private_container from '@/data/private-container-list.json'
 import ContainerItem from './ContainerItem'
 import { useEffect, useState } from 'react'
 import { createContainer, getContainer } from '@/services/container'
@@ -26,9 +32,16 @@ interface Props {
   category: string
 }
 
+const CATEGORY: { [key: string]: string } = {
+  '내 컨테이너': 'MY',
+  '강의 컨테이너': 'LECTURE',
+  '질문 컨테이너': 'QUESTION',
+}
+
 const ContainerList = ({ category }: Props) => {
-  const tempPrivateContainerList = private_container
-  const tempPublicContainerList = public_container
+  const toast = useToast()
+  // const tempPrivateContainerList = private_container
+  // const tempPublicContainerList = public_container
 
   // TODO - 서버와 연동 후 주석 삭제
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -37,12 +50,6 @@ const ContainerList = ({ category }: Props) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
 
   useEffect(() => {
-    const CATEGORY: { [key: string]: string } = {
-      '내 컨테이너': 'my',
-      '강의 컨테이너': 'lecture',
-      '질문 컨테이너': 'question',
-    }
-
     const getContainerList = async () => {
       const response = await getContainer(CATEGORY[category])
 
@@ -54,7 +61,7 @@ const ContainerList = ({ category }: Props) => {
     }
 
     getContainerList()
-  }, [category])
+  }, [])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -90,8 +97,26 @@ const ContainerList = ({ category }: Props) => {
         selectedLanguage
       )
 
-      if (response.success) {
+      if (response.success && response.data) {
+        const newContainer: Container = {
+          id: Number(response.data.id),
+          title: name,
+          description: description,
+          language: selectedLanguage,
+        }
+
+        const newContainerList = [...containerList!, newContainer]
+        setContainerList(newContainerList)
         onClose()
+
+        toast({
+          title: '컨테이너가 생성되었습니다.',
+          position: 'top-right',
+          isClosable: true,
+          colorScheme: 'green',
+          status: 'success',
+          duration: 3000,
+        })
       } else {
         console.log(response.error)
       }
@@ -149,28 +174,32 @@ const ContainerList = ({ category }: Props) => {
             templateColumns="repeat(auto-fill, minmax(250px, 1fr))"
           >
             {category === '내 컨테이너'
-              ? tempPrivateContainerList.map(container => (
-                  <ContainerItem
-                    key={container.id}
-                    category={category}
-                    id={container.id}
-                    title={container.title}
-                    language={container.language}
-                    description={container.description}
-                  />
-                ))
-              : tempPublicContainerList.map(container => (
-                  <ContainerItem
-                    key={container.id}
-                    category={category}
-                    id={container.id}
-                    title={container.title}
-                    language={container.language}
-                    description={container.description}
-                    nickname={container.nickname}
-                    profileUrl={container.profileUrl}
-                  />
-                ))}
+              ? containerList
+                  ?.map(container => (
+                    <ContainerItem
+                      key={container.id}
+                      category={category}
+                      id={container.id}
+                      title={container.title}
+                      language={container.language}
+                      description={container.description}
+                    />
+                  ))
+                  .reverse()
+              : containerList
+                  ?.map(container => (
+                    <ContainerItem
+                      key={container.id}
+                      category={category}
+                      id={container.id}
+                      title={container.title}
+                      language={container.language}
+                      description={container.description}
+                      nickname={container.nickname}
+                      profileUrl={container.profileUrl}
+                    />
+                  ))
+                  .reverse()}
           </SimpleGrid>
         </Box>
       </Box>

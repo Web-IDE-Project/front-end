@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
           loginAction({
             id: userInfo.username,
             nickname: userInfo.nickname,
-            profileUrl: userInfo.profileUrl,
+            profileUrl: userInfo.awsS3SavedFileURL,
           })
         )
         alert('로그인 성공')
@@ -122,12 +122,16 @@ const LoginPage: React.FC = () => {
             </AbsoluteCenter>
           </Box>
           <Flex flexDir="column" w="full" gap={3}>
-            <a href="/api/oauth2/authorization/kakao">
+            <a
+              href={`${import.meta.env.VITE_SERVER_BASE_URL}/api/oauth2/authorization/kakao`}
+            >
               <Button bg="yellow.300" _hover={{ bg: 'yellow.400' }} w="full">
                 카카오계정으로 로그인
               </Button>
             </a>
-            <a href="/api/oauth2/authorization/naver">
+            <a
+              href={`${import.meta.env.VITE_SERVER_BASE_URL}/api/oauth2/authorization/naver`}
+            >
               <Button
                 bg="green.400"
                 color="white"
@@ -137,7 +141,9 @@ const LoginPage: React.FC = () => {
                 네이버로 로그인
               </Button>
             </a>
-            <a href="/api/oauth2/authorization/google">
+            <a
+              href={`${import.meta.env.VITE_SERVER_BASE_URL}/api/oauth2/authorization/google`}
+            >
               <Button colorScheme="gray" w="full">
                 구글로 로그인
               </Button>

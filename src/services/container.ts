@@ -9,7 +9,7 @@ export async function createContainer(
   title: string,
   description: string,
   language: string
-): Promise<ApiResponse<Omit<Container, 'id'>>> {
+): Promise<ApiResponse<{ id: string }>> {
   try {
     const response: AxiosResponse = await API.post(`/api/workspaces`, {
       title,
@@ -58,7 +58,37 @@ export async function getContainer(
 ): Promise<ApiResponse<Container[]>> {
   try {
     const response: AxiosResponse<Container[]> = await API.get(
-      `/api/workspace/${category}`
+      `/api/workspaces/${category}/get`
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}
+
+/** 컨테이너 정보 수정(공유) API */
+export async function editContainerInfo(
+  containerId: string,
+  title: string,
+  description: string,
+  category: string
+): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response: AxiosResponse<{ message: string }> = await API.put(
+      `/api/workspaces/${containerId}`,
+      {
+        title: title,
+        description: description,
+        category: category,
+      }
     )
 
     return {

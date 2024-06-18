@@ -7,8 +7,8 @@ import ContainerPage from './pages/ContainerPage/ContainerPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
 import IDEPage from './pages/IDEPage/IDEPage'
 import LoginHandler from './pages/LoginPage/LoginHandler'
-import { useAppDispatch } from './hooks'
 import { useEffect } from 'react'
+import { useAppDispatch } from './hooks'
 import { checkLoginStatus } from './services/user'
 import { login } from '@/store/userSlice'
 
@@ -20,8 +20,8 @@ function App() {
     const isLogined = async () => {
       try {
         const response = await checkLoginStatus()
-      if (response.success) {
-        const userInfo = response.data?.userInfo
+      if (response.success && response.data) {
+        const userInfo = response.data.userInfo
         dispatch(
           login({
             id: userInfo.username,

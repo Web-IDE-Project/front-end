@@ -26,7 +26,7 @@ const ERROR_MESSAGES = {
 const Setting = () => {
     const username = useAppSelector(selectId);
     const [profileImage, setProfileImage] = useState({
-        profileImage: useAppSelector(selectProfileUrl) as string | null,
+        profileImage: null as string | null,
         previewProfileImage: useAppSelector(selectProfileUrl) as string | null,
     });
     const fileInputRef = useRef(null);
@@ -44,18 +44,14 @@ const Setting = () => {
 
     // 유저 정보 변경하기 버튼 클릭
     const onSubmit: SubmitHandler<FormValues> = async (data) => {
-        console.log('유저 정보 변경하기 버튼 클릭');
         const requestData = JSON.stringify({
             nickname: data.nickname || null,
             password: data.newPassword || null,
         })
-        console.log('reqData:', requestData);
         const formData = new FormData();
         formData.append('updateMemberRequestDTO', requestData);
         formData.append('profileImage', profileImage?.profileImage);
-        console.log('profileImage:', profileImage);
-
-        console.log('data', formData);
+        setChangePassword(false);
     };
 
     const handleOpenModal = () => {
@@ -104,13 +100,13 @@ const Setting = () => {
     const deleteProfileImage = () => {
         setProfileImage({
             profileImage: null,
-            previewProfileImage: null,
+            previewProfileImage: '',
         });
     };
 
     return (
-        <Flex as="form" onSubmit={handleSubmit(onSubmit)} flexDir='column' p={16} h='full' align='center'>
-            <Flex flexDir='column' w={600} h='full'>
+        <Flex  flexDir='column' p={16} h='full' align='center'>
+            <Flex flexDir='column' w={600} h='full' as="form" onSubmit={handleSubmit(onSubmit)}>
                 <Flex flexDir='column' align='center' position='relative' >
                     <Input type="file" ref={fileInputRef} onChange={changeProfileImage} accept='image/png, image/jpeg, image/jpg' display='none' />
                     <Box
@@ -128,7 +124,7 @@ const Setting = () => {
                             }
                         }}
                     >
-                        <Avatar boxSize={200} src={profileImage.previewProfileImage} mb={4} />
+                        <Avatar boxSize={200} src={profileImage.previewProfileImage || ''} mb={4} />
                         <PlusSquareIcon
                             boxSize={8}
                             color='gray.600'
@@ -199,7 +195,7 @@ const Setting = () => {
                         >
                             <Input
                                 {...register('currentPassword', {
-                                    required: ERROR_MESSAGES.REQUIRED,
+                                    // required: ERROR_MESSAGES.REQUIRED,
                                 })}
                                 type="password"
                                 placeholder="비밀번호"
@@ -218,7 +214,7 @@ const Setting = () => {
                                 id="newPassword"
                                 type="password"
                                 {...register("newPassword", {
-                                    required: ERROR_MESSAGES.REQUIRED,
+                                    // required: ERROR_MESSAGES.REQUIRED,
                                     pattern: {
                                         value:
                                             /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+-=])(?=.*[0-9]).{8,15}$/,
@@ -245,7 +241,7 @@ const Setting = () => {
                                 id="confirmNewPassword"
                                 type="password"
                                 {...register("confirmNewPassword", {
-                                    required: ERROR_MESSAGES.REQUIRED,
+                                    // required: ERROR_MESSAGES.REQUIRED,
                                     validate: value =>
                                         value === watch('newPassword') || ERROR_MESSAGES.PASSWORD_MATCH,
                                 })}

@@ -16,16 +16,14 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import Modal from '@/components/Modal'
-// NOTE - 테스트용 데이터
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// @ts-ignore
-// import public_container from '@/data/public-container-list.json'
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// @ts-ignore
-// import private_container from '@/data/private-container-list.json'
 import ContainerItem from './ContainerItem'
 import { useEffect, useState } from 'react'
-import { createContainer, getContainer } from '@/services/container'
+import {
+  createContainer,
+  deleteContainer,
+  editContainerInfo,
+  getContainer,
+} from '@/services/container'
 import { Container } from '@/models/container'
 
 interface Props {
@@ -40,14 +38,7 @@ const CATEGORY: { [key: string]: string } = {
 
 const ContainerList = ({ category }: Props) => {
   const toast = useToast()
-  // const tempPrivateContainerList = private_container
-  // const tempPublicContainerList = public_container
-
-  // TODO - 서버와 연동 후 주석 삭제
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  // @ts-ignore
   const [containerList, setContainerList] = useState<Container[] | null>(null)
-  /* eslint-disable @typescript-eslint/no-unused-vars */
 
   useEffect(() => {
     const getContainerList = async () => {
@@ -131,6 +122,82 @@ const ContainerList = ({ category }: Props) => {
     onClose()
   }
 
+  const handleEditContainerInfo = async (
+    id: string,
+    title: string,
+    desc: string,
+    sharingOption: string
+  ) => {
+    const response = await editContainerInfo(
+      id.toString(),
+      title,
+      desc,
+      sharingOption
+    )
+
+    if (response.success) {
+      toast({
+        title: '컨테이너 정보가 수정되었습니다.',
+        position: 'top-right',
+        isClosable: true,
+        colorScheme: 'green',
+        status: 'success',
+        duration: 3000,
+      })
+
+      const newContainerList = containerList!.map(container => {
+        if (container.id.toString() === id) {
+          return {
+            ...container,
+            title: title,
+            description: desc,
+            sharingOption: sharingOption,
+          }
+        } else {
+          return container
+        }
+      })
+
+      setContainerList(newContainerList)
+    } else {
+      toast({
+        title: '컨테이너 정보가 수정에 오류가 발생했습니다.',
+        position: 'top-right',
+        isClosable: true,
+        status: 'error',
+        duration: 3000,
+      })
+    }
+  }
+
+  const handleDeleteContainer = async (id: string) => {
+    const response = await deleteContainer(id)
+
+    if (response.success) {
+      toast({
+        title: '컨테이너가 삭제되었습니다.',
+        position: 'top-right',
+        isClosable: true,
+        colorScheme: 'green',
+        status: 'success',
+        duration: 3000,
+      })
+
+      const newContainerList = containerList!.filter(
+        container => container.id.toString() !== id
+      )
+      setContainerList(newContainerList)
+    } else {
+      toast({
+        title: '컨테이너 삭제에 오류가 발생했습니다.',
+        position: 'top-right',
+        isClosable: true,
+        status: 'error',
+        duration: 3000,
+      })
+    }
+  }
+
   return (
     <>
       <Box p={5}>
@@ -183,6 +250,8 @@ const ContainerList = ({ category }: Props) => {
                       title={container.title}
                       language={container.language}
                       description={container.description}
+                      onEditInfoButtonClick={handleEditContainerInfo}
+                      onDeleteButtonClick={handleDeleteContainer}
                     />
                   ))
                   .reverse()
@@ -197,6 +266,8 @@ const ContainerList = ({ category }: Props) => {
                       description={container.description}
                       nickname={container.nickname}
                       profileUrl={container.profileUrl}
+                      onEditInfoButtonClick={handleEditContainerInfo}
+                      onDeleteButtonClick={handleDeleteContainer}
                     />
                   ))
                   .reverse()}

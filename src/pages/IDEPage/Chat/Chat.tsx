@@ -14,8 +14,8 @@ import send from '../../../assets/images/send.png'
 import Bubble from './Bubble'
 
 const BASE_URI: string = 'ws://localhost:8080'
-
 const workspaceId: number = 1 // props로 값 받을 예정
+
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
   message: string
@@ -31,6 +31,8 @@ const Chat: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [highlightedIndices, setHighlightedIndices] = useState<number[]>([])
   const messageRefs = useRef<(HTMLDivElement | null)[]>([])
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const client = new Client({
@@ -155,15 +157,24 @@ const Chat: React.FC = () => {
     })
 
     setInputMessage('')
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
 
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages])
+
   return (
     <Flex
-      h="full"
+      h="100vh"
       w={350}
       border="1px solid #eee"
       flexDir="column"
@@ -186,6 +197,7 @@ const Chat: React.FC = () => {
         />
       </InputGroup>
       <Flex
+        ref={chatContainerRef}
         flex="1"
         flexDir="column"
         gap={1}
@@ -228,6 +240,7 @@ const Chat: React.FC = () => {
       <form onSubmit={sendMessage}>
         <Flex gap={2}>
           <Input
+            ref={inputRef}
             value={inputMessage}
             onChange={e => setInputMessage(e.target.value)}
             type="text"

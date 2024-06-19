@@ -23,7 +23,7 @@ const OauthLoginHandler: React.FC = () => {
             login({
               id: userInfo.username,
               nickname: userInfo.nickname,
-              profileUrl: userInfo.profileUrl,
+              profileUrl: userInfo.awsS3SavedFileURL,
             })
           )
         }

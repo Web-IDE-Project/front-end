@@ -12,7 +12,7 @@ const ContainerPage = () => {
   }
 
   return (
-    <Flex minH="100%">
+    <Flex h="full">
       {/* TODO - 왼쪽 사이드 바 애니메이션 구현 */}
       <Box
         w="250px"
@@ -22,7 +22,7 @@ const ContainerPage = () => {
       >
         <Sidebar toggleSidebar={toggleSidebar} />
       </Box>
-      <Box flexGrow={1} bg="gray.50">
+      <Box flexGrow={1} bg="gray.50" overflow="scroll">
         {!isSidebarOpen && (
           <IconButton
             aria-label="open sidebar"

@@ -70,7 +70,7 @@ const Setting = () => {
     
                     if (userInfo) {
                         dispatch(setNickName(userInfo.nickname));
-                        dispatch(setProfileUrl(userInfo.profileUrl));
+                        dispatch(setProfileUrl(userInfo.awsS3SavedFileURL));
                     } else {
                         alert('유저 정보를 불러오는데 오류가 발생했습니다.');
                     }

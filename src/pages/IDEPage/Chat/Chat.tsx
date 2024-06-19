@@ -174,7 +174,7 @@ const Chat: React.FC = () => {
 
   return (
     <Flex
-      h="full"
+      h="100vh"
       w={350}
       border="1px solid #eee"
       flexDir="column"

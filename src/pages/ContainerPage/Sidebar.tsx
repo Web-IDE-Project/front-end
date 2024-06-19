@@ -12,6 +12,8 @@ import {
 import { NavLink } from 'react-router-dom'
 import Logo from '@/assets/images/logo.png'
 import { logout } from '@/services/user'
+import { logout as logoutAction } from '@/store/userSlice'
+import { useDispatch } from 'react-redux'
 
 const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const categories = [
@@ -24,11 +26,13 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
     toggleSidebar()
   }
 
+  const dispatch = useDispatch();
   const onClickLogout = async () => {
     try {
       const response = await logout();
       if (response.success) {
         alert(response.data?.message);
+        dispatch(logoutAction());
       } else {
         alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.');
         console.error('Error:', response.error)

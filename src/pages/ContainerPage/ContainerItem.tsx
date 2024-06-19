@@ -1,6 +1,5 @@
 import Modal from '@/components/Modal'
 import { Container } from '@/models/container'
-import { deleteContainer, editContainerInfo } from '@/services/container'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
@@ -18,7 +17,6 @@ import {
   Text,
   Textarea,
   useDisclosure,
-  useToast,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -50,8 +48,6 @@ const ContainerItem = ({
   const [newTitle, setNewTitle] = useState(title)
   const [newDesc, setNewDesc] = useState(description)
   const [sharingOption, setSharingOption] = useState('MY')
-
-  const toast = useToast()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const {

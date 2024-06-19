@@ -9,52 +9,23 @@ import {
   InputLeftElement,
   Text,
   Image,
+  Avatar,
 } from '@chakra-ui/react'
 import React, { FormEvent, useEffect, useRef, useState } from 'react'
-import { StompConfig, Client, IMessage } from '@stomp/stompjs'
+import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
-
-// 테스트 데이터
-const data: Message[] = [
-  {
-    messageType: 'ENTER',
-    senderName: 'sender',
-    message: '[알림] 코딩 고수님이 입장하셨습니다.',
-  },
-  {
-    messageType: 'TALK',
-    senderName: '코딩 고수',
-    message: '마이크 허용해주시면 직접 설명해드릴게요!',
-  },
-  {
-    messageType: 'TALK',
-    senderName: 'me',
-    message: '감사합니다!!',
-  },
-  {
-    messageType: 'TALK',
-    senderName: 'me',
-    message: '허용해드렸으니 확인 부탁드려요~',
-  },
-  {
-    messageType: 'EXIT',
-    senderName: 'sender',
-    message: '[알림] 코딩 고수님이 퇴장하셨습니다.',
-  },
-]
+import { useAppSelector } from '@/hooks'
+import { selectNickname, selectProfileUrl } from '@/store/userSlice'
 
 const BASE_URI: string = 'ws://localhost:8080'
 const workspaceId: number = 1 // props로 값 받을 예정
-const username: string = 'me' // 상태관리 store에서 값 가져올 예정, 나중에 프로필 이미지도 받아오기.
+const username: string = useAppSelector(selectNickname)
+const profileUrl: string = useAppSelector(selectProfileUrl) || '';
 
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
   message: string
   senderName: string
-}
-interface PubMessage {
-  messageType: 'TALK' | 'ENTER' | 'EXIT'
-  message: string
 }
 interface BubbleProps {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
@@ -82,7 +53,7 @@ const Bubble: React.FC<BubbleProps> = ({
         bg={isHighlighted ? 'yellow.200' : 'green.100'}
         p={2}
         fontSize="small"
-        boxSize="fit-content"
+        w="fit-content"
         borderRadius={6}
         alignSelf="end"
         maxW="70%"
@@ -93,14 +64,7 @@ const Bubble: React.FC<BubbleProps> = ({
   }
   return (
     <Flex>
-      <Image
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmHtyKWEyMh3c5_FfZez-wqWCpj8ptLUbvOe1pAq4_ZdEvWtpyXHBbU4tqPI6UHawF7_Y&usqp=CAU"
-        boxSize="40px"
-        borderRadius="full"
-        alt="user profile image"
-        mr={2}
-        mt={1}
-      />
+      <Avatar src={profileUrl} boxSize="40px" mr={2} mt={1}/>
       <Box>
         <Text fontSize="small" fontWeight="500">
           {senderName}
@@ -109,7 +73,7 @@ const Bubble: React.FC<BubbleProps> = ({
           bg={isHighlighted ? 'yellow.200' : 'gray.200'}
           p={2}
           fontSize="small"
-          boxSize="fit-content"
+          w="fit-content"
           borderRadius={6}
           maxW="70%"
         >
@@ -121,44 +85,28 @@ const Bubble: React.FC<BubbleProps> = ({
 }
 
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>(data)
+  const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
   const [isConnected, setIsConnected] = useState(false)
+  const [subscriberCount, setSubscriberCount] = useState(0)
   const clientRef = useRef<Client | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [highlightedIndices, setHighlightedIndices] = useState<number[]>([])
   const messageRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  // WebSocket
   useEffect(() => {
     const client = new Client({
       brokerURL: `${BASE_URI}/api/ws`,
-      debug: str => {
-        console.debug(str)
-      },
+      beforeConnect: () => console.log('Attempting to connect...'),
+      onConnect: () => handleWebSocketConnect(client),
+      onDisconnect: () => handleWebSocketDisconnect(client),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      beforeConnect: () => {
-        console.log('Attempting to connect...')
-      },
-      onConnect: () => {
-        console.log('Connected to WebSocket')
-        setIsConnected(true)
-
-        client.subscribe(`/api/sub/${workspaceId}`, (message: IMessage) => {
-          const newMessage = JSON.parse(message.body) as Message
-          setMessages(prevMessages => [...prevMessages, newMessage])
-        })
-
-        client.publish({
-          destination: `/api/pub/${workspaceId}`,
-          body: JSON.stringify({
-            messageType: 'ENTER',
-            message: '',
-            senderName: username,
-          }),
-        })
+      debug: str => console.debug(str),
+      onWebSocketClose: () => {
+        console.error('WebSocket connection closed');
+        setIsConnected(false)
       },
       onStompError: frame => {
         console.error('Broker reported error: ' + frame.headers['message'])
@@ -167,36 +115,62 @@ const Chat: React.FC = () => {
       onWebSocketError: event => {
         console.error('WebSocket error', event)
       },
-      onDisconnect: () => {
-        console.log('Disconnected from WebSocket')
-        client.publish({
-          destination: `/api/pub/${workspaceId}`,
-          body: JSON.stringify({
-            messageType: 'EXIT',
-            message: '',
-            senderName: username,
-          }),
-        })
-        client.deactivate()
-        setIsConnected(false)
-      },
-      onWebSocketClose: () => {
-        console.log('WebSocket closed')
-        setIsConnected(false)
-      },
-    } as StompConfig)
+    })
 
     client.activate()
     clientRef.current = client
 
     return () => {
+      console.log('Component unmounting, deactivating WebSocket connection...');
       if (clientRef.current) {
         clientRef.current.deactivate()
       }
     }
   }, [])
 
-  // 검색
+  const handleWebSocketConnect = (client: Client) => {
+    console.log('Connected to WebSocket')
+    setIsConnected(true)
+
+    client.subscribe(`/api/sub/chat/${workspaceId}`, (message: IMessage) => {
+      const newMessage = JSON.parse(message.body) as Message
+      setMessages(prevMessages => [...prevMessages, newMessage])
+    })
+
+    client.subscribe(`/api/sub/chat/${workspaceId}/count`, (message: IMessage) => {
+      setSubscriberCount(parseInt(message.body, 10));
+    });
+    
+    client.publish({
+      destination: `/api/pub/chat/${workspaceId}`,
+      body: JSON.stringify({
+        messageType: 'ENTER',
+        message: '',
+      }),
+    })
+
+    client.publish({
+      destination: `/api/pub/chat/${workspaceId}/count`,
+      body: '',
+    });
+  }
+
+  const handleWebSocketDisconnect = (client: Client) => {
+    console.log('Disconnected from WebSocket')
+
+    client.publish({
+      destination: `/api/pub/chat/${workspaceId}`,
+      body: JSON.stringify({
+        messageType: 'EXIT',
+        message: '',
+      }),
+    })
+    
+    setIsConnected(false)
+    client.deactivate()
+  }
+
+  // 메시지 검색 기능
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setHighlightedIndices([])
@@ -230,16 +204,13 @@ const Chat: React.FC = () => {
     if (!inputMessage.trim() || !isConnected || !clientRef.current) {
       return
     }
-    const message: PubMessage = {
-      messageType: 'TALK',
-      message: inputMessage,
-    }
-
-    const stringifiedMessage = JSON.stringify(message)
 
     clientRef.current?.publish({
-      destination: `/api/pub/${workspaceId}`,
-      body: stringifiedMessage,
+      destination: `/api/pub/chat/${workspaceId}`,
+      body: JSON.stringify({
+        messageType: 'TALK',
+        message: inputMessage,
+      }),
     })
 
     setInputMessage('')
@@ -259,7 +230,7 @@ const Chat: React.FC = () => {
       bg="gray.50"
     >
       <Text fontSize="small" mb={2} color="gray.700">
-        채팅(참여인원)
+        채팅({subscriberCount})
       </Text>
       <InputGroup bg="white" mb={2}>
         <InputLeftElement pointerEvents="none">
@@ -270,6 +241,7 @@ const Chat: React.FC = () => {
           placeholder="검색"
           value={searchQuery}
           onChange={handleSearchChange}
+          focusBorderColor='green.400'
         />
       </InputGroup>
       <Flex
@@ -277,7 +249,7 @@ const Chat: React.FC = () => {
         flexDir="column"
         gap={1}
         py={4}
-        overflow="scroll"
+        overflowY="scroll"
         css={{
           '&::-webkit-scrollbar': {
             width: '4px',
@@ -312,7 +284,7 @@ const Chat: React.FC = () => {
           ))
         )}
       </Flex>
-      <form onSubmit={e => sendMessage(e)}>
+      <form onSubmit={sendMessage}>
         <Flex gap={2}>
           <Input
             value={inputMessage}
@@ -320,6 +292,7 @@ const Chat: React.FC = () => {
             type="text"
             placeholder="채팅을 입력하세요"
             bg="white"
+            focusBorderColor='green.400'
           />
           <Button colorScheme="green" type="submit">
             <Image src={send} h="50%" />

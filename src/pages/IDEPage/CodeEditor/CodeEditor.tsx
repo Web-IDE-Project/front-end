@@ -11,7 +11,7 @@ import { githubLight } from '@uiw/codemirror-theme-github'
 import './code-editor.css'
 import { LanguageSupport } from '@codemirror/language'
 import { showMinimap } from '@replit/codemirror-minimap'
-import yorkie, { type Text } from 'yorkie-js-sdk'
+import yorkie, { Client, Indexable, Document, type Text } from 'yorkie-js-sdk'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { selectCurrentFile, setCurrentFile } from '@/store/ideSlice'
 
@@ -36,6 +36,9 @@ const CodeEditor = ({
   const editorRef = useRef<HTMLDivElement>(null)
   const codemirrorViewRef = useRef<EditorView>()
 
+  const clientRef = useRef<Client>()
+  const docRef = useRef<Document<YorkieDoc, Indexable>>()
+
   const currentFile = useAppSelector(selectCurrentFile)
   const dispatch = useAppDispatch()
 
@@ -45,6 +48,7 @@ const CodeEditor = ({
       apiKey: import.meta.env.VITE_YORKIE_API_KEY,
     })
 
+    clientRef.current = client
     await client.activate()
 
     // 2. 클라이언트와 연결된 문서 생성
@@ -58,6 +62,7 @@ const CodeEditor = ({
       }
     )
 
+    docRef.current = doc
     await client.attach(doc, {})
 
     // 3. 해당 키의 문서에 content가 없으면 새로운 Text 생성
@@ -180,6 +185,11 @@ const CodeEditor = ({
     return () => {
       if (codemirrorViewRef.current) {
         codemirrorViewRef.current.destroy()
+      }
+
+      if (clientRef.current && docRef.current) {
+        clientRef.current.detach(docRef.current)
+        clientRef.current.deactivate()
       }
     }
   }, [containerId, currentFile!.id])

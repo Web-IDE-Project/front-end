@@ -61,7 +61,7 @@ const ContainerList = ({ category }: Props) => {
     }
 
     getContainerList()
-  }, [])
+  }, [category])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 

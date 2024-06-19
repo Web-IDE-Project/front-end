@@ -41,7 +41,7 @@ const Bubble: React.FC<BubbleProps> = ({
     )
   }
   return (
-    <Flex>
+    <Flex maxW='70%'>
       <Avatar src={profileUrl} boxSize="40px" mr={2} mt={1} />
       <Box>
         <Text fontSize="small" fontWeight="500">
@@ -53,7 +53,6 @@ const Bubble: React.FC<BubbleProps> = ({
           fontSize="small"
           w="fit-content"
           borderRadius={6}
-          maxW="70%"
         >
           <Text>{message}</Text>
         </Box>

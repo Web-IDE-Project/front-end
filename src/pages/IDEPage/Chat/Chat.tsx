@@ -1,87 +1,25 @@
 import { Search2Icon } from '@chakra-ui/icons'
 import {
-  Box,
   Button,
-  Center,
   Flex,
   Input,
   InputGroup,
   InputLeftElement,
   Text,
   Image,
-  Avatar,
 } from '@chakra-ui/react'
 import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
-import { useAppSelector } from '@/hooks'
-import { selectNickname, selectProfileUrl } from '@/store/userSlice'
+import Bubble from './Bubble'
 
 const BASE_URI: string = 'ws://localhost:8080'
 const workspaceId: number = 1 // props로 값 받을 예정
-const username: string = useAppSelector(selectNickname)
-const profileUrl: string = useAppSelector(selectProfileUrl) || '';
 
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
   message: string
   senderName: string
-}
-interface BubbleProps {
-  messageType: 'TALK' | 'ENTER' | 'EXIT'
-  message: string
-  senderName: string
-  isHighlighted: boolean
-}
-
-const Bubble: React.FC<BubbleProps> = ({
-  messageType,
-  message,
-  senderName,
-  isHighlighted,
-}) => {
-  if (messageType === 'ENTER' || messageType === 'EXIT') {
-    return (
-      <Center my={3}>
-        <Text fontSize="small">{message}</Text>
-      </Center>
-    )
-  }
-  if (senderName === username) {
-    return (
-      <Box
-        bg={isHighlighted ? 'yellow.200' : 'green.100'}
-        p={2}
-        fontSize="small"
-        w="fit-content"
-        borderRadius={6}
-        alignSelf="end"
-        maxW="70%"
-      >
-        <Text>{message}</Text>
-      </Box>
-    )
-  }
-  return (
-    <Flex>
-      <Avatar src={profileUrl} boxSize="40px" mr={2} mt={1}/>
-      <Box>
-        <Text fontSize="small" fontWeight="500">
-          {senderName}
-        </Text>
-        <Box
-          bg={isHighlighted ? 'yellow.200' : 'gray.200'}
-          p={2}
-          fontSize="small"
-          w="fit-content"
-          borderRadius={6}
-          maxW="70%"
-        >
-          <Text>{message}</Text>
-        </Box>
-      </Box>
-    </Flex>
-  )
 }
 
 const Chat: React.FC = () => {
@@ -140,7 +78,7 @@ const Chat: React.FC = () => {
     client.subscribe(`/api/sub/chat/${workspaceId}/count`, (message: IMessage) => {
       setSubscriberCount(parseInt(message.body, 10));
     });
-    
+
     client.publish({
       destination: `/api/pub/chat/${workspaceId}`,
       body: JSON.stringify({
@@ -165,7 +103,7 @@ const Chat: React.FC = () => {
         message: '',
       }),
     })
-    
+
     setIsConnected(false)
     client.deactivate()
   }
@@ -229,9 +167,7 @@ const Chat: React.FC = () => {
       p={4}
       bg="gray.50"
     >
-      <Text fontSize="small" mb={2} color="gray.700">
-        채팅({subscriberCount})
-      </Text>
+      <Text fontSize="small" mb={2} color="gray.700">채팅({subscriberCount})</Text>
       <InputGroup bg="white" mb={2}>
         <InputLeftElement pointerEvents="none">
           <Search2Icon color="gray.300" />
@@ -264,9 +200,7 @@ const Chat: React.FC = () => {
         }}
       >
         {messages.length === 0 ? (
-          <Text fontSize="small" color="gray.500">
-            채팅을 시작해보세요
-          </Text>
+          <Text fontSize="small" color="gray.500">채팅을 시작해보세요</Text>
         ) : (
           messages.map((msg, index) => (
             <Flex

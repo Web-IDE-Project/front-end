@@ -9,15 +9,37 @@ import IDEPage from './pages/IDEPage/IDEPage'
 import { useAppSelector } from './hooks'
 import { selectIsAuthenticated } from './store/userSlice'
 import { useEffect } from 'react'
+import Setting from './pages/ContainerPage/Setting'
+import { useAppDispatch } from './hooks'
+import { checkLoginStatus } from './services/user'
+import { login } from '@/store/userSlice'
 
 function App() {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/')
+    const isLogined = async () => {
+      try {
+        const response = await checkLoginStatus()
+      if (response.success && response.data) {
+        const userInfo = response.data.userInfo
+        dispatch(
+          login({
+            id: userInfo.username,
+            nickname: userInfo.nickname,
+            profileUrl: userInfo.awsS3SavedFileURL,
+          })
+        )
+        navigate('/container/my')
+      } else {
+        navigate('/');
+      }
+      } catch (error) {
+        console.error('Error:', error)
+      }
     }
+    isLogined();
   }, [])
 
   return (
@@ -37,6 +59,7 @@ function App() {
           path="question"
           element={<ContainerList category="질문 컨테이너" />}
         />
+        <Route path='setting' element={<Setting />} />
       </Route>
       <Route path="/container/:containerId/workspace" element={<IDEPage />} />
     </Routes>

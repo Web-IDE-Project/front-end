@@ -103,3 +103,25 @@ export async function editContainerInfo(
     }
   }
 }
+
+/** 컨테이너 삭제 API */
+export async function deleteContainer(
+  containerId: string
+): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response: AxiosResponse<{ message: string }> = await API.delete(
+      `/api/workspaces/${containerId}`
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}

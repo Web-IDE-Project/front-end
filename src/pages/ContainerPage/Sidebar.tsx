@@ -9,7 +9,7 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import Logo from '@/assets/images/logo.png'
 import { logout } from '@/services/user'
 import { logout as logoutAction } from '@/store/userSlice'
@@ -22,24 +22,27 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
     { name: '질문 컨테이너', path: '/container/question' },
   ]
 
+  const navigate = useNavigate()
+
   const onSidebarOpenButton = () => {
     toggleSidebar()
   }
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const onClickLogout = async () => {
     try {
-      const response = await logout();
+      const response = await logout()
       if (response.success) {
-        alert(response.data?.message);
-        dispatch(logoutAction());
+        alert(response.data?.message)
+        dispatch(logoutAction())
+        navigate('/')
       } else {
-        alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.')
         console.error('Error:', response.error)
       }
     } catch (error) {
-      alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.');
-      console.error('Error:', error);
+      alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.')
+      console.error('Error:', error)
     }
   }
 

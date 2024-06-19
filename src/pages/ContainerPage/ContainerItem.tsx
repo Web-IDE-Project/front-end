@@ -1,6 +1,5 @@
 import Modal from '@/components/Modal'
 import { Container } from '@/models/container'
-import { editContainerInfo } from '@/services/container'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
@@ -18,13 +17,19 @@ import {
   Text,
   Textarea,
   useDisclosure,
-  useToast,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface Props extends Container {
   category: string
+  onEditInfoButtonClick: (
+    id: string,
+    title: string,
+    desc: string,
+    sharingOption: string
+  ) => void
+  onDeleteButtonClick: (id: string) => void
 }
 
 const ContainerItem = ({
@@ -35,6 +40,8 @@ const ContainerItem = ({
   nickname,
   profileUrl,
   category,
+  onEditInfoButtonClick,
+  onDeleteButtonClick,
 }: Props) => {
   const navigate = useNavigate()
 
@@ -42,39 +49,12 @@ const ContainerItem = ({
   const [newDesc, setNewDesc] = useState(description)
   const [sharingOption, setSharingOption] = useState('MY')
 
-  const toast = useToast()
-
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const handleEditContainerInfo = async () => {
-    const response = await editContainerInfo(
-      id.toString(),
-      newTitle,
-      newDesc,
-      sharingOption
-    )
-
-    if (response.success) {
-      toast({
-        title: '컨테이너 정보가 수정되었습니다.',
-        position: 'top-right',
-        isClosable: true,
-        colorScheme: 'green',
-        status: 'success',
-        duration: 3000,
-      })
-    } else {
-      toast({
-        title: '컨테이너 정보가 수정에 오류가 발생했습니다.',
-        position: 'top-right',
-        isClosable: true,
-        status: 'error',
-        duration: 3000,
-      })
-    }
-
-    modalClose()
-  }
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure()
 
   const modalClose = () => {
     setNewTitle(title)
@@ -104,6 +84,7 @@ const ContainerItem = ({
                   bg="transparent"
                   size="sm"
                   icon={<DeleteIcon />}
+                  onClick={onDeleteModalOpen}
                 />
               </>
             )}
@@ -146,7 +127,10 @@ const ContainerItem = ({
         title="컨테이너 정보 수정"
         cancelMessage="취소"
         confirmMessage="수정"
-        confirmCallback={handleEditContainerInfo}
+        confirmCallback={() => {
+          onEditInfoButtonClick(id.toString(), newTitle, newDesc, sharingOption)
+          modalClose()
+        }}
       >
         <Text fontWeight="bold" mb={1}>
           이름
@@ -195,6 +179,18 @@ const ContainerItem = ({
           <option value="LECTURE">강의 컨테이너에 공개</option>
         </Select>
       </Modal>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        title="정말로 삭제하시겠습니까?"
+        cancelMessage="취소"
+        confirmMessage="삭제"
+        confirmCallback={() => {
+          onDeleteButtonClick(id.toString())
+          onDeleteModalClose()
+        }}
+        confirmButtonColorScheme="red"
+      ></Modal>
     </>
   )
 }

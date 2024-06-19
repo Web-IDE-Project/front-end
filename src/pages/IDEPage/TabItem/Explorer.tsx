@@ -29,6 +29,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
   selectSelectedNode,
   selectTree,
+  setCurrentFile,
   setSelectedNode,
   setTree,
 } from '@/store/ideSlice'
@@ -36,14 +37,19 @@ import { useRef, useState } from 'react'
 import { createEntry, deleteEntry, editEntryName } from '@/services/entry'
 import { Tree, TreeNode } from '@/models/entry'
 import { getExtension } from '@/utils/entry'
+import ExplorerState from './ExplorerState'
 
 const Explorer = ({ containerId }: { containerId: string | undefined }) => {
   const toast = useToast()
-  const { isOpen, onOpen, onClose } = useDisclosure()
   const {
     isOpen: isMenuOpen,
     onOpen: onMenuOpen,
     onClose: onMenuClose,
+  } = useDisclosure()
+  const {
+    isOpen: isCreateModalOpen,
+    onOpen: onCreateModalOpen,
+    onClose: onCreateModalClose,
   } = useDisclosure()
   const {
     isOpen: isEditNameModalOpen,
@@ -93,26 +99,38 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
     }
   }
 
-  const onNodeSelect = async ({
-    element,
-    isBranch,
-  }: ITreeViewOnNodeSelectProps) => {
-    if (!isBranch) {
-      dispatch(setSelectedNode(element as TreeNode))
+  const onNodeSelect = async ({ element }: ITreeViewOnNodeSelectProps) => {
+    const isDirectory = element.metadata?.isDirectory
+
+    if (!isDirectory) {
+      dispatch(setCurrentFile(element as TreeNode))
     }
+
+    dispatch(setSelectedNode(element as TreeNode))
   }
 
   // 탐색기 중 파일 외부를 클릭하면 루트 디렉토리를 클릭한 것과 같다.
   const onRootDirectoryClick = () => {
     // 이전에 select 상태였던 노드를 deselect한 것처럼 보여주기
     selectedTreeNodeRef.current?.classList.remove('tree-node--selected')
-    dispatch(setSelectedNode({ ...selectedNode, parent: 1 }))
+
+    dispatch(
+      setSelectedNode({
+        ...selectedNode!,
+        id: tree![0].id,
+        parent: tree![0].id,
+        metadata: {
+          ...selectedNode!.metadata!,
+          isDirectory: true,
+        },
+      })
+    )
   }
 
   /** 디렉토리 생성 버튼 클릭 이벤트 핸들러 */
   // 새 디렉토리 이름을 받는 모달 창을 띄운다.
-  const createDirectoryButtonClick = () => {
-    if (!selectedNode.metadata?.isDirectory) {
+  const handleCreateDirectoryButtonClick = () => {
+    if (!selectedNode!.metadata?.isDirectory) {
       toast({
         title: '파일에 디렉토리를 생성할 수 없습니다.',
         position: 'top-right',
@@ -122,7 +140,7 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
       })
     } else {
       setNewEntryType('directory')
-      onOpen()
+      onCreateModalOpen()
     }
   }
 
@@ -130,16 +148,18 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
   // 새 파일 이름을 받는 모달 창을 띄운다.
   const handleCreateFileButtonClick = () => {
     setNewEntryType('file')
-    onOpen()
+    onCreateModalOpen()
   }
 
   // ** 엔트리 생성 요청 핸들러 */
   const handleCreateEntry = async () => {
-    const isDirectory = selectedNode.metadata?.isDirectory!
+    const isDirectory = newEntryType === 'directory'
 
     const response = await createEntry(
       containerId!,
-      selectedNode.parent || 1,
+      selectedNode?.metadata!.isDirectory
+        ? (selectedNode!.id as number)
+        : (selectedNode!.parent as number),
       newEntryName,
       isDirectory
     )
@@ -166,11 +186,8 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
         isClosable: true,
       })
     }
-  }
 
-  /** 엔트리 생성 모달 onClose */
-  const modalClose = () => {
-    onClose()
+    onCreateModalClose()
     setNewEntryName('')
   }
 
@@ -233,14 +250,9 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
   const handleDeleteEntry = async () => {
     const response = await deleteEntry(containerId!, contextClickElementId)
 
-    if (response.success) {
-      const newTree = tree!.filter(
-        node =>
-          node.id !== contextClickElementId &&
-          node.parent !== contextClickElementId
-      )
-
-      dispatch(setTree(newTree))
+    if (response.success && response.data) {
+      const newTree = flattenTree(response.data)
+      dispatch(setTree(newTree as Tree))
     } else {
       toast({
         title: '삭제 실패',
@@ -257,6 +269,7 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
 
   return (
     <>
+      <ExplorerState containerId={containerId} />
       <Flex align="center">
         <Text fontSize="sm">탐색기</Text>
         <Spacer />
@@ -266,7 +279,7 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
           bgColor="transparent"
           icon={<FiFolderPlus />}
           fontSize="16px"
-          onClick={createDirectoryButtonClick}
+          onClick={handleCreateDirectoryButtonClick}
         />
         <IconButton
           aria-label="add files"
@@ -282,11 +295,9 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
           data={tree!}
           aria-label="directory tree"
           onNodeSelect={onNodeSelect}
-          defaultExpandedIds={[2]}
-          defaultSelectedIds={[3]}
+          defaultSelectedIds={tree!.length > 1 ? [tree![1].id] : [tree![0].id]}
           nodeRenderer={({
             element,
-            isBranch,
             isExpanded,
             getNodeProps,
             isSelected,
@@ -301,7 +312,8 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
                 setContextClickElementId(element.id as number)
               }}
             >
-              {isBranch ? (
+              {tree?.find(node => node.id === element.id)?.metadata
+                ?.isDirectory ? (
                 <FolderIcon isOpen={isExpanded} />
               ) : (
                 <FileIcon filename={element.name} />
@@ -335,9 +347,12 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
 
       {/* SECTION 엔트리 생성 모달 */}
       <Modal
-        isOpen={isOpen}
-        onClose={modalClose}
-        title="이름"
+        isOpen={isCreateModalOpen}
+        onClose={() => {
+          onCreateModalClose()
+          setNewEntryName('')
+        }}
+        title={`${newEntryType === 'file' ? '파일' : '디렉토리'} 생성`}
         cancelMessage="취소"
         confirmMessage="생성"
         confirmCallback={handleCreateEntry}

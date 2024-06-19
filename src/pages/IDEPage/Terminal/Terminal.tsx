@@ -1,5 +1,5 @@
-import { useAppSelector } from '@/hooks'
-import { selectFileExecuteResult } from '@/store/ideSlice'
+import { useAppDispatch, useAppSelector } from '@/hooks'
+import { selectFileExecuteResult, setFileExecuteResult } from '@/store/ideSlice'
 import { Terminal as xterm } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { useEffect, useRef } from 'react'
@@ -8,10 +8,12 @@ const Terminal = () => {
   const terminalRef = useRef(null)
   const terminal = useRef<xterm>()
   const fileExecuteResult = useAppSelector(selectFileExecuteResult)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     terminal.current = new xterm()
     terminal.current.open(terminalRef.current!)
+    terminal.current.resize(120, 12)
     terminal.current.write('$ ')
 
     terminal.current.options = {
@@ -41,7 +43,9 @@ const Terminal = () => {
 
   useEffect(() => {
     if (fileExecuteResult) {
-      terminal.current!.writeln(`\r\n${fileExecuteResult}`)
+      terminal.current!.write(`\r\n${fileExecuteResult}`)
+      terminal.current!.write('\r$ ')
+      dispatch(setFileExecuteResult(''))
     }
   }, [fileExecuteResult])
 

@@ -24,7 +24,7 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   }
 
   return (
-    <Flex direction="column" p={4} h="100vh">
+    <Flex direction="column" p={4} h="full" position="fixed" width="250px">
       <Flex align="center">
         <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
         <Spacer />

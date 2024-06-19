@@ -7,7 +7,8 @@ interface StateType {
   showExplorer: boolean
   showTerminal: boolean
   showPermissionSettings: boolean
-  selectedNode: TreeNode
+  selectedNode: TreeNode | null
+  currentFile: TreeNode | null
   tree: Tree | null
   showChatting: boolean
   fileExecuteResult: string
@@ -17,17 +18,8 @@ const initialState: StateType = {
   showExplorer: true,
   showTerminal: true,
   showPermissionSettings: false,
-  selectedNode: {
-    id: 2,
-    name: 'file',
-    children: [],
-    parent: null,
-    isBranch: true,
-    metadata: {
-      isDirectory: true,
-      content: 'content',
-    },
-  },
+  currentFile: null,
+  selectedNode: null,
   tree: null,
   showChatting: false,
   fileExecuteResult: '',
@@ -58,6 +50,9 @@ export const ideSlice = createSlice({
     setSelectedNode: (state, action: PayloadAction<TreeNode>) => {
       state.selectedNode = action.payload
     },
+    setCurrentFile: (state, action: PayloadAction<TreeNode>) => {
+      state.currentFile = action.payload
+    },
     setTree: (state, action: PayloadAction<Tree>) => {
       state.tree = action.payload
     },
@@ -73,6 +68,7 @@ export const {
   togglePermissionSettings,
   toggleChatting,
   setSelectedNode,
+  setCurrentFile,
   setTree,
   setFileExecuteResult,
 } = ideSlice.actions
@@ -87,3 +83,4 @@ export const selectShowPermissionSettings = (state: RootState) =>
 export const selectTree = (state: RootState) => state.ide.tree
 export const selectFileExecuteResult = (state: RootState) =>
   state.ide.fileExecuteResult
+export const selectCurrentFile = (state: RootState) => state.ide.currentFile

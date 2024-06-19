@@ -12,7 +12,7 @@ interface StateType {
 interface userInfo {
   id: string
   nickname: string
-  profileUrl: string | null
+  profileUrl: string
 }
 
 const initialState: StateType = {
@@ -20,7 +20,7 @@ const initialState: StateType = {
   isAuthenticated: true,
   id: '',
   nickname: '',
-  profileUrl: null,
+  profileUrl: 'http://localhost:8080',
 }
 
 export const userSlice = createSlice({

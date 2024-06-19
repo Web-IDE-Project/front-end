@@ -31,6 +31,8 @@ const Chat: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [highlightedIndices, setHighlightedIndices] = useState<number[]>([])
   const messageRefs = useRef<(HTMLDivElement | null)[]>([])
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const client = new Client({
@@ -152,11 +154,20 @@ const Chat: React.FC = () => {
     })
 
     setInputMessage('')
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages])
 
   return (
     <Flex
@@ -181,6 +192,7 @@ const Chat: React.FC = () => {
         />
       </InputGroup>
       <Flex
+        ref={chatContainerRef}
         flex="1"
         flexDir="column"
         gap={1}
@@ -221,6 +233,7 @@ const Chat: React.FC = () => {
       <form onSubmit={sendMessage}>
         <Flex gap={2}>
           <Input
+            ref={inputRef}
             value={inputMessage}
             onChange={e => setInputMessage(e.target.value)}
             type="text"

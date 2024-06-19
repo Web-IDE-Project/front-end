@@ -44,11 +44,7 @@ const IDEPage = () => {
   const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
   const showChatting = useAppSelector(selectShowChatting)
 
-  const {
-    clientRef,
-    docRef,
-    isLoading: isExplorerLoading,
-  } = useYorkieClient(containerId!)
+  const { docRef, isLoading: isExplorerLoading } = useYorkieClient(containerId!)
 
   // TODO - 서버와 연동 후 주석 삭제
   /* eslint-disable @typescript-eslint/no-unused-vars */

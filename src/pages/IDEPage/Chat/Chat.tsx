@@ -9,16 +9,18 @@ import {
   InputLeftElement,
   Text,
   Image,
+  Avatar,
 } from '@chakra-ui/react'
 import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
 import { useAppSelector } from '@/hooks'
-import { selectNickname } from '@/store/userSlice'
+import { selectNickname, selectProfileUrl } from '@/store/userSlice'
 
 const BASE_URI: string = 'ws://localhost:8080'
 const workspaceId: number = 1 // props로 값 받을 예정
 const username: string = useAppSelector(selectNickname)
+const profileUrl: string = useAppSelector(selectProfileUrl) || '';
 
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
@@ -62,14 +64,7 @@ const Bubble: React.FC<BubbleProps> = ({
   }
   return (
     <Flex>
-      <Image
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmHtyKWEyMh3c5_FfZez-wqWCpj8ptLUbvOe1pAq4_ZdEvWtpyXHBbU4tqPI6UHawF7_Y&usqp=CAU"
-        boxSize="40px"
-        borderRadius="full"
-        alt="user profile image"
-        mr={2}
-        mt={1}
-      />
+      <Avatar src={profileUrl} boxSize="40px" mr={2} mt={1}/>
       <Box>
         <Text fontSize="small" fontWeight="500">
           {senderName}

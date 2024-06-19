@@ -34,7 +34,7 @@ const PermissionSettings = ({
 
         const users = docRef!
           .current!.getPresences()
-          // .filter(presence => presence.presence.id !== userId)
+          .filter(presence => presence.presence.id !== userId)
           .map(presence => {
             return {
               id: presence.presence.id,

@@ -187,7 +187,6 @@ const ContainerItem = ({
           borderRadius="md"
           value={sharingOption}
           onChange={e => setSharingOption(e.target.value)}
-          defaultValue={'MY'}
         >
           <option value="MY">
             비공개(나의 컨테이너에서만 확인 가능합니다.)

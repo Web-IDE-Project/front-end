@@ -13,10 +13,12 @@ import {
 import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
+import { useAppSelector } from '@/hooks'
+import { selectNickname } from '@/store/userSlice'
 
 const BASE_URI: string = 'ws://localhost:8080'
 const workspaceId: number = 1 // props로 값 받을 예정
-const username: string = 'me' // 상태관리 store에서 값 가져올 예정, 나중에 프로필 이미지도 받아오기.
+const username: string = useAppSelector(selectNickname)
 
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
@@ -97,6 +99,40 @@ const Chat: React.FC = () => {
   const [highlightedIndices, setHighlightedIndices] = useState<number[]>([])
   const messageRefs = useRef<(HTMLDivElement | null)[]>([])
 
+  useEffect(() => {
+    const client = new Client({
+      brokerURL: `${BASE_URI}/api/ws`,
+      beforeConnect: () => console.log('Attempting to connect...'),
+      onConnect: () => handleWebSocketConnect(client),
+      onDisconnect: () => handleWebSocketDisconnect(client),
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      debug: str => console.debug(str),
+      onWebSocketClose: () => {
+        console.error('WebSocket connection closed');
+        setIsConnected(false)
+      },
+      onStompError: frame => {
+        console.error('Broker reported error: ' + frame.headers['message'])
+        console.error('Additional details: ' + frame.body)
+      },
+      onWebSocketError: event => {
+        console.error('WebSocket error', event)
+      },
+    })
+
+    client.activate()
+    clientRef.current = client
+
+    return () => {
+      console.log('Component unmounting, deactivating WebSocket connection...');
+      if (clientRef.current) {
+        clientRef.current.deactivate()
+      }
+    }
+  }, [])
+
   const handleWebSocketConnect = (client: Client) => {
     console.log('Connected to WebSocket')
     setIsConnected(true)
@@ -106,6 +142,10 @@ const Chat: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, newMessage])
     })
 
+    client.subscribe(`/api/sub/chat/${workspaceId}/count`, (message: IMessage) => {
+      setSubscriberCount(parseInt(message.body, 10));
+    });
+    
     client.publish({
       destination: `/api/pub/chat/${workspaceId}`,
       body: JSON.stringify({
@@ -113,10 +153,6 @@ const Chat: React.FC = () => {
         message: '',
       }),
     })
-    
-    client.subscribe(`/api/sub/chat/${workspaceId}/count`, (message: IMessage) => {
-      setSubscriberCount(parseInt(message.body, 10));
-    });
 
     client.publish({
       destination: `/api/pub/chat/${workspaceId}/count`,
@@ -134,47 +170,10 @@ const Chat: React.FC = () => {
         message: '',
       }),
     })
-    client.deactivate()
+    
     setIsConnected(false)
+    client.deactivate()
   }
-
-  // WebSocket 연결 설정
-  useEffect(() => {
-    const client = new Client({
-      brokerURL: `${BASE_URI}/api/ws`,
-      beforeConnect: () => {
-        console.log('Attempting to connect...')
-      },
-      onConnect: () => handleWebSocketConnect(client),
-      onDisconnect: () => handleWebSocketDisconnect(client),
-      onWebSocketClose: () => {
-        console.log('WebSocket closed')
-        setIsConnected(false)
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      debug: str => {
-        console.debug(str)
-      },
-      onStompError: frame => {
-        console.error('Broker reported error: ' + frame.headers['message'])
-        console.error('Additional details: ' + frame.body)
-      },
-      onWebSocketError: event => {
-        console.error('WebSocket error', event)
-      },
-    })
-
-    client.activate()
-    clientRef.current = client
-
-    return () => {
-      if (clientRef.current) {
-        clientRef.current.deactivate()
-      }
-    }
-  }, [])
 
   // 메시지 검색 기능
   useEffect(() => {

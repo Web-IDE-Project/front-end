@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
 import Logo from '@/assets/images/logo.png'
+import { logout } from '@/services/user'
 
 const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const categories = [
@@ -21,6 +22,21 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
 
   const onSidebarOpenButton = () => {
     toggleSidebar()
+  }
+
+  const onClickLogout = async () => {
+    try {
+      const response = await logout();
+      if (response.success) {
+        alert(response.data?.message);
+      } else {
+        alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        console.error('Error:', response.error)
+      }
+    } catch (error) {
+      alert('로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      console.error('Error:', error);
+    }
   }
 
   return (
@@ -92,7 +108,7 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
           borderRadius="xl"
           transition="background-color 0.3s"
         >
-          <Flex p={4}>
+          <Flex p={4} onClick={onClickLogout}>
             <Text fontSize="md">로그아웃</Text>
           </Flex>
         </Box>

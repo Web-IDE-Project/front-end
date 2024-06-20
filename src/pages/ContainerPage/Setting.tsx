@@ -1,6 +1,6 @@
 import { PlusSquareIcon } from "@chakra-ui/icons";
 import { Button, Divider, Flex, FormControl, FormLabel, Input, Text, Box, Avatar } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import API from "@/services/API";
 import Modal from "@/components/Modal";
@@ -44,6 +44,13 @@ const Setting = () => {
             confirmNewPassword: null,
         }
     });
+    const [isSocialLogined, setIsSocialLogined] = useState<boolean>(false);
+
+    useEffect(() => {
+        const socials: string[] = ['naver', 'kakao', 'google'];
+        const isSocialLogin: boolean = socials.some(social => username.startsWith(social));
+        setIsSocialLogined(isSocialLogin);
+    }, [])
 
     const onSubmit: SubmitHandler<FormValues> = async (data) => {
         try {
@@ -51,23 +58,23 @@ const Setting = () => {
                 nickname: data.nickname || null,
                 password: data.newPassword || null,
             });
-    
+
             const formData = new FormData();
             formData.append('updateMemberRequestDTO', requestData);
             if (profileImage?.profileImage) {
                 formData.append('profileImage', profileImage.profileImage);
             }
-    
+
             const response = await API.put('/api/member', formData);
-            
+
             if (response.status === 200) {
                 alert('수정이 완료되었습니다.');
-    
+
                 const userStatus = await checkLoginStatus();
-    
+
                 if (userStatus.success) {
                     const userInfo = userStatus.data?.userInfo;
-    
+
                     if (userInfo) {
                         dispatch(setNickName(userInfo.nickname));
                         dispatch(setProfileUrl(userInfo.awsS3SavedFileURL));
@@ -80,7 +87,7 @@ const Setting = () => {
             } else {
                 alert('수정이 정상적으로 완료되지 않았습니다.');
             }
-    
+
             setChangePassword(false);
         } catch (error) {
             console.error('Error:', error);
@@ -205,38 +212,40 @@ const Setting = () => {
                     {errors.nickname && <Text color="tomato">{errors.nickname.message}</Text>}
                 </FormControl>
 
-                <Box my={4}>
-                    <Flex justifyContent='space-between' align='center'>
-                        <Text fontWeight='500'>비밀번호</Text>
-                        {!changePassword &&
-                            <Button colorScheme="green" variant='outline' onClick={handleOpenModal}>비밀번호 변경</Button>
-                        }
-                        {changePassword &&
-                            <Button colorScheme="red" variant='outline' onClick={() => {
-                                setChangePassword(false)
-                                setValue('newPassword', null);
-                                setValue('confirmNewPassword', null);
-                            }}>취소</Button>
-                        }
-                        <Modal
-                            isOpen={isModalOpen}
-                            onClose={handleCloseModal}
-                            title='현재 비밀번호를 입력하세요'
-                            cancelMessage="취소"
-                            confirmMessage="확인"
-                            confirmCallback={handleConfirm}
-                            confirmButtonColorScheme="green"
-                        >
-                            <Input
-                                {...register('currentPassword')}
-                                type="password"
-                                placeholder="비밀번호"
-                                focusBorderColor="green.400"
-                            />
-                        </Modal>
-                    </Flex>
-                    {errorPassword && <Text color='tomato'>입력하신 비밀번호가 올바르지 않습니다.</Text>}
-                </Box>
+                {!isSocialLogined &&
+                    <Box my={4}>
+                        <Flex justifyContent='space-between' align='center'>
+                            <Text fontWeight='500'>비밀번호</Text>
+                            {!changePassword &&
+                                <Button colorScheme="green" variant='outline' onClick={handleOpenModal}>비밀번호 변경</Button>
+                            }
+                            {changePassword &&
+                                <Button colorScheme="red" variant='outline' onClick={() => {
+                                    setChangePassword(false)
+                                    setValue('newPassword', null);
+                                    setValue('confirmNewPassword', null);
+                                }}>취소</Button>
+                            }
+                            <Modal
+                                isOpen={isModalOpen}
+                                onClose={handleCloseModal}
+                                title='현재 비밀번호를 입력하세요'
+                                cancelMessage="취소"
+                                confirmMessage="확인"
+                                confirmCallback={handleConfirm}
+                                confirmButtonColorScheme="green"
+                            >
+                                <Input
+                                    {...register('currentPassword')}
+                                    type="password"
+                                    placeholder="비밀번호"
+                                    focusBorderColor="green.400"
+                                />
+                            </Modal>
+                        </Flex>
+                        {errorPassword && <Text color='tomato'>입력하신 비밀번호가 올바르지 않습니다.</Text>}
+                    </Box>
+                }
 
                 {changePassword &&
                     <FormControl my={4}>

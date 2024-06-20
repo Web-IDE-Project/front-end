@@ -11,7 +11,7 @@ import CodeEditor from './CodeEditor/CodeEditor'
 import Terminal from './Terminal/Terminal'
 import Tab from './Tab/Tab.tsx'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { startContainer } from '@/services/container'
 import Loading from './Loading'
 import Explorer from './TabItem/Explorer'
@@ -19,7 +19,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
   selectShowChatting,
   selectShowExplorer,
-  selectShowPermissionSettings,
   selectShowTerminal,
   setCurrentFile,
   setSelectedNode,
@@ -29,6 +28,13 @@ import { flattenTree } from 'react-accessible-treeview'
 import { Tree, nodeMetadata } from '@/models/entry.ts'
 import Chat from './Chat/Chat.tsx'
 import useYorkieClient from '@/hooks/useYorkieClient.ts'
+import { selectId } from '@/store/userSlice.ts'
+
+const CATEGORY: { [key: string]: string } = {
+  '내 컨테이너': 'MY',
+  '강의 컨테이너': 'LECTURE',
+  '질문 컨테이너': 'QUESTION',
+}
 
 const IDEPage = () => {
   const { containerId } = useParams()
@@ -36,8 +42,15 @@ const IDEPage = () => {
 
   const showTerminal = useAppSelector(selectShowTerminal)
   const showExplorer = useAppSelector(selectShowExplorer)
-  const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
   const showChatting = useAppSelector(selectShowChatting)
+  const userId = useAppSelector(selectId)
+
+  const location = useLocation()
+  const locationState = { ...location.state }
+  const category = CATEGORY[locationState.category]
+  const isOwner = locationState.ownerId === userId
+  const title = locationState.title
+  const status = locationState.status
 
   const { isLoading: isExplorerLoading } = useYorkieClient(containerId!)
   const [isLoading, setIsLoading] = useState(true)
@@ -86,12 +99,17 @@ const IDEPage = () => {
   return (
     <>
       {/* SECTION 상단바 - 로고, 저장/실행 버튼 */}
-      <NavBar containerId={containerId} />
+      <NavBar containerId={containerId} status={status} />
 
       {/* SECTION 하단 영역 */}
       <Flex minH="calc(100vh - 48px)">
         {/* SECTION 파일 탐색기, 터미널, 권한 관리 탭 */}
-        <Tab />
+        <Tab
+          containerId={containerId}
+          category={category}
+          isOwner={isOwner}
+          status={status}
+        />
 
         {/* SECTION 파일 탐색기/권한 관리 영역 */}
         <Box
@@ -99,10 +117,16 @@ const IDEPage = () => {
           p={2}
           borderRight="1px"
           borderColor="gray.200"
-          display={showExplorer || showPermissionSettings ? 'block' : 'none'}
+          display={showExplorer ? 'block' : 'none'}
         >
           <Box display={showExplorer ? 'block' : 'none'}>
-            <Explorer containerId={containerId} />
+            <Explorer
+              containerId={containerId}
+              category={category}
+              isOwner={isOwner}
+              title={title}
+              status={status}
+            />
           </Box>
         </Box>
 
@@ -130,7 +154,13 @@ const IDEPage = () => {
           </Box>
           <Flex grow={1}>
             {/* TODO - language 동적으로 수정 */}
-            <CodeEditor language="javascript" containerId={containerId} />
+            <CodeEditor
+              language="javascript"
+              containerId={containerId}
+              category={category}
+              isOwner={isOwner}
+              status={status}
+            />
           </Flex>
 
           {/* SECTION 터미널 영역 */}

@@ -21,7 +21,12 @@ import {
 import { executeFile, saveFile } from '@/services/entry'
 import { getExtension } from '@/utils/entry'
 
-const NavBar = ({ containerId }: { containerId: string | undefined }) => {
+interface Props {
+  containerId: string | undefined
+  status: string
+}
+
+const NavBar = ({ containerId, status }: Props) => {
   const toast = useToast()
 
   const dispatch = useAppDispatch()
@@ -90,40 +95,45 @@ const NavBar = ({ containerId }: { containerId: string | undefined }) => {
     >
       <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
       <Spacer />
-      <Button
-        size="sm"
-        colorScheme="green"
-        variant="outline"
-        leftIcon={<IoIosSave />}
-        onClick={saveButtonClick}
-      >
-        저장
-      </Button>
-      <Button
-        size="sm"
-        colorScheme="green"
-        variant="solid"
-        leftIcon={<IoIosPlay />}
-        onClick={onExecuteButtonClick}
-      >
-        실행
-      </Button>
-      <Spacer />
-      {/* TODO - 상태에 따라 아이콘 visibility 여부 설정 */}
-      <IconButton
-        size="sm"
-        aria-label="mic"
-        icon={<FiMic />}
-        bgColor="transparent"
-        fontSize={'20px'}
-      />
-      {/* <IconButton
+      {status === 'DEFAULT' && (
+        <>
+          <Button
+            size="sm"
+            colorScheme="green"
+            variant="outline"
+            leftIcon={<IoIosSave />}
+            onClick={saveButtonClick}
+          >
+            저장
+          </Button>
+          <Button
+            size="sm"
+            colorScheme="green"
+            variant="solid"
+            leftIcon={<IoIosPlay />}
+            onClick={onExecuteButtonClick}
+          >
+            실행
+          </Button>
+          <Spacer />
+          {/* TODO - 상태에 따라 아이콘 visibility 여부 설정 */}
+          <IconButton
+            size="sm"
+            aria-label="mic"
+            icon={<FiMic />}
+            bgColor="transparent"
+            fontSize={'20px'}
+          />
+          {/* <IconButton
         size="sm"
         aria-label="mic"
         icon={<FiMicOff />}
         bgColor="transparent"
         fontSize={'20px'}
       /> */}
+        </>
+      )}
+
       <IconButton
         size="sm"
         aria-label="chat"

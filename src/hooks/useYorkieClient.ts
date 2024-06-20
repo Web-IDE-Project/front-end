@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { TreeNode } from '@/models/entry'
 import { selectTree, setTree } from '@/store/ideSlice'
-import { selectId, selectNickname } from '@/store/userSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import yorkie, {
   Document,
@@ -20,9 +19,6 @@ const useYorkieClient = (containerId: string) => {
   const clientRef = useRef<Client>()
   const docRef = useRef<Document<ContainerDoc, Indexable>>()
 
-  const userId = useAppSelector(selectId)
-  const userNickname = useAppSelector(selectNickname)
-
   const dispatch = useAppDispatch()
   const tree = useAppSelector(selectTree)
 
@@ -34,7 +30,6 @@ const useYorkieClient = (containerId: string) => {
       apiKey: import.meta.env.VITE_YORKIE_API_KEY,
     })
 
-    // setClient(client)
     clientRef.current = client
 
     await client.activate()
@@ -53,13 +48,10 @@ const useYorkieClient = (containerId: string) => {
     docRef.current = doc
 
     await client.attach(doc, {
-      initialPresence: {
-        id: userId,
-        nickname: userNickname,
-      },
+      initialPresence: {},
     })
 
-    // 3. 해당 키의 문서에 content가 없으면 새로운 Text 생성
+    // 3. 해당 키의 문서에 content가 없으면 새로운 tree 생성
     doc.update(root => {
       if (!root.tree) {
         root.tree = []
@@ -68,16 +60,6 @@ const useYorkieClient = (containerId: string) => {
         for (const treeNode of tree!) {
           root.tree.push(treeNode)
         }
-      }
-
-      // 해당 키의 문서에 user가 없으면 초기값 할당
-      if (!root.users) {
-        root.users = {}
-      }
-
-      if (userId) {
-        // TODO -  현재 유저가 이 컨테이너의 생성자가 아닐 경우 viewer 권한 부여
-        root.users[userId] = 'admin'
       }
     }, 'create content if not exists')
 
@@ -96,7 +78,7 @@ const useYorkieClient = (containerId: string) => {
 
     await client.sync()
 
-    syncFileTree()
+    // syncFileTree()
 
     setIsLoading(false)
   }, [containerId])
@@ -131,8 +113,6 @@ const useYorkieClient = (containerId: string) => {
   }, [])
 
   return {
-    clientRef,
-    docRef,
     isLoading,
   }
 }

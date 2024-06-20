@@ -25,13 +25,8 @@ import {
   setSelectedNode,
   setTree,
 } from '@/store/ideSlice'
-import PermissionSettings from './TabItem/PermissionSettings.tsx'
 import { flattenTree } from 'react-accessible-treeview'
 import { Tree, nodeMetadata } from '@/models/entry.ts'
-// NOTE - 테스트용 파일 리스트
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// @ts-ignore
-// import entries from '@/data/file-system-entry.json'
 import Chat from './Chat/Chat.tsx'
 import useYorkieClient from '@/hooks/useYorkieClient.ts'
 
@@ -44,24 +39,13 @@ const IDEPage = () => {
   const showPermissionSettings = useAppSelector(selectShowPermissionSettings)
   const showChatting = useAppSelector(selectShowChatting)
 
-  const { docRef, isLoading: isExplorerLoading } = useYorkieClient(containerId!)
-
-  // TODO - 서버와 연동 후 주석 삭제
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  // @ts-ignore
+  const { isLoading: isExplorerLoading } = useYorkieClient(containerId!)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // NOTE - 상태 추적 변수: 로딩 중 컴포넌트가 언마운트되면 요청을 중단한다.
     let isCancelled = false
 
-    // TODO - 테스트용 코드
-    // const tree = flattenTree<nodeMetadata>(entries as any)
-    // dispatch(setTree(tree as Tree))
-
-    // TODO - 서버와 연동 후 주석 삭제
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    // @ts-ignore
     const startContainerRequest = async () => {
       setIsLoading(true) // 로딩 시작
 
@@ -119,9 +103,6 @@ const IDEPage = () => {
         >
           <Box display={showExplorer ? 'block' : 'none'}>
             <Explorer containerId={containerId} />
-          </Box>
-          <Box display={showPermissionSettings ? 'block' : 'none'}>
-            <PermissionSettings docRef={docRef || null} />
           </Box>
         </Box>
 

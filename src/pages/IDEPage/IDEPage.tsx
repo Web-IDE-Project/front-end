@@ -99,7 +99,12 @@ const IDEPage = () => {
   return (
     <>
       {/* SECTION 상단바 - 로고, 저장/실행 버튼 */}
-      <NavBar containerId={containerId} status={status} />
+      <NavBar
+        containerId={containerId}
+        status={status}
+        category={category}
+        isOwner={isOwner}
+      />
 
       {/* SECTION 하단 영역 */}
       <Flex minH="calc(100vh - 48px)">
@@ -165,7 +170,7 @@ const IDEPage = () => {
 
           {/* SECTION 터미널 영역 */}
           <Box h={showTerminal ? 200 : 0}>
-            <Terminal />
+            <Terminal containerId={containerId} />
           </Box>
         </Flex>
 

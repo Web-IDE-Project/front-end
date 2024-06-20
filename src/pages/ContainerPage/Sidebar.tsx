@@ -12,8 +12,13 @@ import {
 import { NavLink, useNavigate } from 'react-router-dom'
 import Logo from '@/assets/images/logo.png'
 import { logout } from '@/services/user'
-import { logout as logoutAction } from '@/store/userSlice'
+import {
+  logout as logoutAction,
+  selectNickname,
+  selectProfileUrl,
+} from '@/store/userSlice'
 import { useDispatch } from 'react-redux'
+import { useAppSelector } from '@/hooks'
 
 const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const categories = [
@@ -23,6 +28,9 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   ]
 
   const navigate = useNavigate()
+
+  const nickname = useAppSelector(selectNickname)
+  const profileUrl = useAppSelector(selectProfileUrl)
 
   const onSidebarOpenButton = () => {
     toggleSidebar()
@@ -59,9 +67,9 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
         />
       </Flex>
       <Flex align="center" py={8} pl={2} gap={2}>
-        <Avatar name="Avatar" src="https://bit.ly/dan-abramov" />
+        <Avatar name={nickname} src={profileUrl || ''} />
         <Text fontSize="md" as="b">
-          코딩 고수
+          {nickname}
         </Text>
       </Flex>
       <Divider orientation="horizontal" mb={3} />
@@ -102,7 +110,12 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
           borderRadius="xl"
           transition="background-color 0.3s"
         >
-          <Flex p={4}>
+          <Flex
+            p={4}
+            onClick={() => {
+              navigate('setting')
+            }}
+          >
             <Text fontSize="md">설정</Text>
           </Flex>
         </Box>

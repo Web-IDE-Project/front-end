@@ -23,9 +23,8 @@ jobs:
 
       - name: Build project
         env:
-          VITE_YORKIE_API_ADDR: ${{ secrets.VITE_YORKIE_API_ADDR }}
           VITE_YORKIE_API_KEY: ${{ secrets.VITE_YORKIE_API_KEY }}
-          VITE_SERVER_BASE_URL: ${{ secrets.VITE_SERVER_BASE_URL }}
+          VITE_SERVER_BASE_URL: ${{ vars.VITE_SERVER_BASE_URL }}
         run: echo $VITE_SERVER_BASE_URL && npm run build
 
       - name: Deploy to Vercel

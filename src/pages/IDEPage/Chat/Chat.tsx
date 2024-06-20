@@ -181,13 +181,13 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     }
   }
 
-  // 로컬 오디오 스트림 정지
-  const stopLocalStream = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => track.stop())
-      localStreamRef.current = null
-    }
-  }
+  // 로컬 오디오 스트림 정지(사용하는 부분 없어 주석 처리)
+  // const stopLocalStream = () => {
+  //   if (localStreamRef.current) {
+  //     localStreamRef.current.getTracks().forEach(track => track.stop())
+  //     localStreamRef.current = null
+  //   }
+  // }
 
   // 피어 연결 설정 및 ICE candidate 이벤트 핸들링 (특정 사용자와의 피어 연결을 설정)
   const setupPeerConnection = (peerId: string) => {

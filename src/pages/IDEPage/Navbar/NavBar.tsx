@@ -20,13 +20,16 @@ import {
 } from '@/store/ideSlice'
 import { executeFile, saveFile } from '@/services/entry'
 import { getExtension } from '@/utils/entry'
+import { isEditable } from '@/utils/ide'
 
 interface Props {
   containerId: string | undefined
   status: string
+  category: string
+  isOwner: boolean
 }
 
-const NavBar = ({ containerId, status }: Props) => {
+const NavBar = ({ containerId, status, category, isOwner }: Props) => {
   const toast = useToast()
 
   const dispatch = useAppDispatch()
@@ -95,7 +98,7 @@ const NavBar = ({ containerId, status }: Props) => {
     >
       <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
       <Spacer />
-      {status === 'DEFAULT' && (
+      {isEditable(status, category, isOwner) && (
         <>
           <Button
             size="sm"
@@ -115,35 +118,36 @@ const NavBar = ({ containerId, status }: Props) => {
           >
             실행
           </Button>
-          <Spacer />
-          {/* TODO - 상태에 따라 아이콘 visibility 여부 설정 */}
-          <IconButton
-            size="sm"
-            aria-label="mic"
-            icon={<FiMic />}
-            bgColor="transparent"
-            fontSize={'20px'}
-          />
-          {/* <IconButton
+        </>
+      )}
+
+      <Spacer />
+      <Flex visibility={category !== 'MY' ? 'visible' : 'hidden'}>
+        <IconButton
+          size="sm"
+          aria-label="mic"
+          icon={<FiMic />}
+          bgColor="transparent"
+          fontSize={'20px'}
+        />
+        {/* <IconButton
         size="sm"
         aria-label="mic"
         icon={<FiMicOff />}
         bgColor="transparent"
         fontSize={'20px'}
       /> */}
-        </>
-      )}
-
-      <IconButton
-        size="sm"
-        aria-label="chat"
-        icon={<IoChatbubbleEllipsesOutline />}
-        bgColor="transparent"
-        fontSize={'20px'}
-        onClick={() => {
-          dispatch(toggleChatting())
-        }}
-      />
+        <IconButton
+          size="sm"
+          aria-label="chat"
+          icon={<IoChatbubbleEllipsesOutline />}
+          bgColor="transparent"
+          fontSize={'20px'}
+          onClick={() => {
+            dispatch(toggleChatting())
+          }}
+        />
+      </Flex>
     </Flex>
   )
 }

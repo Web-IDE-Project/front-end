@@ -179,7 +179,7 @@ const SignUp: React.FC = () => {
                   required: ERROR_MESSAGES.REQUIRED,
                   pattern: {
                     value:
-                      /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+])(?=.*[0-9]).{8,15}$/,
+                      /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+-=])(?=.*[0-9]).{8,15}$/,
                     message: ERROR_MESSAGES.PASSWORD_INVALID,
                   },
                   minLength: {

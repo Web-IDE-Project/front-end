@@ -264,8 +264,10 @@ const ContainerList = ({ category }: Props) => {
                       title={container.title}
                       language={container.language}
                       description={container.description}
+                      username={container.username}
                       nickname={container.nickname}
-                      profileUrl={container.profileUrl}
+                      awsS3SavedFileUrl={container.awsS3SavedFileUrl}
+                      status={container.status}
                       onEditInfoButtonClick={handleEditContainerInfo}
                       onDeleteButtonClick={handleDeleteContainer}
                     />

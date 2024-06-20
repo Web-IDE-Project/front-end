@@ -19,8 +19,9 @@ const useYorkieClient = (containerId: string) => {
   const clientRef = useRef<Client>()
   const docRef = useRef<Document<ContainerDoc, Indexable>>()
 
-  const dispatch = useAppDispatch()
   const tree = useAppSelector(selectTree)
+
+  const dispatch = useAppDispatch()
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -56,9 +57,11 @@ const useYorkieClient = (containerId: string) => {
       if (!root.tree) {
         root.tree = []
 
-        // 기존에 저장된 트리 삽입
-        for (const treeNode of tree!) {
-          root.tree.push(treeNode)
+        if (tree) {
+          // 기존에 저장된 트리 삽입
+          for (const treeNode of tree!) {
+            root.tree.push(treeNode)
+          }
         }
       }
     }, 'create content if not exists')
@@ -78,14 +81,21 @@ const useYorkieClient = (containerId: string) => {
 
     await client.sync()
 
-    // syncFileTree()
-
     setIsLoading(false)
-  }, [containerId])
+  }, [containerId, dispatch, tree])
+
+  useEffect(() => {
+    initializeYorkie()
+
+    return () => {
+      clientRef.current!.detach(docRef.current!)
+      clientRef.current!.deactivate()
+    }
+  }, [])
 
   // local 조작에 의해 tree 상태가 바뀌면 remote 문서를 update
   useEffect(() => {
-    if (docRef.current !== undefined && tree) {
+    if (docRef.current?.getRoot().tree && tree) {
       const remoteTree = `[${docRef.current.getRoot().tree.toString()}]`
 
       // local에서 바꾼 경우, 이어지는 remote change에 의해 순환상태에 빠지는 걸 막기 위한 return문
@@ -102,15 +112,6 @@ const useYorkieClient = (containerId: string) => {
       })
     }
   }, [tree])
-
-  useEffect(() => {
-    initializeYorkie()
-
-    return () => {
-      clientRef.current!.detach(docRef.current!)
-      clientRef.current!.deactivate()
-    }
-  }, [])
 
   return {
     isLoading,

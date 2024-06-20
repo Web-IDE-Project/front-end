@@ -3,6 +3,8 @@ export interface Container {
   title: string
   language: string
   description: string
+  status?: string
+  username?: string
   nickname?: string
-  profileUrl?: string
+  awsS3SavedFileUrl?: string
 }

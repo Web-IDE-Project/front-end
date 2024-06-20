@@ -37,8 +37,17 @@ import { useRef, useState } from 'react'
 import { createEntry, deleteEntry, editEntryName } from '@/services/entry'
 import { Tree, TreeNode } from '@/models/entry'
 import { getExtension } from '@/utils/entry'
+import { isEditable } from '@/utils/ide'
 
-const Explorer = ({ containerId }: { containerId: string | undefined }) => {
+interface Props {
+  containerId: string | undefined
+  category: string
+  isOwner: boolean
+  title: string
+  status: string
+}
+
+const Explorer = ({ containerId, category, isOwner, title, status }: Props) => {
   const toast = useToast()
   const {
     isOpen: isMenuOpen,
@@ -268,25 +277,32 @@ const Explorer = ({ containerId }: { containerId: string | undefined }) => {
 
   return (
     <>
-      <Flex align="center">
-        <Text fontSize="sm">탐색기</Text>
+      <Text fontSize="xs" mb={2}>
+        파일 탐색기
+      </Text>
+      <Flex align="center" mb={1}>
+        <Text as="b">{title}</Text>
         <Spacer />
-        <IconButton
-          aria-label="add folder"
-          size="xs"
-          bgColor="transparent"
-          icon={<FiFolderPlus />}
-          fontSize="16px"
-          onClick={handleCreateDirectoryButtonClick}
-        />
-        <IconButton
-          aria-label="add files"
-          size="xs"
-          bgColor="transparent"
-          icon={<FiFilePlus />}
-          fontSize="16px"
-          onClick={handleCreateFileButtonClick}
-        />
+        {isEditable(status, category, isOwner) && (
+          <>
+            <IconButton
+              aria-label="add folder"
+              size="xs"
+              bgColor="transparent"
+              icon={<FiFolderPlus />}
+              fontSize="16px"
+              onClick={handleCreateDirectoryButtonClick}
+            />
+            <IconButton
+              aria-label="add files"
+              size="xs"
+              bgColor="transparent"
+              icon={<FiFilePlus />}
+              fontSize="16px"
+              onClick={handleCreateFileButtonClick}
+            />
+          </>
+        )}
       </Flex>
       <Flex className="directory" direction="column" minH="calc(100vh - 120px)">
         <TreeView

@@ -125,3 +125,26 @@ export async function deleteContainer(
     }
   }
 }
+
+/** 컨테이너 상태(해결/종료/비공개) 수정 API */
+export async function editContainerStatus(
+  containerId: string,
+  status: string
+): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response: AxiosResponse<{ message: string }> = await API.put(
+      `/api/workspaces/${containerId}/${status}`
+    )
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}

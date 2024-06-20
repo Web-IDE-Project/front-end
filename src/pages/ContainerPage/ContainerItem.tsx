@@ -38,8 +38,10 @@ const ContainerItem = ({
   language,
   description,
   nickname,
-  profileUrl,
+  username,
+  awsS3SavedFileUrl,
   category,
+  status,
   onEditInfoButtonClick,
   onDeleteButtonClick,
 }: Props) => {
@@ -63,12 +65,34 @@ const ContainerItem = ({
     onClose()
   }
 
+  const statusText = () => {
+    if (category === '강의 컨테이너' && status === 'COMPLETE') {
+      return '종료'
+    }
+
+    if (category === '질문 컨테이너' && status === 'SOLVE') {
+      return '해결'
+    }
+
+    return ''
+  }
+
   return (
     <>
-      <Card minH={280}>
+      <Card
+        minH={280}
+        borderColor={
+          !status ? 'none' : status !== 'DEFAULT' ? 'green.500' : 'none'
+        }
+        borderWidth={0.5}
+      >
         <CardHeader>
           <Flex align="center">
-            <Heading size="md">{title}</Heading>
+            <Flex align="center" width="full">
+              <Heading size="md">{title}</Heading>
+              <Spacer />
+              <Text color="green">{statusText()}</Text>
+            </Flex>
             <Spacer />
             {category === '내 컨테이너' && (
               <>
@@ -96,17 +120,12 @@ const ContainerItem = ({
         {/* Card Body */}
         <Text px={5}>{description}</Text>
         <Spacer />
-        <Flex
-          align="center"
-          px={5}
-          pt={3}
-          display={nickname && profileUrl ? 'flex' : 'none'}
-        >
+        <Flex align="center" px={5} pt={3} display={nickname ? 'flex' : 'none'}>
           <Spacer />
           <Text fontSize="sm" pr={1}>
             {nickname}
           </Text>
-          <Avatar name="Avatar" size="sm" src={profileUrl} />
+          <Avatar name={nickname} size="sm" src={awsS3SavedFileUrl || ''} />
         </Flex>
         {/* Card Body */}
         <CardFooter pt={3}>
@@ -114,7 +133,16 @@ const ContainerItem = ({
             w="100%"
             size="sm"
             variant="outline"
-            onClick={() => navigate(`/container/${id}/workspace`)}
+            onClick={() => {
+              navigate(`/container/${id}/workspace`, {
+                state: {
+                  category: category,
+                  ownerId: username,
+                  title: title,
+                  status: status,
+                },
+              })
+            }}
           >
             {/* TODO - 현재 로그인한 사용자가 생성하지 않은 컨테이너는 '참여' 버튼으로 보여주기(강의/질문 컨테이너) */}
             실행

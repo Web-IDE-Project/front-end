@@ -14,6 +14,7 @@ import { showMinimap } from '@replit/codemirror-minimap'
 import yorkie, { Client, Indexable, Document, type Text } from 'yorkie-js-sdk'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { selectCurrentFile, setCurrentFile } from '@/store/ideSlice'
+import { isEditable } from '@/utils/ide'
 
 type YorkieDoc = {
   content: Text
@@ -26,13 +27,21 @@ const EXTENSIONS: { [key: string]: LanguageSupport } = {
   java: java(),
 }
 
+interface Props {
+  language: string
+  containerId: string | undefined
+  category: string
+  isOwner: boolean
+  status: string
+}
+
 const CodeEditor = ({
   language,
   containerId,
-}: {
-  language: string
-  containerId: string | undefined
-}) => {
+  category,
+  isOwner,
+  status,
+}: Props) => {
   const editorRef = useRef<HTMLDivElement>(null)
   const codemirrorViewRef = useRef<EditorView>()
 
@@ -167,6 +176,8 @@ const CodeEditor = ({
           }
         }),
         updateListener,
+        EditorView.editable.of(isEditable(status, category, isOwner)),
+        EditorState.readOnly.of(!isEditable(status, category, isOwner)),
       ],
     })
 

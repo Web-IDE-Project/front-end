@@ -6,7 +6,6 @@ import { Tree, TreeNode } from '@/models/entry'
 interface StateType {
   showExplorer: boolean
   showTerminal: boolean
-  showPermissionSettings: boolean
   selectedNode: TreeNode | null
   currentFile: TreeNode | null
   tree: Tree | null
@@ -17,7 +16,6 @@ interface StateType {
 const initialState: StateType = {
   showExplorer: true,
   showTerminal: true,
-  showPermissionSettings: false,
   currentFile: null,
   selectedNode: null,
   tree: null,
@@ -31,18 +29,9 @@ export const ideSlice = createSlice({
   reducers: {
     toggleExplorer: state => {
       state.showExplorer = !state.showExplorer
-      if (state.showExplorer && state.showPermissionSettings) {
-        state.showPermissionSettings = false
-      }
     },
     toggleTerminal: state => {
       state.showTerminal = !state.showTerminal
-    },
-    togglePermissionSettings: state => {
-      state.showPermissionSettings = !state.showPermissionSettings
-      if (state.showPermissionSettings && state.showExplorer) {
-        state.showExplorer = false
-      }
     },
     toggleChatting: state => {
       state.showChatting = !state.showChatting
@@ -65,7 +54,6 @@ export const ideSlice = createSlice({
 export const {
   toggleExplorer,
   toggleTerminal,
-  togglePermissionSettings,
   toggleChatting,
   setSelectedNode,
   setCurrentFile,
@@ -78,8 +66,6 @@ export const selectShowExplorer = (state: RootState) => state.ide.showExplorer
 export const selectShowTerminal = (state: RootState) => state.ide.showTerminal
 export const selectSelectedNode = (state: RootState) => state.ide.selectedNode
 export const selectShowChatting = (state: RootState) => state.ide.showChatting
-export const selectShowPermissionSettings = (state: RootState) =>
-  state.ide.showPermissionSettings
 export const selectTree = (state: RootState) => state.ide.tree
 export const selectFileExecuteResult = (state: RootState) =>
   state.ide.fileExecuteResult

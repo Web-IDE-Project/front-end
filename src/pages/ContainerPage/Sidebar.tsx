@@ -91,7 +91,6 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <Text fontSize="md" mr={2}>
                     {category.name}
                   </Text>
-                  <Text color="green.900">3</Text>
                 </Flex>
               </Box>
             )}

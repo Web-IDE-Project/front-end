@@ -3,7 +3,7 @@ import { selectFileExecuteResult, setFileExecuteResult } from '@/store/ideSlice'
 import { Client, IMessage } from '@stomp/stompjs'
 import { Terminal as xterm } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 const BASE_URI = 'ws://localhost:8080'
 

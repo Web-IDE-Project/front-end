@@ -23,13 +23,12 @@ jobs:
 
       - name: Generate Environment Variables File for Production
         run: |
-          echo "VITE_YORKIE_API_KEY=$VITE_YORKIE_API_KEY" >> .env.production
-          echo "VITE_SERVER_BASE_URL=$VITE_SERVER_BASE_URL" >> .env.production
+          touch .env
+          echo VITE_YORKIE_API_KEY=${{ secrets.VITE_YORKIE_API_KEY }} >> .env
+          echo VITE_SERVER_BASE_URL=${{ secrets.VITE_SERVER_BASE_URL }} >> .env
+          cat .env
 
       - name: Build project
-        env:
-          VITE_YORKIE_API_KEY: ${{ secrets.VITE_YORKIE_API_KEY }}
-          VITE_SERVER_BASE_URL: ${{ secrets.VITE_SERVER_BASE_URL }}
         run: npm run build
 
       - name: Deploy to Vercel

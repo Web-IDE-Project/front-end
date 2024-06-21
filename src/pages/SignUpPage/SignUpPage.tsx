@@ -23,8 +23,7 @@ interface SignUpFormFields {
 
 const ERROR_MESSAGES = {
   REQUIRED: '이 필드는 필수입니다.',
-  USERNAME_INVALID:
-    '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
+  USERNAME_INVALID: '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
   USERNAME_LENGTH: '아이디는 최소 5자에서 최대 15자까지 가능합니다.',
   EMAIL_INVALID: '유효한 이메일을 입력해주세요.',
   NICKNAME_INVALID: '닉네임은 한글, 알파벳 대소문자, 숫자만 허용됩니다.',
@@ -175,7 +174,7 @@ const SignUp: React.FC = () => {
                   required: ERROR_MESSAGES.REQUIRED,
                   pattern: {
                     value:
-                      /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+])(?=.*[0-9]).{8,15}$/,
+                      /^(?=.*[a-zA-Z])(?=.*[~!@#$%^&*()_+-=])(?=.*[0-9]).{8,15}$/,
                     message: ERROR_MESSAGES.PASSWORD_INVALID,
                   },
                   minLength: {

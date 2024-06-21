@@ -15,12 +15,15 @@ import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
   selectCurrentFile,
+  selectTree,
   setFileExecuteResult,
+  setTree,
   toggleChatting,
 } from '@/store/ideSlice'
 import { executeFile, saveFile } from '@/services/entry'
 import { getExtension } from '@/utils/entry'
 import { isEditable } from '@/utils/ide'
+import { Tree } from '@/models/entry'
 
 interface Props {
   containerId: string | undefined
@@ -34,6 +37,7 @@ const NavBar = ({ containerId, status, category, isOwner }: Props) => {
 
   const dispatch = useAppDispatch()
   const currentFile = useAppSelector(selectCurrentFile)
+  const tree = useAppSelector(selectTree)
 
   const saveButtonClick = async () => {
     const response = await saveFile(
@@ -43,6 +47,22 @@ const NavBar = ({ containerId, status, category, isOwner }: Props) => {
     )
 
     if (response.success) {
+      const newTree = tree?.map(treeNode => {
+        if (treeNode.id === currentFile?.id) {
+          return {
+            ...treeNode,
+            metadata: {
+              ...treeNode.metadata,
+              content: currentFile.metadata?.content,
+            },
+          }
+        } else {
+          return treeNode
+        }
+      })
+
+      dispatch(setTree(newTree as Tree))
+
       toast({
         title: '파일이 저장되었습니다.',
         position: 'top-right',

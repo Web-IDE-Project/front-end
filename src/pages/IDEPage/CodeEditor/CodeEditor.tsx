@@ -13,7 +13,7 @@ import { LanguageSupport } from '@codemirror/language'
 import { showMinimap } from '@replit/codemirror-minimap'
 import yorkie, { Client, Indexable, Document, type Text } from 'yorkie-js-sdk'
 import { useAppDispatch, useAppSelector } from '@/hooks'
-import { selectCurrentFile, setCurrentFile } from '@/store/ideSlice'
+import { selectCurrentFile, selectTree, setCurrentFile } from '@/store/ideSlice'
 import { isEditable } from '@/utils/ide'
 
 type YorkieDoc = {
@@ -48,8 +48,14 @@ const CodeEditor = ({
   const clientRef = useRef<Client>()
   const docRef = useRef<Document<YorkieDoc, Indexable>>()
 
+  const tree = useAppSelector(selectTree)
   const currentFile = useAppSelector(selectCurrentFile)
   const dispatch = useAppDispatch()
+
+  // 최신 저장본을 참조하기 위한 useRef
+  const savedFileRef = useRef(
+    tree?.find(node => node.id === currentFile?.id)?.metadata?.content
+  )
 
   const initializeYorkieEditor = useCallback(async () => {
     // 1. 클라이언트 생성 및 활성화
@@ -81,21 +87,12 @@ const CodeEditor = ({
 
         // 기존에 저장된 코드 삽입
         root.content.edit(0, 0, currentFile?.metadata?.content || '')
-      } else {
-        dispatch(
-          setCurrentFile({
-            ...currentFile!,
-            metadata: {
-              isDirectory: false,
-              content: root.content.toString(),
-            },
-          })
-        )
       }
     }, 'create content if not exists')
 
     // 4. 문서의 변경 이벤트 구독
-    // 문서 내용을 CodeMirror 에디터에 동기화
+
+    // 문서 내용을 CodeMirror 에디터에 동기화하는 함수
     const syncText = () => {
       const text = doc.getRoot().content
 
@@ -190,6 +187,12 @@ const CodeEditor = ({
   }, [containerId, currentFile, language])
 
   useEffect(() => {
+    savedFileRef.current = tree?.find(
+      node => node.id === currentFile?.id
+    )?.metadata?.content
+  }, [tree?.find(node => node.id === currentFile?.id)])
+
+  useEffect(() => {
     initializeYorkieEditor()
 
     // Cleanup function to destroy the editor when the component unmounts
@@ -199,6 +202,14 @@ const CodeEditor = ({
       }
 
       if (clientRef.current && docRef.current) {
+        // 현재 저장된 결과를 yorkie에 반영한다.
+        const savedContent = savedFileRef?.current
+
+        docRef.current.update(root => {
+          root.content.empty()
+          root.content.edit(0, 0, savedContent || '')
+        })
+
         clientRef.current.detach(docRef.current)
         clientRef.current.deactivate()
       }

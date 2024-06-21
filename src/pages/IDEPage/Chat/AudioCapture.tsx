@@ -23,9 +23,9 @@ const AudioCapture = () => {
       console.log('Got stream with constraints:', constraints)
       console.log('Using audio device: ' + audioTracks[0].label)
       // stream에 oninactive 메소드 존재하지 않아 주석 처리
-      //   stream.oninactive = () => {
-      //     console.log('Stream ended')
-      //   }
+      // stream.oninactive = () => {
+      //   console.log('Stream ended')
+      // }
 
       if (audioRef.current) {
         audioRef.current.srcObject = stream

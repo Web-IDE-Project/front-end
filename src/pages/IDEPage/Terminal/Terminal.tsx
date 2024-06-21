@@ -118,6 +118,10 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
           terminal.current!.writeln(result)
         }
 
+        if (currentCommand.includes('cat')) {
+          terminal.current!.writeln(`${result.trim()}`)
+        }
+
         if (currentCommand.includes('cd')) {
           if (!result.includes('not found')) {
             if (!result.includes('WORKSPACE')) {

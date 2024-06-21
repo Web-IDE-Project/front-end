@@ -7,6 +7,7 @@ import { javascript } from '@codemirror/lang-javascript'
 import { cpp } from '@codemirror/lang-cpp'
 import { java } from '@codemirror/lang-java'
 import { python } from '@codemirror/lang-python'
+import {} from '@codemirror/language'
 import { githubLight } from '@uiw/codemirror-theme-github'
 import './code-editor.css'
 import { LanguageSupport } from '@codemirror/language'
@@ -15,33 +16,28 @@ import yorkie, { Client, Indexable, Document, type Text } from 'yorkie-js-sdk'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { selectCurrentFile, selectTree, setCurrentFile } from '@/store/ideSlice'
 import { isEditable } from '@/utils/ide'
+import { getExtension } from '@/utils/entry'
 
 type YorkieDoc = {
   content: Text
 }
 
 const EXTENSIONS: { [key: string]: LanguageSupport } = {
-  python: python(),
-  javascript: javascript(),
+  py: python(),
+  js: javascript(),
+  c: cpp(),
   cpp: cpp(),
   java: java(),
 }
 
 interface Props {
-  language: string
   containerId: string | undefined
   category: string
   isOwner: boolean
   status: string
 }
 
-const CodeEditor = ({
-  language,
-  containerId,
-  category,
-  isOwner,
-  status,
-}: Props) => {
+const CodeEditor = ({ containerId, category, isOwner, status }: Props) => {
   const editorRef = useRef<HTMLDivElement>(null)
   const codemirrorViewRef = useRef<EditorView>()
 
@@ -56,6 +52,8 @@ const CodeEditor = ({
   const savedFileRef = useRef(
     tree?.find(node => node.id === currentFile?.id)?.metadata?.content
   )
+
+  let language = getExtension(currentFile?.name!)
 
   const initializeYorkieEditor = useCallback(async () => {
     // 1. 클라이언트 생성 및 활성화

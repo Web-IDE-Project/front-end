@@ -83,7 +83,6 @@ const IDEPage = () => {
 
     setIsLoading(false)
 
-    // TODO - 서버와 연동 후 주석 삭제
     startContainerRequest()
 
     return () => {
@@ -158,9 +157,7 @@ const IDEPage = () => {
             </Breadcrumb>
           </Box>
           <Flex grow={1}>
-            {/* TODO - language 동적으로 수정 */}
             <CodeEditor
-              language="javascript"
               containerId={containerId}
               category={category}
               isOwner={isOwner}

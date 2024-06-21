@@ -1,9 +1,14 @@
 import { useAppDispatch, useAppSelector } from '@/hooks'
-import { selectFileExecuteResult, setFileExecuteResult } from '@/store/ideSlice'
+import {
+  selectFileExecuteResult,
+  setFileExecuteResult,
+  setTree,
+} from '@/store/ideSlice'
 import { Client, IMessage } from '@stomp/stompjs'
 import { Terminal as xterm } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { useEffect, useRef } from 'react'
+import { flattenTree } from 'react-accessible-treeview'
 
 const BASE_URI = 'ws://localhost:8080'
 
@@ -17,6 +22,8 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
   const currentCommandRef = useRef<string>('')
   const isConnected = useRef<boolean>(false)
 
+  const currentPath = useRef<string>('/')
+
   // 터미널 초기 세팅
   useEffect(() => {
     terminal.current = new xterm({
@@ -24,7 +31,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
     })
     terminal.current.open(terminalRef.current!)
     terminal.current.resize(120, 12)
-    terminal.current.write('$ ')
+    terminal.current.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
 
     terminal.current.onKey(({ key, domEvent }) => {
       const printable =
@@ -34,7 +41,10 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
         sendCommand()
       } else if (domEvent.key === 'Backspace') {
         // Do not delete the prompt
-        if (terminal.current!.buffer.active.cursorX > 2) {
+        if (
+          terminal.current!.buffer.active.cursorX >
+          currentPath.current.length + 3
+        ) {
           terminal.current!.write('\b \b')
           currentCommandRef.current = currentCommandRef.current.slice(0, -1)
         }
@@ -97,12 +107,47 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
       `/api/sub/terminal/${containerId}`,
       (message: IMessage) => {
         const newMessage = JSON.parse(message.body)
-        const result = newMessage.result.split('\n')
+        const result = newMessage.result
+        const allEntries = newMessage.allEntries
 
-        for (const line of result) {
-          terminal.current!.writeln(line)
+        const currentCommand = currentCommandRef.current
+        currentCommandRef.current = ''
+
+        if (currentCommand.includes('touch') || currentCommand.includes('rm')) {
+          dispatch(setTree(flattenTree(allEntries)))
+          terminal.current!.writeln(result)
         }
-        terminal.current!.write('\r$ ')
+
+        if (currentCommand.includes('cat')) {
+          terminal.current!.writeln(`${result.trim()}`)
+        }
+
+        if (currentCommand.includes('cd')) {
+          if (!result.includes('not found')) {
+            if (!result.includes('WORKSPACE')) {
+              currentPath.current = '/'
+            } else {
+              currentPath.current = result.replace(
+                /^Changed directory to \/WORKSPACE-[^/]+/,
+                ''
+              )
+
+              if (currentPath.current === '') {
+                currentPath.current = '/'
+              }
+            }
+          }
+          terminal.current!.writeln(`${result}`)
+        }
+
+        if (currentCommand.includes('ls')) {
+          const resultArray = result.split('\n')
+          for (const line of resultArray) {
+            terminal.current!.writeln(`${line}`)
+          }
+        }
+
+        terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
       }
     )
   }
@@ -121,8 +166,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
         command: currentCommandRef.current.trim(),
       }),
     })
-    currentCommandRef.current = ''
-    terminal.current!.write('\r\n$ ')
+    terminal.current!.write('\r\n')
   }
 
   const handleWebSocketDisconnect = (client: Client) => {

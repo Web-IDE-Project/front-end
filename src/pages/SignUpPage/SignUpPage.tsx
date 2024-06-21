@@ -25,7 +25,6 @@ const ERROR_MESSAGES = {
   REQUIRED: '이 필드는 필수입니다.',
   USERNAME_INVALID: '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
   USERNAME_LENGTH: '아이디는 최소 5자에서 최대 15자까지 가능합니다.',
-  USERNAME_SOCIAL_INVALID: '아이디는 "kakao", "naver", "google"로 시작할 수 없습니다.',
   EMAIL_INVALID: '유효한 이메일을 입력해주세요.',
   NICKNAME_INVALID: '닉네임은 한글, 알파벳 대소문자, 숫자만 허용됩니다.',
   NICKNAME_LENGTH: '아이디는 최소 2자에서 최대 20자까지 가능합니다.',
@@ -91,6 +90,10 @@ const SignUp: React.FC = () => {
               <Input
                 {...register('username', {
                   required: ERROR_MESSAGES.REQUIRED,
+                  pattern: {
+                    value: /^[a-zA-Z0-9._]{5,15}$/,
+                    message: ERROR_MESSAGES.USERNAME_INVALID,
+                  },
                   minLength: {
                     value: 5,
                     message: ERROR_MESSAGES.USERNAME_LENGTH,
@@ -99,14 +102,6 @@ const SignUp: React.FC = () => {
                     value: 15,
                     message: ERROR_MESSAGES.USERNAME_LENGTH,
                   },
-                  validate: {
-                    pattern1: value => /^[a-zA-Z0-9._]{5,15}$/.test(value) || ERROR_MESSAGES.USERNAME_INVALID,
-                    pattern2: value => {
-                      const socials = ['naver', 'kakao', 'google'];
-                      const isStartSocial = socials.some(social => value.startsWith(social));
-                      return !isStartSocial || ERROR_MESSAGES.USERNAME_SOCIAL_INVALID;
-                    },
-                  }
                 })}
                 id="username"
                 type="text"

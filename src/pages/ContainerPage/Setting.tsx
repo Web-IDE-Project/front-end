@@ -47,7 +47,7 @@ const Setting = () => {
     const [isSocialLogined, setIsSocialLogined] = useState<boolean>(false);
 
     useEffect(() => {
-        const socials: string[] = ['naver', 'kakao', 'google'];
+        const socials: string[] = ['naver ', 'kakao ', 'google '];
         const isSocialLogin: boolean = socials.some(social => username.startsWith(social));
         setIsSocialLogined(isSocialLogin);
     }, [])

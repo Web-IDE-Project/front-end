@@ -1,3 +1,5 @@
+import { Entry } from '@/models/entry'
+
 export function isEditable(status: string, category: string, isOwner: boolean) {
   // 상태가 종료/해결일 경우
   if (status === 'SOLVE' || status === 'COMPLETE') {

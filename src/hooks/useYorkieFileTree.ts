@@ -15,7 +15,7 @@ export type ContainerDoc = {
   users: JSONObject<{ [key: string]: string }>
 }
 
-const useYorkieClient = (containerId: string) => {
+const useYorkieFileTree = (containerId: string) => {
   const clientRef = useRef<Client>()
   const docRef = useRef<Document<ContainerDoc, Indexable>>()
 
@@ -118,4 +118,4 @@ const useYorkieClient = (containerId: string) => {
   }
 }
 
-export default useYorkieClient
+export default useYorkieFileTree

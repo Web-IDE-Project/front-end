@@ -27,8 +27,8 @@ import {
 import { flattenTree } from 'react-accessible-treeview'
 import { Tree, nodeMetadata } from '@/models/entry.ts'
 import Chat from './Chat/Chat.tsx'
-import useYorkieClient from '@/hooks/useYorkieClient.ts'
 import { selectId } from '@/store/userSlice.ts'
+import useYorkieFileTree from '@/hooks/useYorkieFileTree.ts'
 
 const CATEGORY: { [key: string]: string } = {
   '내 컨테이너': 'MY',
@@ -52,7 +52,7 @@ const IDEPage = () => {
   const title = locationState.title
   const status = locationState.status
 
-  const { isLoading: isExplorerLoading } = useYorkieClient(containerId!)
+  const { isLoading: isExplorerLoading } = useYorkieFileTree(containerId!)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -175,9 +175,11 @@ const IDEPage = () => {
         </Flex>
 
         {/* SECTION 채팅창 영역 */}
-        <Box display={showChatting ? 'block' : 'none'}>
-          <Chat workspaceId={containerId} />
-        </Box>
+        {category !== 'MY' && (
+          <Box display={showChatting ? 'block' : 'none'}>
+            <Chat workspaceId={containerId} />
+          </Box>
+        )}
       </Flex>
     </>
   )

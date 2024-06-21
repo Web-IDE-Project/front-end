@@ -22,11 +22,6 @@ interface Message {
   senderName: string
 }
 
-interface Participant {
-  id: string
-  name: string
-}
-
 const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
@@ -44,15 +39,6 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
   const localStreamRef = useRef<MediaStream | null>(null)
   const remoteStreams = useRef<{ [key: string]: MediaStream }>({})
   const peerConnections = useRef<{ [key: string]: RTCPeerConnection }>({})
-
-  const [participants, setParticipants] = useState<Participant[]>([])
-
-  useEffect(() => {
-    setParticipants([
-      { id: '1', name: 'Participant 1' },
-      { id: '2', name: 'Participant 2' },
-    ])
-  }, [])
 
   useEffect(() => {
     const client = new Client({
@@ -95,14 +81,6 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     client.subscribe(`/api/sub/chat/${workspaceId}`, (message: IMessage) => {
       const newMessage = JSON.parse(message.body) as Message
       setMessages(prevMessages => [...prevMessages, newMessage])
-
-      // JSON.stringify 시 타입 에러 발생
-      const newParticipant = {
-        id: '3',
-        name: 'Participant 3',
-      }
-
-      setParticipants(prevParticipants => [...prevParticipants, newParticipant])
     })
 
     client.subscribe(
@@ -170,10 +148,9 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
 
   // 로컬 오디오 스트림 가져오기
   const startLocalStream = async () => {
+    const constraints = { 'video': false, 'audio': true };
     try {
-      const localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      }) // 사용자에게 오디오 접근 권한을 요청
+      const localStream = await navigator.mediaDevices.getUserMedia(constraints) // 사용자에게 오디오 접근 권한을 요청
       localStreamRef.current = localStream
     } catch (error: any) {
       console.error('Error accessing local media:', error)
@@ -432,14 +409,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
           </Button>
         </Flex>
       </form>
-
-      {participants.map(participant => (
-        <div key={participant.id}>
-          <h3>{participant.name}</h3>
-          <AudioCapture key={participant.id} />{' '}
-          {/* 각 참가자에 대해 AudioCapture 컴포넌트를 렌더링 */}
-        </div>
-      ))}
+      <AudioCapture />
     </Flex>
   )
 }

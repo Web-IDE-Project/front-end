@@ -74,6 +74,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     }
   }, [])
 
+  // 웹소켓 연결 시 실행되는 함수
   const handleWebSocketConnect = (client: Client) => {
     console.log('Connected to WebSocket')
     setIsConnected(true)
@@ -131,6 +132,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     })
   }
 
+  // 웹소켓 연결 해지 시 실행되는 함수
   const handleWebSocketDisconnect = (client: Client) => {
     console.log('Disconnected from WebSocket')
 
@@ -142,8 +144,9 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
       }),
     })
 
+    stopLocalStream();
     setIsConnected(false)
-    client.deactivate()
+    client.deactivate();
   }
 
   // 로컬 오디오 스트림 가져오기
@@ -158,13 +161,13 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     }
   }
 
-  // 로컬 오디오 스트림 정지(사용하는 부분 없어 주석 처리)
-  // const stopLocalStream = () => {
-  //   if (localStreamRef.current) {
-  //     localStreamRef.current.getTracks().forEach(track => track.stop())
-  //     localStreamRef.current = null
-  //   }
-  // }
+  // 로컬 오디오 스트림 정지
+  const stopLocalStream = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => track.stop())
+      localStreamRef.current = null
+    }
+  }
 
   // 피어 연결 설정 및 ICE candidate 이벤트 핸들링 (특정 사용자와의 피어 연결을 설정)
   const setupPeerConnection = (peerId: string) => {
@@ -269,7 +272,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     )
   }
 
-  // 메시지 검색 기능
+  // 채팅 메시지 검색 기능
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setHighlightedIndices([])
@@ -298,6 +301,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     }
   }, [searchQuery, messages])
 
+  // 채팅 메시지 전송 기능
   const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!inputMessage.trim() || !isConnected || !clientRef.current) {
@@ -318,10 +322,12 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     }
   }
 
+  // 채팅 메시지 인풋 change 값 저장 기능
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
 
+  // 채팅 메시지 스크롤 이동 기능
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight

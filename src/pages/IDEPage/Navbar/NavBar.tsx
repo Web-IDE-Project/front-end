@@ -119,28 +119,25 @@ const NavBar = ({ containerId, status, category, isOwner }: Props) => {
       <Image width="80px" src={Logo} alt="3Ever" objectFit="contain" />
       <Spacer />
       {isEditable(status, category, isOwner) && (
-        <>
-          <Button
-            size="sm"
-            colorScheme="green"
-            variant="outline"
-            leftIcon={<IoIosSave />}
-            onClick={saveButtonClick}
-          >
-            저장
-          </Button>
-          <Button
-            size="sm"
-            colorScheme="green"
-            variant="solid"
-            leftIcon={<IoIosPlay />}
-            onClick={onExecuteButtonClick}
-          >
-            실행
-          </Button>
-        </>
+        <Button
+          size="sm"
+          colorScheme="green"
+          variant="outline"
+          leftIcon={<IoIosSave />}
+          onClick={saveButtonClick}
+        >
+          저장
+        </Button>
       )}
-
+      <Button
+        size="sm"
+        colorScheme="green"
+        variant="solid"
+        leftIcon={<IoIosPlay />}
+        onClick={onExecuteButtonClick}
+      >
+        실행
+      </Button>
       <Spacer />
       <Flex visibility={category !== 'MY' ? 'visible' : 'hidden'}>
         <IconButton

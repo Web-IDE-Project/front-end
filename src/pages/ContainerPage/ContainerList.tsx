@@ -250,6 +250,7 @@ const ContainerList = ({ category }: Props) => {
                       title={container.title}
                       language={container.language}
                       description={container.description}
+                      status={container.status}
                       onEditInfoButtonClick={handleEditContainerInfo}
                       onDeleteButtonClick={handleDeleteContainer}
                     />

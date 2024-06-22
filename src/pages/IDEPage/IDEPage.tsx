@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { startContainer } from '@/services/container'
 import Loading from './Loading'
-import Explorer from './TabItem/Explorer'
+import Explorer from './Explorer/Explorer.tsx'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
   selectShowChatting,

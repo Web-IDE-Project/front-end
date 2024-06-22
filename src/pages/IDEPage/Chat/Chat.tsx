@@ -45,7 +45,6 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
       brokerURL: `${BASE_URI}/api/ws`,
       beforeConnect: () => console.log('Attempting to connect...'),
       onConnect: () => handleWebSocketConnect(client),
-      onDisconnect: () => handleWebSocketDisconnect(client),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -69,6 +68,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
     return () => {
       console.log('Component unmounting, deactivating WebSocket connection...')
       if (client) {
+        handleWebSocketDisconnect(client)
         client.deactivate()
       }
     }
@@ -144,14 +144,13 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
       }),
     })
 
-    stopLocalStream();
+    stopLocalStream()
     setIsConnected(false)
-    client.deactivate();
   }
 
   // 로컬 오디오 스트림 가져오기
   const startLocalStream = async () => {
-    const constraints = { 'video': false, 'audio': true };
+    const constraints = { video: false, audio: true }
     try {
       const localStream = await navigator.mediaDevices.getUserMedia(constraints) // 사용자에게 오디오 접근 권한을 요청
       localStreamRef.current = localStream

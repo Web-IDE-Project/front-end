@@ -1,8 +1,14 @@
-import { Box } from '@chakra-ui/react'
+import {
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Flex,
+} from '@chakra-ui/react'
 import { EditorState, Transaction } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { javascript } from '@codemirror/lang-javascript'
 import { cpp } from '@codemirror/lang-cpp'
 import { java } from '@codemirror/lang-java'
@@ -16,7 +22,8 @@ import yorkie, { Client, Indexable, Document, type Text } from 'yorkie-js-sdk'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { selectCurrentFile, selectTree, setCurrentFile } from '@/store/ideSlice'
 import { isEditable } from '@/utils/ide'
-import { getExtension } from '@/utils/entry'
+import { getExtension, getPathById } from '@/utils/entry'
+import { ChevronRightIcon } from '@chakra-ui/icons'
 
 type YorkieDoc = {
   content: Text
@@ -48,12 +55,14 @@ const CodeEditor = ({ containerId, category, isOwner, status }: Props) => {
   const currentFile = useAppSelector(selectCurrentFile)
   const dispatch = useAppDispatch()
 
+  const [filePath, setFilePath] = useState<string[]>([])
+
   // 최신 저장본을 참조하기 위한 useRef
   const savedFileRef = useRef(
     tree?.find(node => node.id === currentFile?.id)?.metadata?.content
   )
 
-  let language = getExtension(currentFile?.name!)
+  const language = getExtension(currentFile?.name!)
 
   const initializeYorkieEditor = useCallback(async () => {
     // 1. 클라이언트 생성 및 활성화
@@ -191,6 +200,10 @@ const CodeEditor = ({ containerId, category, isOwner, status }: Props) => {
   }, [tree?.find(node => node.id === currentFile?.id)])
 
   useEffect(() => {
+    setFilePath(getPathById(currentFile!.id!.toString(), tree!) || [])
+  }, [currentFile])
+
+  useEffect(() => {
     initializeYorkieEditor()
 
     // Cleanup function to destroy the editor when the component unmounts
@@ -214,7 +227,28 @@ const CodeEditor = ({ containerId, category, isOwner, status }: Props) => {
     }
   }, [containerId, currentFile!.id])
 
-  return <Box ref={editorRef} minH="calc(100vh - 285px)" width="100%"></Box>
+  return (
+    <Flex direction="column" w="full">
+      <Box p={2} fontSize="sm">
+        <Breadcrumb
+          spacing="8px"
+          separator={<ChevronRightIcon color="gray.500" />}
+        >
+          {filePath &&
+            filePath.map(file => {
+              return (
+                <BreadcrumbItem key={file}>
+                  <BreadcrumbLink cursor="default" textDecor="none">
+                    {file}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              )
+            })}
+        </Breadcrumb>
+      </Box>
+      <Box ref={editorRef} minH="calc(100vh - 285px)" width="100%"></Box>
+    </Flex>
+  )
 }
 
 export default CodeEditor

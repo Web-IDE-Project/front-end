@@ -115,7 +115,7 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
               navigate('setting')
             }}
           >
-            <Text fontSize="md">설정</Text>
+            <Text fontSize="md">마이페이지</Text>
           </Flex>
         </Box>
         <Box

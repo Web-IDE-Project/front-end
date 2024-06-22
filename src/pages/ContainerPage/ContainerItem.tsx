@@ -4,7 +4,6 @@ import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
   Badge,
-  Box,
   Button,
   Card,
   CardFooter,

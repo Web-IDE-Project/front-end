@@ -7,7 +7,7 @@ import ContainerPage from './pages/ContainerPage/ContainerPage'
 import ContainerList from './pages/ContainerPage/ContainerList'
 import IDEPage from './pages/IDEPage/IDEPage'
 import { useEffect } from 'react'
-import Setting from './pages/ContainerPage/Setting'
+import Setting from './pages/MyPage/MyPage'
 import { useAppDispatch } from './hooks'
 import { checkLoginStatus } from './services/user'
 import { login } from '@/store/userSlice'
@@ -20,24 +20,25 @@ function App() {
     const isLogined = async () => {
       try {
         const response = await checkLoginStatus()
-      if (response.success && response.data) {
-        const userInfo = response.data.userInfo
-        dispatch(
-          login({
-            id: userInfo.username,
-            nickname: userInfo.nickname,
-            profileUrl: userInfo.awsS3SavedFileURL,
-          })
-        )
-        navigate('/container/my')
-      } else {
-        navigate('/');
-      }
+        if (response.success && response.data) {
+          const userInfo = response.data.userInfo
+          dispatch(
+            login({
+              id: userInfo.username,
+              nickname: userInfo.nickname,
+              profileUrl: userInfo.awsS3SavedFileURL,
+            })
+          )
+          navigate('/container/my')
+        } else {
+          alert('로그인이 필요합니다.')
+          navigate('/')
+        }
       } catch (error) {
         console.error('Error:', error)
       }
     }
-    isLogined();
+    isLogined()
   }, [])
 
   return (
@@ -57,7 +58,7 @@ function App() {
           path="question"
           element={<ContainerList category="질문 컨테이너" />}
         />
-        <Route path='setting' element={<Setting />} />
+        <Route path="setting" element={<Setting />} />
       </Route>
       <Route path="/container/:containerId/workspace" element={<IDEPage />} />
     </Routes>

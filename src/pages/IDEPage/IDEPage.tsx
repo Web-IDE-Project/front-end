@@ -1,12 +1,5 @@
-import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Flex,
-} from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import NavBar from './Navbar/NavBar'
-import { ChevronRightIcon } from '@chakra-ui/icons'
 import CodeEditor from './CodeEditor/CodeEditor'
 import Terminal from './Terminal/Terminal'
 import Tab from './Tab/Tab.tsx'
@@ -67,6 +60,7 @@ const IDEPage = () => {
 
         if (!isCancelled && response.success) {
           const tree = flattenTree<nodeMetadata>(response.data!)
+          console.log(JSON.stringify(tree))
           dispatch(setTree(tree as Tree))
 
           if (tree.length > 1) {
@@ -137,25 +131,6 @@ const IDEPage = () => {
         {/* SECTION 에디터/터미널 영역 */}
         <Flex direction="column" w="100%">
           {/* SECTION 에디터 영역 */}
-          {/* TODO - 경로 보여주기 */}
-          <Box p={2} fontSize="sm">
-            <Breadcrumb
-              spacing="8px"
-              separator={<ChevronRightIcon color="gray.500" />}
-            >
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href="#">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href="#">About</BreadcrumbLink>
-              </BreadcrumbItem>
-
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href="#">Contact</BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </Box>
           <Flex grow={1}>
             <CodeEditor
               containerId={containerId}

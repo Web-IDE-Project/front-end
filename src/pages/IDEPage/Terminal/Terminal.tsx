@@ -180,7 +180,8 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
   useEffect(() => {
     if (fileExecuteResult) {
       terminal.current!.write(`\r\n${fileExecuteResult}`)
-      terminal.current!.write('\r$ ')
+      terminal.current!.write('\r\n')
+      terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
       dispatch(setFileExecuteResult(''))
     }
   }, [fileExecuteResult])

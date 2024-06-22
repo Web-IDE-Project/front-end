@@ -281,7 +281,9 @@ const Explorer = ({ containerId, category, isOwner, title, status }: Props) => {
         파일 탐색기
       </Text>
       <Flex align="center" mb={1}>
-        <Text as="b">{title}</Text>
+        <Text as="b" fontSize="sm">
+          {title.length > 9 ? `${title.substring(0, 9).trim()}...` : title}
+        </Text>
         <Spacer />
         {isEditable(status, category, isOwner) && (
           <>

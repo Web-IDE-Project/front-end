@@ -335,7 +335,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
 
   return (
     <Flex
-      h="100vh"
+      h="calc(100vh - 50px)"
       w={350}
       border="1px solid #eee"
       flexDir="column"
@@ -414,7 +414,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
           </Button>
         </Flex>
       </form>
-      <AudioCapture />
+      {/* <AudioCapture /> */}
     </Flex>
   )
 }

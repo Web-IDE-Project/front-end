@@ -30,7 +30,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
       cursorBlink: true,
     })
     terminal.current.open(terminalRef.current!)
-    terminal.current.resize(120, 12)
+    terminal.current.resize(100, 12)
     terminal.current.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
 
     terminal.current.onKey(({ key, domEvent }) => {

@@ -125,7 +125,7 @@ const ContainerItem = ({
           <Text fontSize="sm" pr={1}>
             {nickname}
           </Text>
-          <Avatar name={nickname} size="sm" src={awsS3SavedFileUrl || ''} />
+          <Avatar size="sm" src={awsS3SavedFileUrl || ''} />
         </Flex>
         {/* Card Body */}
         <CardFooter pt={3}>

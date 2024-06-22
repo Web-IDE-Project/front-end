@@ -4,6 +4,7 @@ import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
   Badge,
+  Box,
   Button,
   Card,
   CardFooter,
@@ -94,24 +95,24 @@ const ContainerItem = ({
               <Text color="green">{statusText()}</Text>
             </Flex>
             <Spacer />
-            {category === '내 컨테이너' && (
-              <>
-                <IconButton
-                  aria-label="Settings"
-                  bg="transparent"
-                  size="sm"
-                  icon={<SettingsIcon />}
-                  onClick={onOpen}
-                />
-                <IconButton
-                  aria-label="Delete Container"
-                  bg="transparent"
-                  size="sm"
-                  icon={<DeleteIcon />}
-                  onClick={onDeleteModalOpen}
-                />
-              </>
-            )}
+            <Flex
+              visibility={category === '내 컨테이너' ? 'visible' : 'hidden'}
+            >
+              <IconButton
+                aria-label="Settings"
+                bg="transparent"
+                size="sm"
+                icon={<SettingsIcon />}
+                onClick={onOpen}
+              />
+              <IconButton
+                aria-label="Delete Container"
+                bg="transparent"
+                size="sm"
+                icon={<DeleteIcon />}
+                onClick={onDeleteModalOpen}
+              />
+            </Flex>
           </Flex>
           <Badge colorScheme="green" size="sm" mt={2}>
             {language}

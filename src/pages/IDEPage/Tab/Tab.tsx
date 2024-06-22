@@ -18,7 +18,7 @@ import {
   toggleExplorer,
   toggleTerminal,
 } from '@/store/ideSlice'
-import { selectNickname, selectProfileUrl } from '@/store/userSlice'
+import { selectProfileUrl } from '@/store/userSlice'
 import Modal from '@/components/Modal'
 import { editContainerStatus } from '@/services/container'
 
@@ -34,7 +34,6 @@ const Tab = ({ containerId, category, isOwner, status }: Props) => {
 
   const showTerminal = useAppSelector(selectShowTerminal)
   const showExplorer = useAppSelector(selectShowExplorer)
-  const nickname = useAppSelector(selectNickname)
   const profileUrl = useAppSelector(selectProfileUrl)
 
   const dispatch = useAppDispatch()
@@ -135,7 +134,7 @@ const Tab = ({ containerId, category, isOwner, status }: Props) => {
           }}
         />
         <Spacer />
-        <Avatar name={nickname} size="sm" src={profileUrl || ''} />
+        <Avatar size="sm" src={profileUrl || ''} />
         <IconButton
           aria-label="back"
           icon={<ArrowBackIcon />}

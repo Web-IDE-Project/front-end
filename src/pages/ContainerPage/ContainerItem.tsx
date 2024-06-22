@@ -98,6 +98,16 @@ const ContainerItem = ({
     return false
   }
 
+  const executeText = () => {
+    if (status === 'SOLVE' || status === 'COMPLETE') {
+      return '코드 보기'
+    } else if (category === '강의 컨테이너' || category === '질문 컨테이너') {
+      return '참여'
+    }
+
+    return '실행'
+  }
+
   return (
     <>
       <Card
@@ -160,7 +170,7 @@ const ContainerItem = ({
               })
             }}
           >
-            {username === currentUserId ? '실행' : '참여'}
+            {executeText()}
           </Button>
         </CardFooter>
       </Card>
@@ -218,8 +228,8 @@ const ContainerItem = ({
           <option value="MY">
             비공개(나의 컨테이너에서만 확인 가능합니다.)
           </option>
-          <option value="QUESTION">질문 컨테이너에 공개</option>
           <option value="LECTURE">강의 컨테이너에 공개</option>
+          <option value="QUESTION">질문 컨테이너에 공개</option>
         </Select>
       </Modal>
       <Modal

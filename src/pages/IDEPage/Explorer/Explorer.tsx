@@ -202,6 +202,8 @@ const Explorer = ({ containerId, category, isOwner, title, status }: Props) => {
   // ** 마우스 우클릭 클릭 이벤트 핸들러 */
   // 메뉴 모달을 띄운다.
   const handleContextMenu = (e: any) => {
+    if (!isEditable(status, category, isOwner)) return
+
     e.preventDefault()
     setMenuPosition({ x: e.clientX, y: e.clientY })
     onMenuOpen()
@@ -324,8 +326,8 @@ const Explorer = ({ containerId, category, isOwner, title, status }: Props) => {
               style={{ paddingLeft: 20 * (level - 1) }}
               ref={isSelected ? selectedTreeNodeRef : null}
               onContextMenu={e => {
-                handleContextMenu(e)
                 setContextClickElementId(element.id as number)
+                handleContextMenu(e)
               }}
             >
               {tree?.find(node => node.id === element.id)?.metadata

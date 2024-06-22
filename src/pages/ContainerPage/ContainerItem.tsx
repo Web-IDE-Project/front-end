@@ -1,5 +1,7 @@
 import Modal from '@/components/Modal'
+import { useAppSelector } from '@/hooks'
 import { Container } from '@/models/container'
+import { selectId } from '@/store/userSlice'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
@@ -50,6 +52,7 @@ const ContainerItem = ({
   const [newTitle, setNewTitle] = useState(title)
   const [newDesc, setNewDesc] = useState(description)
   const [sharingOption, setSharingOption] = useState('MY')
+  const currentUserId = useAppSelector(selectId)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const {
@@ -88,11 +91,7 @@ const ContainerItem = ({
       >
         <CardHeader>
           <Flex align="center">
-            <Flex align="center" width="full">
-              <Heading size="md">{title}</Heading>
-              <Spacer />
-              <Text color="green">{statusText()}</Text>
-            </Flex>
+            <Heading size="md">{title}</Heading>
             <Spacer />
             <Flex
               visibility={category === '내 컨테이너' ? 'visible' : 'hidden'}
@@ -112,6 +111,7 @@ const ContainerItem = ({
                 onClick={onDeleteModalOpen}
               />
             </Flex>
+            <Text color="green">{statusText()}</Text>
           </Flex>
           <Badge colorScheme="green" size="sm" mt={2}>
             {language}
@@ -144,8 +144,7 @@ const ContainerItem = ({
               })
             }}
           >
-            {/* TODO - 현재 로그인한 사용자가 생성하지 않은 컨테이너는 '참여' 버튼으로 보여주기(강의/질문 컨테이너) */}
-            실행
+            {username === currentUserId ? '실행' : '참여'}
           </Button>
         </CardFooter>
       </Card>

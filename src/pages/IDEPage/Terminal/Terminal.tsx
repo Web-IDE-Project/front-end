@@ -116,16 +116,12 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
         if (currentCommand.includes('touch') || currentCommand.includes('rm')) {
           dispatch(setTree(flattenTree(allEntries)))
           terminal.current!.writeln(result)
-        }
-
-        if (currentCommand.includes('cat')) {
+        } else if (currentCommand.includes('cat')) {
           const resultArray = result.split('\n')
           for (const line of resultArray) {
             terminal.current!.writeln(`${line}`)
           }
-        }
-
-        if (currentCommand.includes('cd')) {
+        } else if (currentCommand.includes('cd')) {
           if (!result.includes('not found')) {
             if (!result.includes('WORKSPACE')) {
               currentPath.current = '/'
@@ -141,9 +137,12 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
             }
           }
           terminal.current!.writeln(`${result}`)
-        }
-
-        if (currentCommand.includes('ls')) {
+        } else if (currentCommand.includes('ls')) {
+          const resultArray = result.split('\n')
+          for (const line of resultArray) {
+            terminal.current!.writeln(`${line}`)
+          }
+        } else {
           const resultArray = result.split('\n')
           for (const line of resultArray) {
             terminal.current!.writeln(`${line}`)

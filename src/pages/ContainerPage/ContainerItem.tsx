@@ -2,7 +2,6 @@ import Modal from '@/components/Modal'
 import { useAppSelector } from '@/hooks'
 import { Container } from '@/models/container'
 import { selectId } from '@/store/userSlice'
-import { isEditable } from '@/utils/ide'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,

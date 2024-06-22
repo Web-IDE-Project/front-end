@@ -2,6 +2,7 @@ import Modal from '@/components/Modal'
 import { useAppSelector } from '@/hooks'
 import { Container } from '@/models/container'
 import { selectId } from '@/store/userSlice'
+import { isEditable } from '@/utils/ide'
 import { DeleteIcon, SettingsIcon } from '@chakra-ui/icons'
 import {
   Avatar,
@@ -80,6 +81,18 @@ const ContainerItem = ({
     return ''
   }
 
+  const settingVisibility = () => {
+    if (category === '내 컨테이너') {
+      return true
+    } else {
+      if (status === 'DEFAULT' && username === currentUserId) {
+        return true
+      }
+    }
+
+    return false
+  }
+
   return (
     <>
       <Card
@@ -93,9 +106,7 @@ const ContainerItem = ({
           <Flex align="center">
             <Heading size="md">{title}</Heading>
             <Spacer />
-            <Flex
-              visibility={category === '내 컨테이너' ? 'visible' : 'hidden'}
-            >
+            <Flex visibility={settingVisibility() ? 'visible' : 'hidden'}>
               <IconButton
                 aria-label="Settings"
                 bg="transparent"

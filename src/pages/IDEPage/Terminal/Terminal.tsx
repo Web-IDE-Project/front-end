@@ -119,7 +119,10 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
         }
 
         if (currentCommand.includes('cat')) {
-          terminal.current!.writeln(`${result.trim()}`)
+          const resultArray = result.split('\n')
+          for (const line of resultArray) {
+            terminal.current!.writeln(`${line}`)
+          }
         }
 
         if (currentCommand.includes('cd')) {
@@ -179,8 +182,12 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
   // 실행 버튼 클릭으로 파일이 실행되었을 때의 결과
   useEffect(() => {
     if (fileExecuteResult) {
-      terminal.current!.write(`\r\n${fileExecuteResult}`)
+      const resultArray = fileExecuteResult.split('\n')
       terminal.current!.write('\r\n')
+
+      for (const line of resultArray) {
+        terminal.current!.writeln(`${line}`)
+      }
       terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
       dispatch(setFileExecuteResult(''))
     }

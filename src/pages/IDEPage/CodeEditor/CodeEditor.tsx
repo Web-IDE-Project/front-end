@@ -246,7 +246,7 @@ const CodeEditor = ({ containerId, category, isOwner, status }: Props) => {
             })}
         </Breadcrumb>
       </Box>
-      <Box ref={editorRef} minH="calc(100vh - 285px)" width="100%"></Box>
+      <Box ref={editorRef} minH="calc(100vh - 285px)"></Box>
     </Flex>
   )
 }

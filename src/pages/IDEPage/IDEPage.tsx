@@ -90,7 +90,7 @@ const IDEPage = () => {
   }
 
   return (
-    <>
+    <Box w="100vw">
       {/* SECTION 상단바 - 로고, 저장/실행 버튼 */}
       <NavBar
         containerId={containerId}
@@ -100,7 +100,7 @@ const IDEPage = () => {
       />
 
       {/* SECTION 하단 영역 */}
-      <Flex minH="calc(100vh - 48px)">
+      <Flex h="calc(100vh - 48px)" w="full">
         {/* SECTION 파일 탐색기, 터미널, 권한 관리 탭 */}
         <Tab
           containerId={containerId}
@@ -129,7 +129,7 @@ const IDEPage = () => {
         </Box>
 
         {/* SECTION 에디터/터미널 영역 */}
-        <Flex direction="column" w="100%">
+        <Flex direction="column" grow={1}>
           {/* SECTION 에디터 영역 */}
           <Flex grow={1}>
             <CodeEditor
@@ -139,11 +139,10 @@ const IDEPage = () => {
               status={status}
             />
           </Flex>
-
           {/* SECTION 터미널 영역 */}
-          <Box h={showTerminal ? 200 : 0}>
+          <Flex display={showTerminal ? 'block' : 'none'}>
             <Terminal containerId={containerId} />
-          </Box>
+          </Flex>
         </Flex>
 
         {/* SECTION 채팅창 영역 */}
@@ -153,7 +152,7 @@ const IDEPage = () => {
           </Box>
         )}
       </Flex>
-    </>
+    </Box>
   )
 }
 

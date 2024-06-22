@@ -35,6 +35,12 @@ interface Props extends Container {
   onDeleteButtonClick: (id: string) => void
 }
 
+const CATEGORY: { [key: string]: string } = {
+  '내 컨테이너': 'MY',
+  '강의 컨테이너': 'LECTURE',
+  '질문 컨테이너': 'QUESTION',
+}
+
 const ContainerItem = ({
   id,
   title,
@@ -52,7 +58,7 @@ const ContainerItem = ({
 
   const [newTitle, setNewTitle] = useState(title)
   const [newDesc, setNewDesc] = useState(description)
-  const [sharingOption, setSharingOption] = useState('MY')
+  const [sharingOption, setSharingOption] = useState(CATEGORY[category])
   const currentUserId = useAppSelector(selectId)
 
   const { isOpen, onOpen, onClose } = useDisclosure()

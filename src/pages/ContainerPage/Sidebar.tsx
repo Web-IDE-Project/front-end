@@ -67,7 +67,7 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
         />
       </Flex>
       <Flex align="center" py={8} pl={2} gap={2}>
-        <Avatar name={nickname} src={profileUrl || ''} />
+        <Avatar src={profileUrl || ''} />
         <Text fontSize="md" as="b">
           {nickname}
         </Text>
@@ -115,7 +115,7 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
               navigate('setting')
             }}
           >
-            <Text fontSize="md">설정</Text>
+            <Text fontSize="md">마이페이지</Text>
           </Flex>
         </Box>
         <Box

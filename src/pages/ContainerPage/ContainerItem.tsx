@@ -94,24 +94,24 @@ const ContainerItem = ({
               <Text color="green">{statusText()}</Text>
             </Flex>
             <Spacer />
-            {category === '내 컨테이너' && (
-              <>
-                <IconButton
-                  aria-label="Settings"
-                  bg="transparent"
-                  size="sm"
-                  icon={<SettingsIcon />}
-                  onClick={onOpen}
-                />
-                <IconButton
-                  aria-label="Delete Container"
-                  bg="transparent"
-                  size="sm"
-                  icon={<DeleteIcon />}
-                  onClick={onDeleteModalOpen}
-                />
-              </>
-            )}
+            <Flex
+              visibility={category === '내 컨테이너' ? 'visible' : 'hidden'}
+            >
+              <IconButton
+                aria-label="Settings"
+                bg="transparent"
+                size="sm"
+                icon={<SettingsIcon />}
+                onClick={onOpen}
+              />
+              <IconButton
+                aria-label="Delete Container"
+                bg="transparent"
+                size="sm"
+                icon={<DeleteIcon />}
+                onClick={onDeleteModalOpen}
+              />
+            </Flex>
           </Flex>
           <Badge colorScheme="green" size="sm" mt={2}>
             {language}
@@ -125,7 +125,7 @@ const ContainerItem = ({
           <Text fontSize="sm" pr={1}>
             {nickname}
           </Text>
-          <Avatar name={nickname} size="sm" src={awsS3SavedFileUrl || ''} />
+          <Avatar size="sm" src={awsS3SavedFileUrl || ''} />
         </Flex>
         {/* Card Body */}
         <CardFooter pt={3}>

@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { VscFiles } from 'react-icons/vsc'
 import { VscTerminal } from 'react-icons/vsc'
-import { ArrowBackIcon, SettingsIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import {
@@ -141,11 +141,6 @@ const Tab = ({ containerId, category, isOwner, status }: Props) => {
           icon={<ArrowBackIcon />}
           fontSize="20px"
           onClick={handleBackButtonClick}
-        />
-        <IconButton
-          aria-label="settings"
-          icon={<SettingsIcon />}
-          fontSize="20px"
         />
       </Flex>
       <Modal

@@ -1,6 +1,6 @@
 import { Box, Center, Flex, Text, Avatar } from '@chakra-ui/react'
 import { useAppSelector } from '@/hooks'
-import { selectId, selectNickname, selectProfileUrl } from '@/store/userSlice'
+import { selectId, selectProfileUrl } from '@/store/userSlice'
 
 interface BubbleProps {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
@@ -17,7 +17,6 @@ const Bubble: React.FC<BubbleProps> = ({
   senderId,
   isHighlighted,
 }) => {
-  const username: string = useAppSelector(selectNickname)
   const profileUrl: string = useAppSelector(selectProfileUrl) || ''
   const userId = useAppSelector(selectId)
 

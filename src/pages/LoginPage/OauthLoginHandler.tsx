@@ -13,8 +13,6 @@ const OauthLoginHandler: React.FC = () => {
   useEffect(() => {
     const handleOauthLogin = async () => {
       if (params.get('isSuccess') === 'true') {
-        alert('로그인 성공')
-
         const response = await checkLoginStatus()
 
         if (response.success) {

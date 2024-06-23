@@ -7,6 +7,7 @@ import {
   Image,
   Input,
   FormLabel,
+  useToast,
 } from '@chakra-ui/react'
 import logo from '../../assets/images/logo.png'
 import { useForm, SubmitHandler, FieldError } from 'react-hook-form'
@@ -23,7 +24,8 @@ interface SignUpFormFields {
 
 const ERROR_MESSAGES = {
   REQUIRED: '이 필드는 필수입니다.',
-  USERNAME_INVALID: '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
+  USERNAME_INVALID:
+    '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
   USERNAME_LENGTH: '아이디는 최소 5자에서 최대 15자까지 가능합니다.',
   EMAIL_INVALID: '유효한 이메일을 입력해주세요.',
   NICKNAME_INVALID: '닉네임은 한글, 알파벳 대소문자, 숫자만 허용됩니다.',
@@ -42,27 +44,27 @@ const SignUp: React.FC = () => {
     formState: { errors },
   } = useForm<SignUpFormFields>()
 
-  const onSubmit: SubmitHandler<SignUpFormFields> = async data => {
-    try {
-      const response = await signup(
-        data.username,
-        data.password,
-        data.nickname,
-        data.email
-      )
+  const toast = useToast()
 
-      if (response.success) {
-        console.log(response)
-        navigate('/login')
-      }
-    } catch (error: unknown) {
-      if (typeof error === 'object' && error !== null && 'message' in error) {
-        alert((error as { message: string }).message)
-        console.error('회원가입 실패:', error)
-      } else {
-        alert('알 수 없는 오류가 발생했습니다.')
-        console.error('회원가입 실패:', error)
-      }
+  const onSubmit: SubmitHandler<SignUpFormFields> = async data => {
+    const response = await signup(
+      data.username,
+      data.password,
+      data.nickname,
+      data.email
+    )
+
+    if (response.success) {
+      navigate('/login')
+    } else {
+      toast({
+        title: '회원가입에 문제가 발생하였습니다.',
+        description: response.error,
+        position: 'top-right',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
     }
   }
 

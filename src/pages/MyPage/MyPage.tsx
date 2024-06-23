@@ -169,7 +169,7 @@ const MyPage = () => {
   }
 
   return (
-    <Flex flexDir="column" p={16} h="full" align="center">
+    <Flex flexDir="column" p={16} align="center">
       <Flex
         flexDir="column"
         w={600}

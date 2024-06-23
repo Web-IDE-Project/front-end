@@ -24,12 +24,11 @@ interface SignUpFormFields {
 
 const ERROR_MESSAGES = {
   REQUIRED: '이 필드는 필수입니다.',
-  USERNAME_INVALID:
-    '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
+  USERNAME_INVALID: '아이디는 알파벳 대소문자, 숫자, 밑줄(_) 또는 점(.)만 허용됩니다.',
   USERNAME_LENGTH: '아이디는 최소 5자에서 최대 15자까지 가능합니다.',
   EMAIL_INVALID: '유효한 이메일을 입력해주세요.',
   NICKNAME_INVALID: '닉네임은 한글, 알파벳 대소문자, 숫자만 허용됩니다.',
-  NICKNAME_LENGTH: '아이디는 최소 2자에서 최대 20자까지 가능합니다.',
+  NICKNAME_LENGTH: '닉네임은 최소 2자에서 최대 20자까지 가능합니다.',
   PASSWORD_INVALID: '비밀번호는 알파벳, 숫자, 특수 문자를 포함해야 합니다.',
   PASSWORD_LENGTH: '비밀번호는 최소 8자에서 최대 20자까지 가능합니다.',
   PASSWORD_MATCH: '비밀번호가 일치하지 않습니다.',
@@ -144,7 +143,7 @@ const SignUp: React.FC = () => {
                 {...register('nickname', {
                   required: ERROR_MESSAGES.REQUIRED,
                   pattern: {
-                    value: /^[가-힣a-zA-Z0-9]{2,20}$/,
+                    value: /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]{2,20}$/,
                     message: ERROR_MESSAGES.NICKNAME_INVALID,
                   },
                   minLength: {

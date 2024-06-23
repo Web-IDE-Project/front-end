@@ -14,12 +14,12 @@ import send from '../../../assets/images/send.png'
 import Bubble from './Bubble'
 // import AudioCapture from './AudioCapture'
 
-const BASE_URI: string = 'ws://localhost:8080'
-
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
   message: string
+  senderId: string
   senderName: string
+  senderProfileImageUrl: string
 }
 
 const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
@@ -42,7 +42,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
 
   useEffect(() => {
     const client = new Client({
-      brokerURL: `${BASE_URI}/api/ws`,
+      brokerURL: `${import.meta.env.VITE_SERVER_WS_BASE_URL}/api/ws`,
       beforeConnect: () => console.log('Attempting to connect...'),
       onConnect: () => handleWebSocketConnect(client),
       reconnectDelay: 5000,
@@ -392,6 +392,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
                 messageType={msg.messageType}
                 message={msg.message}
                 senderName={msg.senderName}
+                senderId={msg.senderId}
                 isHighlighted={highlightedIndices.includes(index)}
               />
             </Flex>

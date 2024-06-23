@@ -4,13 +4,12 @@ import {
   setFileExecuteResult,
   setTree,
 } from '@/store/ideSlice'
+import { selectId } from '@/store/userSlice'
 import { Client, IMessage } from '@stomp/stompjs'
 import { Terminal as xterm } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { useEffect, useRef } from 'react'
 import { flattenTree } from 'react-accessible-treeview'
-
-const BASE_URI = 'ws://localhost:8080'
 
 const Terminal = ({ containerId }: { containerId: string | undefined }) => {
   const terminalRef = useRef(null)
@@ -24,6 +23,8 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
 
   const currentPath = useRef<string>('/')
 
+  const userId = useAppSelector(selectId)
+
   // 터미널 초기 세팅
   useEffect(() => {
     terminal.current = new xterm({
@@ -31,7 +32,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
     })
     terminal.current.open(terminalRef.current!)
     terminal.current.resize(100, 12)
-    terminal.current.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
+    terminal.current.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m % `)
 
     terminal.current.onKey(({ key, domEvent }) => {
       const printable =
@@ -62,7 +63,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
   // socket 클라이언트 생성
   useEffect(() => {
     const client = new Client({
-      brokerURL: `${BASE_URI}/api/ws`,
+      brokerURL: `${import.meta.env.VITE_SERVER_WS_BASE_URL}/api/ws`,
       beforeConnect: () => console.log('[Terminal] Attempting to connect...'),
       onConnect: () => handleWebSocketConnect(client),
       onDisconnect: () => handleWebSocketDisconnect(client),
@@ -104,7 +105,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
 
     // 구독
     client.subscribe(
-      `/api/sub/terminal/${containerId}`,
+      `/api/sub/terminal/${containerId}/${userId}`,
       (message: IMessage) => {
         const newMessage = JSON.parse(message.body)
         const result = newMessage.result
@@ -149,7 +150,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
           }
         }
 
-        terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
+        terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m % `)
       }
     )
   }
@@ -163,7 +164,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
 
     // 발행
     clientRef.current.publish({
-      destination: `/api/pub/terminal/${containerId}`,
+      destination: `/api/pub/terminal/${containerId}/${userId}`,
       body: JSON.stringify({
         command: currentCommandRef.current.trim(),
       }),
@@ -187,7 +188,7 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
       for (const line of resultArray) {
         terminal.current!.writeln(`${line}`)
       }
-      terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m $ `)
+      terminal.current!.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m % `)
       dispatch(setFileExecuteResult(''))
     }
   }, [fileExecuteResult])

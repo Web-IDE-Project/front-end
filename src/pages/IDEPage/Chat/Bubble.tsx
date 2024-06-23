@@ -1,22 +1,24 @@
 import { Box, Center, Flex, Text, Avatar } from '@chakra-ui/react'
 import { useAppSelector } from '@/hooks'
-import { selectNickname, selectProfileUrl } from '@/store/userSlice'
+import { selectId, selectProfileUrl } from '@/store/userSlice'
 
 interface BubbleProps {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
   message: string
   senderName: string
   isHighlighted: boolean
+  senderId: string
 }
 
 const Bubble: React.FC<BubbleProps> = ({
   messageType,
   message,
   senderName,
+  senderId,
   isHighlighted,
 }) => {
-  const username: string = useAppSelector(selectNickname)
   const profileUrl: string = useAppSelector(selectProfileUrl) || ''
+  const userId = useAppSelector(selectId)
 
   if (messageType === 'ENTER' || messageType === 'EXIT') {
     return (
@@ -25,7 +27,7 @@ const Bubble: React.FC<BubbleProps> = ({
       </Center>
     )
   }
-  if (senderName === username) {
+  if (senderId === userId) {
     return (
       <Box
         bg={isHighlighted ? 'yellow.200' : 'green.100'}
@@ -41,7 +43,7 @@ const Bubble: React.FC<BubbleProps> = ({
     )
   }
   return (
-    <Flex maxW='70%'>
+    <Flex maxW="70%">
       <Avatar src={profileUrl} boxSize="40px" mr={2} mt={1} />
       <Box>
         <Text fontSize="small" fontWeight="500">

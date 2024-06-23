@@ -13,7 +13,6 @@ import {
 } from '@chakra-ui/react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import API from '@/services/API'
 import Modal from '@/components/Modal'
 import { useAppSelector } from '@/hooks'
 import {

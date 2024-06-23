@@ -5,13 +5,21 @@ import {
   setTree,
 } from '@/store/ideSlice'
 import { selectId } from '@/store/userSlice'
+import { isEditable } from '@/utils/ide'
 import { Client, IMessage } from '@stomp/stompjs'
 import { Terminal as xterm } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { useEffect, useRef } from 'react'
 import { flattenTree } from 'react-accessible-treeview'
 
-const Terminal = ({ containerId }: { containerId: string | undefined }) => {
+interface Props {
+  containerId: string | undefined
+  category: string
+  isOwner: boolean
+  status: string
+}
+
+const Terminal = ({ containerId, category, isOwner, status }: Props) => {
   const terminalRef = useRef(null)
   const terminal = useRef<xterm>()
   const fileExecuteResult = useAppSelector(selectFileExecuteResult)
@@ -28,13 +36,15 @@ const Terminal = ({ containerId }: { containerId: string | undefined }) => {
   // 터미널 초기 세팅
   useEffect(() => {
     terminal.current = new xterm({
-      cursorBlink: true,
+      cursorBlink: isEditable(status, category, isOwner),
     })
     terminal.current.open(terminalRef.current!)
     terminal.current.resize(100, 12)
     terminal.current.write(`\x1B[1;3;31m${currentPath.current}\x1B[0m % `)
 
     terminal.current.onKey(({ key, domEvent }) => {
+      if (!isEditable(status, category, isOwner)) return
+
       const printable =
         !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey
 

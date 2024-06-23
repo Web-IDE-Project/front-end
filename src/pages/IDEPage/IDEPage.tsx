@@ -141,7 +141,12 @@ const IDEPage = () => {
           </Flex>
           {/* SECTION 터미널 영역 */}
           <Flex display={showTerminal ? 'block' : 'none'}>
-            <Terminal containerId={containerId} />
+            <Terminal
+              containerId={containerId}
+              category={category}
+              isOwner={isOwner}
+              status={status}
+            />
           </Flex>
         </Flex>
 

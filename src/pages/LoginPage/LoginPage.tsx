@@ -9,6 +9,7 @@ import {
   Box,
   Divider,
   AbsoluteCenter,
+  useToast,
 } from '@chakra-ui/react'
 import logo from '../../assets/images/logo.png'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -31,30 +32,30 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const onSubmit: SubmitHandler<LoginFormFields> = async data => {
-    try {
-      const response = await login(data.username, data.password)
+  const toast = useToast()
 
-      if (response.success) {
-        const userInfo = response.data?.userInfo!
-        dispatch(
-          loginAction({
-            id: userInfo.username,
-            nickname: userInfo.nickname,
-            profileUrl: userInfo.awsS3SavedFileURL,
-          })
-        )
-        alert('로그인 성공')
-        navigate('/container/my')
-      }
-    } catch (error: unknown) {
-      if (typeof error === 'object' && error !== null && 'message' in error) {
-        alert((error as { message: string }).message)
-        console.error('로그인 실패:', error)
-      } else {
-        alert('알 수 없는 오류가 발생했습니다.')
-        console.error('로그인 실패:', error)
-      }
+  const onSubmit: SubmitHandler<LoginFormFields> = async data => {
+    const response = await login(data.username, data.password)
+
+    if (response.success) {
+      const userInfo = response.data?.userInfo!
+      dispatch(
+        loginAction({
+          id: userInfo.username,
+          nickname: userInfo.nickname,
+          profileUrl: userInfo.awsS3SavedFileURL,
+        })
+      )
+      navigate('/container/my')
+    } else {
+      toast({
+        title: '로그인에 문제가 발생하였습니다.',
+        description: response.error,
+        position: 'top-right',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
     }
   }
 

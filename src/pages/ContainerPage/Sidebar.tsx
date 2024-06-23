@@ -41,7 +41,6 @@ const Sidebar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
     try {
       const response = await logout()
       if (response.success) {
-        alert(response.data?.message)
         dispatch(logoutAction())
         navigate('/')
       } else {

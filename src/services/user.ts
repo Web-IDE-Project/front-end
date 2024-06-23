@@ -90,3 +90,33 @@ export async function checkLoginStatus(): Promise<ApiResponse<loginResponse>> {
     }
   }
 }
+
+/** 유저 정보 수정 API */
+export async function editUserInfo(
+  updateMemberRequestDTO: { nickname: string | null; password: string | null },
+  profileImage: File | null
+): Promise<ApiResponse<{ result?: string; message: string }>> {
+  try {
+    const formData = new FormData()
+    formData.append(
+      'updateMemberRequestDTO',
+      new Blob([JSON.stringify(updateMemberRequestDTO)], {
+        type: 'application/json',
+      })
+    )
+    formData.append('profileImage', profileImage || 'null')
+
+    const response: AxiosResponse = await API.put(`/api/member`, formData)
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}

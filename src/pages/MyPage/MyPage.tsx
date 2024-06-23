@@ -22,7 +22,7 @@ import {
   setNickName,
   setProfileUrl,
 } from '@/store/userSlice'
-import { checkLoginStatus } from '@/services/user'
+import { checkLoginStatus, editUserInfo } from '@/services/user'
 import { useDispatch } from 'react-redux'
 
 interface FormValues {
@@ -78,20 +78,17 @@ const MyPage = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     try {
-      const requestData = JSON.stringify({
+      const requestData = {
         nickname: data.nickname || null,
         password: data.newPassword || null,
-      })
-
-      const formData = new FormData()
-      formData.append('updateMemberRequestDTO', requestData)
-      if (profileImage?.profileImage) {
-        formData.append('profileImage', profileImage.profileImage)
       }
 
-      const response = await API.put('/api/member', formData)
+      const response = await editUserInfo(
+        requestData,
+        profileImage.profileImage
+      )
 
-      if (response.status === 200) {
+      if (response.success) {
         alert('수정이 완료되었습니다.')
 
         const userStatus = await checkLoginStatus()

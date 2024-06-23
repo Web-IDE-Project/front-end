@@ -12,7 +12,7 @@ import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
 import Bubble from './Bubble'
-import AudioCapture from './AudioCapture'
+// import AudioCapture from './AudioCapture'
 
 const BASE_URI: string = 'ws://localhost:8080'
 
@@ -156,7 +156,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
       localStreamRef.current = localStream
     } catch (error: any) {
       console.error('Error accessing local media:', error)
-      alert(`Error accessing local media: ${error.message}`)
+      // alert(`Error accessing local media: ${error.message}`)
     }
   }
 

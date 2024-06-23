@@ -120,3 +120,25 @@ export async function editUserInfo(
     }
   }
 }
+
+/** 유저 비밀번호 일치 확인 API */
+export async function checkPassword(
+  password: string
+): Promise<ApiResponse<{ result: string; message: string }>> {
+  try {
+    const response: AxiosResponse = await API.post(`/api/auth/password`, {
+      password: password,
+    })
+
+    return {
+      success: true,
+      data: response.data,
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.response?.data?.message || err.message || 'Unknown error occurred',
+    }
+  }
+}

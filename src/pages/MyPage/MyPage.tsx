@@ -9,6 +9,7 @@ import {
   Text,
   Box,
   Avatar,
+  useToast,
 } from '@chakra-ui/react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -22,7 +23,7 @@ import {
   setNickName,
   setProfileUrl,
 } from '@/store/userSlice'
-import { checkLoginStatus, editUserInfo } from '@/services/user'
+import { checkLoginStatus, checkPassword, editUserInfo } from '@/services/user'
 import { useDispatch } from 'react-redux'
 
 interface FormValues {
@@ -67,6 +68,7 @@ const MyPage = () => {
     },
   })
   const [isSocialLogined, setIsSocialLogined] = useState<boolean>(false)
+  const toast = useToast()
 
   useEffect(() => {
     const socials: string[] = ['naver ', 'kakao ', 'google ']
@@ -77,43 +79,52 @@ const MyPage = () => {
   }, [])
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
-    try {
-      const requestData = {
-        nickname: data.nickname || null,
-        password: data.newPassword || null,
-      }
-
-      const response = await editUserInfo(
-        requestData,
-        profileImage.profileImage
-      )
-
-      if (response.success) {
-        alert('수정이 완료되었습니다.')
-
-        const userStatus = await checkLoginStatus()
-
-        if (userStatus.success) {
-          const userInfo = userStatus.data?.userInfo
-
-          if (userInfo) {
-            dispatch(setNickName(userInfo.nickname))
-            dispatch(setProfileUrl(userInfo.awsS3SavedFileURL))
-          } else {
-            alert('유저 정보를 불러오는데 오류가 발생했습니다.')
-          }
-        } else {
-          alert('유저 정보를 불러오는데 오류가 발생했습니다.')
-        }
-      } else {
-        alert('수정이 정상적으로 완료되지 않았습니다.')
-      }
-
-      setChangePassword(false)
-    } catch (error) {
-      console.error('Error:', error)
-      alert('수정이 정상적으로 완료되지 않았습니다.')
+    const requestData = {
+      nickname: data.nickname || null,
+      password: data.newPassword || null,
     }
+
+    const response = await editUserInfo(requestData, profileImage.profileImage)
+
+    if (response.success) {
+      const userStatus = await checkLoginStatus()
+
+      if (userStatus.success) {
+        const userInfo = userStatus.data?.userInfo
+
+        if (userInfo) {
+          dispatch(setNickName(userInfo.nickname))
+          dispatch(setProfileUrl(userInfo.awsS3SavedFileURL))
+        } else {
+          toast({
+            title: '유저 정보를 불러오는데 오류가 발생했습니다.',
+            position: 'top-right',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          })
+        }
+      }
+
+      toast({
+        title: '유저 정보가 변경되었습니다.',
+        position: 'top-right',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+    } else {
+      toast({
+        title: '유저 정보 수정에 문제가 발생하였습니다.',
+        description: response.error,
+        position: 'top-right',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+
+    setChangePassword(false)
   }
 
   const handleOpenModal = () => {
@@ -127,24 +138,15 @@ const MyPage = () => {
   }
 
   const handleConfirm = async () => {
-    try {
-      const response = await API.post('/api/auth/password', {
-        password: watch('currentPassword'),
-      })
+    const response = await checkPassword(watch('currentPassword'))
 
-      if (response.status === 200) {
-        setChangePassword(true)
-        setErrorPassword(false)
-      }
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        setErrorPassword(true)
-      } else {
-        alert(error.message)
-      }
-    } finally {
-      setIsModalOpen(false)
+    if (response.success) {
+      setChangePassword(true)
+      setErrorPassword(false)
+    } else {
+      setErrorPassword(true)
     }
+    setIsModalOpen(false)
   }
 
   const changeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {

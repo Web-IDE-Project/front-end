@@ -110,9 +110,6 @@ const LoginPage: React.FC = () => {
             <Link to="/signup">
               <Text fontSize="small">회원가입 하러가기</Text>
             </Link>
-            <Link to="">
-              <Text fontSize="small">아이디 비밀번호 찾기</Text>
-            </Link>
           </Flex>
           <Box pos="relative" py={12} width="100%">
             <Divider />

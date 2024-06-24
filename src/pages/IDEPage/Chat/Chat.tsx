@@ -12,7 +12,7 @@ import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { Client, IMessage } from '@stomp/stompjs'
 import send from '../../../assets/images/send.png'
 import Bubble from './Bubble'
-// import AudioCapture from './AudioCapture'
+import AudioCapture from './AudioCapture'
 
 interface Message {
   messageType: 'TALK' | 'ENTER' | 'EXIT'
@@ -415,7 +415,7 @@ const Chat = ({ workspaceId }: { workspaceId: string | undefined }) => {
           </Button>
         </Flex>
       </form>
-      {/* <AudioCapture /> */}
+      <AudioCapture />
     </Flex>
   )
 }

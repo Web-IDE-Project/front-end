@@ -93,7 +93,9 @@ const MyPage = () => {
 
         if (userInfo) {
           dispatch(setNickName(userInfo.nickname))
-          dispatch(setProfileUrl(userInfo.awsS3SavedFileURL))
+          dispatch(
+            setProfileUrl(`http://localhost:8080${userInfo.awsS3SavedFileURL}`)
+          )
         } else {
           toast({
             title: '유저 정보를 불러오는데 오류가 발생했습니다.',

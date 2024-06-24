@@ -71,7 +71,7 @@
 <br><br>
 
 ### 시연영상
-[보러가기](https://www.canva.com/design/DAGI4FX3p20/xFEiQMyan_C39bIc9s2HEA/watch?utm_content=DAGI4FX3p20&utm_campaign=designshare&utm_medium=link&utm_source=editor)
+[보러가기](https://www.youtube.com/watch?v=gfLYe-VhBAg)
 
 <br><br>
 

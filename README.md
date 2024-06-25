@@ -127,7 +127,7 @@ Spring Security, OAuth2를 이용하였으며 인증된 사용자의 상태는 �
 <br><br>
 
 ### 시연영상
-[보러가기](https://www.youtube.com/watch?v=gfLYe-VhBAg)
+[![3Ever 시연영상](http://img.youtube.com/vi/gfLYe-VhBAg/0.jpg)](https://youtu.be/gfLYe-VhBAg)
 
 <br><br>
 

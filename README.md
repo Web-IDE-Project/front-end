@@ -7,9 +7,13 @@
 
 <br><br>
 
+### 팀 노션 페이지
+> 🔗 [숨코다 팀 노션](https://www.notion.so/yuuub/8c3da47a75f04e508bdb820263bb59c6?pvs=4)
+
+<br>
 
 ### 배포 주소
-> 🔗 [3Ever](http://ec2-52-79-123-145.ap-northeast-2.compute.amazonaws.com/)
+> 🔗 [3Ever](http://ec2-52-79-123-145.ap-northeast-2.compute.amazonaws.com/) (현재는 서버가 동작하지 않고 있습니다.)
 
 <br><br>
 
